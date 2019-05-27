@@ -1,0 +1,81 @@
+Desired Data Structure
+RASP/
+├── DATA/
+│   ├── W2/
+│   │   ├── SC2/
+│   │   │   └── FCST/   ???
+│   │   │       └── %Y/
+│   │   │           └── %m/
+│   │   │               └── %d/
+│   │   │                   ├── %H%M_sfcwindspd.data
+│   │   │                   ├── %H%M_sfcwinddir.data
+│   │   │                   └── %H%M_cape.data
+│   │   ├── SC2+1/
+│   │   │     The same for tomorrow
+│   │   ├── SC4+2/
+│   │   │     The same for the day after tomorrow
+│   │   └── SC4+3/
+│   │         The same for the day after the day after tomorrow
+│   └── D2/
+│         The same for the bigger domain
+└── PLOTS/
+    ├── W2/
+    │   ├── SFCwind/
+    │   │   └── %Y/
+    │   │       └── %m/
+    │   │           └── %d/
+    │   │               └── %H%M.jpg
+    │   ├── CAPE/
+    │   │   └── %Y/
+    │   │       └── %m/
+    │   │           └── %d/
+    │   │               └── %H%M.jpg
+    │   └── sounding/
+    │       └── %Y/
+    │           └── %m/
+    │               └── %d/
+    │                   ├── %H%M_arcones.w2.data
+    │                   └── %H%M_cebreros.w2.data
+    └── D2/
+          The same for the bigger domain
+
+----------------------------
+Thermal Updraft Velocity
+Thrml. Updrft. Vel&B/S Ratio
+Buoyancy/Shear (B/S) Ratio
+Critical Updraft Hgt (Hcrit)
+Depth of Hcrit (AGL Hcrit)
+Max.Therm.Height
+BL Top Height
+BL Depth
+Thermal Hgt. Variability
+Surface Heating
+Normalized Surface Sun
+Surface Temperature
+Sfc. Wind
+BL Avg. Wind
+BL Top Wind
+BL Vertical Wind Shear
+BL Max.Up/Down Motion
+Cumulus Potential
+Cumulus Cloudbase
+Cu Cloudbase @CuPot>0
+OD Potential
+OD Cloudbase
+OD Cloudbase @ODpot>0
+CloudWater Cloudbase
+BL Max. Rel. Humidity
+Sfc. Dew Point Temp.
+CAPE
+BL Cl.Cover
+BL Ext.Cloudbase
+Vert.Velocity@850mb
+@700mb  @500mb
+Vert.Vel.Slide@Vert.Vel.Max
+Experimental:  .
+Loop
+Arcones XD (line)
+Snow C
+Rain (acc.)
+Psfc Pmsl
+Hgt
