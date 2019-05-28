@@ -58,7 +58,6 @@ def get_and_place(url,base='RASP'):
 
 props = ['sfcwindspd','sfcwinddir','cape']
 # + [f'sounding{i}' for i in range(15)]
-from tqdm import tqdm
 for f in folders:
    print('Going for',f)
    url = 'http://raspuri.mooo.com/RASP/%s/FCST/'%(f)
@@ -66,7 +65,7 @@ for f in folders:
    S = BeautifulSoup(html_doc, 'html.parser')
    table = S.find('table')
    data_files,soundings,cape = [],[],[]
-   for row in tqdm(table.find_all('tr')[3:-1]):
+   for row in table.find_all('tr')[3:-1]:
       col = row.find_all('td')[1]
       l = col.find('a')
       l = l['href']
