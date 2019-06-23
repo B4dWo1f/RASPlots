@@ -22,7 +22,6 @@ params = {'figure.dpi': 150,
           'figure.dpi': 150}
 matplotlib.rcParams.update(params)
 figsize=(32,19)
-cmap = 'Paired'
 fs = 35   # fontsize
 
 
@@ -49,6 +48,10 @@ def border():
 
 
 def plot_background(img,ext,pueblos,ax=None):
+   """
+    Sets an image as background for other plots. It also marks the villages
+   stored in pueblos.csv
+   """
    if ax is None: ax = plt.gca()
    img = mpimg.imread(img) #here+'/Gmap1.jpg')
    #yshape,xshape,_ = img.shape
@@ -67,7 +70,7 @@ def plot_background(img,ext,pueblos,ax=None):
    ax.scatter(px,py,c='r',s=200,zorder=11)
 
 
-def plot_scalar(X,Y,S,fig=None,ax=None,lim=36):
+def plot_scalar(X,Y,S,fig=None,ax=None,lim=36,cmap='Paired',cbar=True):
    """
    X: longitude of the data
    Y: latitude of the data
@@ -80,13 +83,14 @@ def plot_scalar(X,Y,S,fig=None,ax=None,lim=36):
                    cmap=cmap,
                    vmin=0, vmax=40,
                    zorder=10,alpha=0.3)
-   divider = make_axes_locatable(ax)
-   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
-   cbar.set_clim(0, lim)
-   cbar.ax.set_ylabel('Km/h',fontsize=fs)
-   ticklabs = cbar.ax.get_yticklabels()
-   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   if cbar:
+      divider = make_axes_locatable(ax)
+      cax = divider.append_axes("right", size="1.5%", pad=0.2)
+      cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
+      cbar.set_clim(0, lim)
+      cbar.ax.set_ylabel('Km/h',fontsize=fs)
+      ticklabs = cbar.ax.get_yticklabels()
+      cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
 
 def plot_vector(X,Y,U,V,ax=None):
    """
@@ -107,6 +111,9 @@ def plot_wind(fol,tail):
 
    spd = fol +  tail  + 'spd.data'
    dire = fol + tail  + 'dir.data'
+   blcloud = fol + tail.replace('sfcwind','blcloudpct.data')
+   cape = fol + tail.replace('sfcwind','cape.data')
+
    #dire = fol + '/sfcwinddir.' + tail
 
    # Forecast valid for day:
@@ -125,7 +132,9 @@ def plot_wind(fol,tail):
 
    # Calculate Vx and Vy
    S = np.loadtxt(spd, skiprows=4) * 3.6 # km/h
-   D = np.radians(np.loadtxt(dire,skiprows=4))  
+   D = np.radians(np.loadtxt(dire, skiprows=4))  
+   cloud_cover = np.loadtxt(blcloud, skiprows=4)
+   cape = np.loadtxt(cape, skiprows=4)
 
    U = -S*np.sin(D)
    V = -S*np.cos(D)
@@ -145,7 +154,18 @@ def plot_wind(fol,tail):
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
    plot_vector(x,y,U,V)
-   plot_scalar(X,Y,S,fig,ax)
+   plot_scalar(X,Y,S,fig,ax,cmap = 'Paired')
+   from matplotlib.colors import LinearSegmentedColormap
+   color_array = [(0,0,0,a) for a in np.linspace(0,0.9,100)]
+   greys = LinearSegmentedColormap.from_list(name='cloud_cover',colors=color_array)
+   color_array = [(1,0,0,a) for a in np.linspace(0,0.9,100)]
+   reds = LinearSegmentedColormap.from_list(name='cape',colors=color_array)
+
+   #ax.contourf(X,Y,cloud_cover,cmap=greys,vmin=40,vmax=100,zorder=20)
+   if np.max(cape)>1000:
+      ax.contourf(X,Y,cape,cmap=reds,zorder=20)
+   #plot_scalar(X,Y,cloud_cover,fig,ax,cmap='Greys',cbar=False)
+   #plot_scalar(X,Y,cloud_cover,fig,ax,cmap=map_object,cbar=False)
 
    ax.set_aspect('equal')
    ax.set_xticks([])
