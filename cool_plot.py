@@ -163,7 +163,7 @@ def plot_wind(fol,tail):
 
    #ax.contourf(X,Y,cloud_cover,cmap=greys,vmin=40,vmax=100,zorder=20)
    if np.max(cape)>2000:
-      ax.contourf(X,Y,cape,cmap=reds,zorder=20)
+      ax.contourf(X,Y,cape,cmap=reds,vmin=0,vmax=5300,zorder=20)
    #plot_scalar(X,Y,cloud_cover,fig,ax,cmap='Greys',cbar=False)
    #plot_scalar(X,Y,cloud_cover,fig,ax,cmap=map_object,cbar=False)
 
