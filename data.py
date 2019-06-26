@@ -56,7 +56,7 @@ def get_and_place(url,base='RASP'):
    os.rename(ftemp, fname)
 
 
-props = ['sfcwindspd','sfcwinddir','cape']
+props = ['sfcwindspd','sfcwinddir','cape','blcloudpct']
 # + [f'sounding{i}' for i in range(15)]
 for f in folders:
    print('Going for',f)
