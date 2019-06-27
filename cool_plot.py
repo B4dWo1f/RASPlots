@@ -112,7 +112,7 @@ def plot_wind(fol,tail):
    spd = fol +  tail  + 'spd.data'
    dire = fol + tail  + 'dir.data'
    #blcloud = fol + tail.replace('sfcwind','blcloudpct.data')
-   cape = fol + tail.replace('sfcwind','cape.data')
+   #cape = fol + tail.replace('sfcwind','cape.data')
 
    #dire = fol + '/sfcwinddir.' + tail
 
@@ -134,7 +134,7 @@ def plot_wind(fol,tail):
    S = np.loadtxt(spd, skiprows=4) * 3.6 # km/h
    D = np.radians(np.loadtxt(dire, skiprows=4))  
    #cloud_cover = np.loadtxt(blcloud, skiprows=4)
-   cape = np.loadtxt(cape, skiprows=4)
+   #cape = np.loadtxt(cape, skiprows=4)
 
    U = -S*np.sin(D)
    V = -S*np.cos(D)
@@ -155,15 +155,15 @@ def plot_wind(fol,tail):
    plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
    plot_vector(x,y,U,V)
    plot_scalar(X,Y,S,fig,ax,cmap = 'Paired')
-   from matplotlib.colors import LinearSegmentedColormap
+   #from matplotlib.colors import LinearSegmentedColormap
    #color_array = [(0,0,0,a) for a in np.linspace(0,0.9,100)]
    #greys = LinearSegmentedColormap.from_list(name='cloud_cover',colors=color_array)
-   color_array = [(1,0,0,a) for a in np.linspace(0,0.9,100)]
-   reds = LinearSegmentedColormap.from_list(name='cape',colors=color_array)
+   #color_array = [(1,0,0,a) for a in np.linspace(0,0.9,100)]
+   #reds = LinearSegmentedColormap.from_list(name='cape',colors=color_array)
 
    #ax.contourf(X,Y,cloud_cover,cmap=greys,vmin=40,vmax=100,zorder=20)
-   if np.max(cape)>2000:
-      ax.contourf(X,Y,cape,cmap=reds,vmin=0,vmax=5300,zorder=20)
+   #if np.max(cape)>2000:
+   #   ax.contourf(X,Y,cape,cmap=reds,vmin=0,vmax=5300,zorder=20)
    #plot_scalar(X,Y,cloud_cover,fig,ax,cmap='Greys',cbar=False)
    #plot_scalar(X,Y,cloud_cover,fig,ax,cmap=map_object,cbar=False)
 
