@@ -79,7 +79,8 @@ def plot_background(img,ext,pueblos,ax=None):
    ax.scatter(px,py,c='r',s=200,zorder=11)
 
 
-def plot_scalar(X,Y,S,fig=None,ax=None,lim=36,cmap='Paired',cbar=True):
+def plot_scalar(X,Y,S, fig=None, ax=None, cbar=True,
+                vmin=0,vmax=40,lim=40,cmap='Paired'):
    """
    X: longitude of the data
    Y: latitude of the data
@@ -87,10 +88,10 @@ def plot_scalar(X,Y,S,fig=None,ax=None,lim=36,cmap='Paired',cbar=True):
    """
    if fig is None: fig = plt.figure()
    if ax is None: ax = plt.gca()
-   C = ax.contourf(X,Y,S, levels=range(0,lim,2), extend='max',
+   C = ax.contourf(X,Y,S, levels=range(0,lim,4), extend='max',
                    antialiased=True,
                    cmap=cmap,
-                   vmin=0, vmax=40,
+                   vmin=0, vmax=lim,
                    zorder=10,alpha=0.3)
    if cbar:
       divider = make_axes_locatable(ax)
@@ -209,7 +210,7 @@ def plot_cape(fol,tail):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
-   plot_scalar(X,Y,cape,fig,ax,lim=6000,cmap=mycolors.bgr)
+   plot_scalar(X,Y,cape,fig,ax,vmax=6000,lim=6000,cmap=mycolors.bgr)
 
    ax.set_aspect('equal')
    ax.set_xticks([])
