@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
+import common
 from urllib.request import Request, urlopen, urlretrieve
 from bs4 import BeautifulSoup
 import datetime as dt
@@ -15,17 +16,6 @@ def make_request(url):
    html_doc = urlopen(req)
    html_doc= html_doc.read()
    return html_doc
-
-fol = here + '/data/'
-fol = HOME + '/Documents/RASP'
-if fol[-1] == '/': fol = fol[:-1]
-
-folders = ['SC2','SC2+1','SC4+2','SC4+3']
-
-sounding_index = {'arcones': 1, 'bustarviejo': 2, 'cebreros': 3, 'abantos': 4,
-                  'piedrahita': 5, 'pedro bernardo': 6, 'lillo': 7,
-                  'fuentemilanos': 8, 'candelario': 10, 'pitolero': 11,
-                  'pegalajar': 12,'otivar': 13}
 
 import re
 def get_and_place(url,base='RASP'):
@@ -55,21 +45,36 @@ def get_and_place(url,base='RASP'):
    os.system(com)
    os.rename(ftemp, fname)
 
+if __name__ == '__main__':
+   C = common.load(here+'/config.ini')
 
-props = ['sfcwindspd','sfcwinddir','cape','blcloudpct']
-# + [f'sounding{i}' for i in range(15)]
-for f in folders:
-   print('Going for',f)
-   url = 'http://raspuri.mooo.com/RASP/%s/FCST/'%(f)
-   html_doc = make_request(url)
-   S = BeautifulSoup(html_doc, 'html.parser')
-   table = S.find('table')
-   data_files,soundings,cape = [],[],[]
-   for row in table.find_all('tr')[3:-1]:
-      col = row.find_all('td')[1]
-      l = col.find('a')
-      l = l['href']
-      if '.data' == l[-5:]:
-         if 'curr' in l:
-            if l.split('.')[0] in props:
-               get_and_place(url+l, fol)
+   fol = C.root_folder
+   props = C.props
+   if fol[-1] == '/': fol = fol[:-1]
+
+   folder_index = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
+   sounding_index= {'arcones': 1, 'bustarviejo': 2, 'cebreros': 3, 'abantos': 4,
+                    'piedrahita': 5, 'pedro bernardo': 6, 'lillo': 7,
+                    'fuentemilanos': 8, 'candelario': 10, 'pitolero': 11,
+                    'pegalajar': 12,'otivar': 13}
+
+   tday = dt.datetime.now().date()
+   folders = [folder_index[x] for x in C.run_days]
+
+   #props = ['sfcwindspd','sfcwinddir','cape','blcloudpct']
+   # + [f'sounding{i}' for i in range(15)]
+   for f in folders:
+      print('Going for',f)
+      url = 'http://raspuri.mooo.com/RASP/%s/FCST/'%(f)
+      html_doc = make_request(url)
+      S = BeautifulSoup(html_doc, 'html.parser')
+      table = S.find('table')
+      data_files,soundings,cape = [],[],[]
+      for row in table.find_all('tr')[3:-1]:
+         col = row.find_all('td')[1]
+         l = col.find('a')
+         l = l['href']
+         if '.data' == l[-5:]:
+            if 'curr' in l:
+               if l.split('.')[0] in props:
+                  get_and_place(url+l, fol)

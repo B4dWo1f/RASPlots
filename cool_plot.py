@@ -114,7 +114,7 @@ def plot_vector(X,Y,U,V,ax=None):
                            arrowstyle='->',arrowsize=5,
                            zorder=12)
 
-def plot_wind(fol,tail):
+def plot_wind(fol,tail,prop=''):
    fol_save = fol.replace('DATA','PLOTS')
    os.system('mkdir -p %s'%(fol_save))
 
@@ -164,7 +164,7 @@ def plot_wind(fol,tail):
    ax.set_ylim([my,My])
 
 
-   ax.set_title(date.strftime('Surface Wind for - %d/%m/%Y %H:%M'),fontsize=50)
+   ax.set_title(date.strftime(prop+' for - %d/%m/%Y %H:%M'),fontsize=50)
    fig.tight_layout()
    fsave = fol_save + tail + '.jpg'
    fig.savefig(fsave, dpi=65, quality=90) #,dpi=80,quality=100)
@@ -250,5 +250,7 @@ if __name__ == '__main__':
    files = [f.replace('spd','') for f in files]
    for f in files:
       tail = f.split('/')[-1].split('.')[0]
-      plot_wind(fname,tail)
+      plot_wind(fname,tail, prop='Surface wind')   # surface wind
+      plot_wind(fname,tail.replace('sfcwind','blwind'), prop='BL wind')
+      plot_wind(fname,tail.replace('sfcwind','bltopwind'), prop='top BL wind')
       plot_cape(fname,tail.replace('sfcwind','cape'))
