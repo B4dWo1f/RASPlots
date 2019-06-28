@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
+import re
 import numpy as np
 import matplotlib
 import matplotlib.image as mpimg
@@ -8,6 +9,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import datetime as dt
 from random import choice
+import mycolors
 import os
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -45,6 +47,13 @@ def border():
    #P2 = (-2.692100, 39.582791)
    #P3 = (-2.781653, 41.722646)
    return P0,P1,P2,P3
+
+def get_valid_date(line):
+   pattern = r'([ ^\W\w\d_ ]*) Valid (\S+) ([ ^\W\w\d_ ]*) ~Z75~([ ^\W\w\d_ ]*)~Z~ ([ ^\W\w\d_ ]*) ~Z75~([ ^\W\w\d_ ]*)'
+   match = re.search(pattern, line)
+   prop,h,Z,_,date,rest = match.groups()
+   date = ' '.join(date.split()[1:]) + ' ' + h + ' ' + Z+'T'
+   return prop,dt.datetime.strptime(date,'%d %b %Y %H%M %Z')
 
 
 def plot_background(img,ext,pueblos,ax=None):
@@ -111,15 +120,10 @@ def plot_wind(fol,tail):
 
    spd = fol +  tail  + 'spd.data'
    dire = fol + tail  + 'dir.data'
-   #blcloud = fol + tail.replace('sfcwind','blcloudpct.data')
-   #cape = fol + tail.replace('sfcwind','cape.data')
-
-   #dire = fol + '/sfcwinddir.' + tail
 
    # Forecast valid for day:
-   date = open(spd,'r').read().strip().splitlines()[1].split()
-   date = ' '.join(date[11:14]) + ' ' + date[7]
-   date = dt.datetime.strptime(date, '%d %b %Y %H%M')
+   date = open(spd,'r').read().strip().splitlines()[1]
+   _, date = get_valid_date(date)
 
    # Read latitude and longitude info
    # convert lat,lon to pixel
@@ -133,9 +137,6 @@ def plot_wind(fol,tail):
    # Calculate Vx and Vy
    S = np.loadtxt(spd, skiprows=4) * 3.6 # km/h
    D = np.radians(np.loadtxt(dire, skiprows=4))  
-   #cloud_cover = np.loadtxt(blcloud, skiprows=4)
-   #cape = np.loadtxt(cape, skiprows=4)
-
    U = -S*np.sin(D)
    V = -S*np.cos(D)
 
@@ -155,17 +156,6 @@ def plot_wind(fol,tail):
    plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
    plot_vector(x,y,U,V)
    plot_scalar(X,Y,S,fig,ax,cmap = 'Paired')
-   #from matplotlib.colors import LinearSegmentedColormap
-   #color_array = [(0,0,0,a) for a in np.linspace(0,0.9,100)]
-   #greys = LinearSegmentedColormap.from_list(name='cloud_cover',colors=color_array)
-   #color_array = [(1,0,0,a) for a in np.linspace(0,0.9,100)]
-   #reds = LinearSegmentedColormap.from_list(name='cape',colors=color_array)
-
-   #ax.contourf(X,Y,cloud_cover,cmap=greys,vmin=40,vmax=100,zorder=20)
-   #if np.max(cape)>2000:
-   #   ax.contourf(X,Y,cape,cmap=reds,vmin=0,vmax=5300,zorder=20)
-   #plot_scalar(X,Y,cloud_cover,fig,ax,cmap='Greys',cbar=False)
-   #plot_scalar(X,Y,cloud_cover,fig,ax,cmap=map_object,cbar=False)
 
    ax.set_aspect('equal')
    ax.set_xticks([])
@@ -181,6 +171,59 @@ def plot_wind(fol,tail):
    #plt.show()
    plt.close('all')
 
+
+
+def plot_cape(fol,tail):
+   fol_save = fol.replace('DATA','PLOTS')
+   os.system('mkdir -p %s'%(fol_save))
+
+   cape = fol + tail + '.data'
+
+   # Forecast valid for day:
+   date = open(cape,'r').read().strip().splitlines()[1]
+   _, date = get_valid_date(date)
+
+   # Read latitude and longitude info
+   # convert lat,lon to pixel
+   f = '/'.join(fol.split('/')[:-4])
+   X = np.load(f+'/lons.npy')
+   Y = np.load(f+'/lats.npy')
+   mx,Mx = np.min(X),np.max(X)
+   my,My = np.min(Y),np.max(Y)
+
+
+   ## Read CAPE data
+   cape = np.loadtxt(cape, skiprows=4)
+
+   # Prepare XY grid
+   x = np.linspace(mx,Mx,X.shape[1])
+   y = np.linspace(my,My,X.shape[0])
+
+   # Create Plot
+   fig, ax = plt.subplots(figsize=figsize)
+   ax.xaxis.tick_top()
+
+   # Background Image
+   p0,p1,p2,p3 = border()
+   ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
+          np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
+
+   plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
+   plot_scalar(X,Y,cape,fig,ax,lim=6000,cmap=mycolors.bgr)
+
+   ax.set_aspect('equal')
+   ax.set_xticks([])
+   ax.set_yticks([])
+   ax.set_xlim([mx,Mx])
+   ax.set_ylim([my,My])
+
+
+   ax.set_title(date.strftime('CAPE for - %d/%m/%Y %H:%M'),fontsize=50)
+   fig.tight_layout()
+   fsave = fol_save + tail + '.jpg'
+   fig.savefig(fsave, dpi=65, quality=90) #,dpi=80,quality=100)
+   #plt.show()
+   plt.close('all')
 
 
 if __name__ == '__main__':
@@ -208,3 +251,4 @@ if __name__ == '__main__':
    for f in files:
       tail = f.split('/')[-1].split('.')[0]
       plot_wind(fname,tail)
+      plot_cape(fname,tail.replace('sfcwind','cape'))
