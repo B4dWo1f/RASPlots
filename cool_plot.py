@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import datetime as dt
 from random import choice
-import mycolors
+import colormaps
 import os
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -210,7 +210,8 @@ def plot_cape(fol,tail):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
-   plot_scalar(X,Y,cape,fig,ax,vmax=6000,lim=6000,cmap=mycolors.bgr)
+   bgr = colormaps.bgr
+   plot_scalar(X,Y,cape,fig,ax,vmax=6000,lim=6000,cmap=bgr)
 
    ax.set_aspect('equal')
    ax.set_xticks([])
