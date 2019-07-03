@@ -56,7 +56,7 @@ def get_valid_date(line):
    return prop,dt.datetime.strptime(date,'%d %b %Y %H%M %Z')
 
 
-def plot_background(img,ext,pueblos,ax=None):
+def plot_background(img,ext,pueblos,takeoffs,ax=None):
    """
     Sets an image as background for other plots. It also marks the villages
    stored in pueblos.csv
@@ -67,16 +67,31 @@ def plot_background(img,ext,pueblos,ax=None):
    ax.imshow(img, aspect='equal', extent=ext,zorder=1,origin='lower')
    ## Pueblos
    px,py = [],[]
-   for line in open(pueblos,'r').read().strip().splitlines():
+   villages = open(pueblos,'r').read().strip().splitlines()
+   txt = ''
+   for i in range(len(villages)):
+      line = villages[i]
       ll = line.split()
-      #a_x,a_y = mapP([float(ll[1]),float(ll[0])],img.shape)
       a_x,a_y = float(ll[1]),float(ll[0])
       px.append(a_x)
       py.append(a_y)
       nam = ' '.join(ll[2:])
-      ax.text(a_x,a_y,nam,bbox=dict(facecolor='white', alpha=0.5),
+      ax.text(a_x+0.025,a_y,str(i),bbox=dict(facecolor='white', alpha=0.5),
                                                       fontsize=fs, zorder=13)
+      txt += f'{i}: {nam}\n'
+   txt = txt[:-1]
+   ax.text(0.01,0.665,txt,bbox=dict(facecolor='white', alpha=0.7),
+                               transform=ax.transAxes, fontsize=fs, zorder=13)
    ax.scatter(px,py,c='r',s=200,zorder=11)
+   px,py = [],[]
+   villages = open(takeoffs,'r').read().strip().splitlines()
+   for i in range(len(villages)):
+      line = villages[i]
+      ll = line.split()
+      a_x,a_y = float(ll[1]),float(ll[0])
+      px.append(a_x)
+      py.append(a_y)
+   ax.scatter(px,py,c='C0',s=1500,zorder=13,marker='*')
 
 
 def plot_scalar(X,Y,S, fig=None, ax=None, cbar=True,
@@ -128,9 +143,9 @@ def plot_wind(fol,tail,prop=''):
 
    # Read latitude and longitude info
    # convert lat,lon to pixel
-   f = '/'.join(fol.split('/')[:-4])
-   X = np.load(f+'/lons.npy')
-   Y = np.load(f+'/lats.npy')
+   sc = fol.split('/')[-5].lower()
+   X = np.load(here+f'/{sc}_lons.npy')
+   Y = np.load(here+f'/{sc}_lats.npy')
    mx,Mx = np.min(X),np.max(X)
    my,My = np.min(Y),np.max(Y)
 
@@ -154,7 +169,7 @@ def plot_wind(fol,tail,prop=''):
    ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
-   plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
+   plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
    plot_vector(x,y,U,V)
    plot_scalar(X,Y,S,fig,ax,cmap = 'Paired')
 
@@ -186,9 +201,9 @@ def plot_cape(fol,tail):
 
    # Read latitude and longitude info
    # convert lat,lon to pixel
-   f = '/'.join(fol.split('/')[:-4])
-   X = np.load(f+'/lons.npy')
-   Y = np.load(f+'/lats.npy')
+   sc = fol.split('/')[-5].lower()
+   X = np.load(here+f'/{sc}_lons.npy')
+   Y = np.load(here+f'/{sc}_lats.npy')
    mx,Mx = np.min(X),np.max(X)
    my,My = np.min(Y),np.max(Y)
 
@@ -209,7 +224,7 @@ def plot_cape(fol,tail):
    ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
-   plot_background(here+'/Gmap1.jpg',ext,here+'/pueblos.csv',ax)
+   plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
    bgr = colormaps.bgr
    plot_scalar(X,Y,cape,fig,ax,vmax=6000,lim=6000,cmap=bgr)
 
