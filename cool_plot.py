@@ -325,8 +325,8 @@ if __name__ == '__main__':
    files = [f.replace('spd','') for f in files]
    for f in files:
       tail = f.split('/')[-1].split('.')[0]
-      #plot_wind(fname,tail, prop='Surface wind')   # surface wind
-      #plot_wind(fname,tail.replace('sfcwind','blwind'), prop='BL wind')
-      #plot_wind(fname,tail.replace('sfcwind','bltopwind'), prop='top BL wind')
-      #plot_cape(fname,tail.replace('sfcwind','cape'))
-      plot_thermal_height(fname,tail.replace('sfcwind','wstar'))
+      plot_wind(fname,tail, prop='Surface wind')   # surface wind
+      plot_wind(fname,tail.replace('sfcwind','blwind'), prop='BL wind')
+      plot_wind(fname,tail.replace('sfcwind','bltopwind'), prop='top BL wind')
+      plot_cape(fname,tail.replace('sfcwind','cape'))
+      #plot_thermal_height(fname,tail.replace('sfcwind','wstar'))
