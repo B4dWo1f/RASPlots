@@ -243,6 +243,64 @@ def plot_cape(fol,tail):
    plt.close('all')
 
 
+
+def plot_thermal_height(fol,tail):
+   fol_save = fol.replace('DATA','PLOTS')
+   os.system('mkdir -p %s'%(fol_save))
+
+   thermal_height = fol + tail + '.data'
+
+   # Forecast valid for day:
+   date = open(thermal_height,'r').read().strip().splitlines()[1]
+   _, date = get_valid_date(date)
+
+   # Read latitude and longitude info
+   # convert lat,lon to pixel
+   sc = fol.split('/')[-5].lower()
+   X = np.load(here+f'/{sc}_lons.npy')
+   Y = np.load(here+f'/{sc}_lats.npy')
+   mx,Mx = np.min(X),np.max(X)
+   my,My = np.min(Y),np.max(Y)
+
+
+   ## Read CAPE data
+   print(thermal_height)
+   thermal_height = np.loadtxt(thermal_height, skiprows=4) / 100  # m/s
+   print(np.max(thermal_height))
+   print(np.min(thermal_height))
+
+   # Prepare XY grid
+   x = np.linspace(mx,Mx,X.shape[1])
+   y = np.linspace(my,My,X.shape[0])
+
+   # Create Plot
+   fig, ax = plt.subplots(figsize=figsize)
+   ax.xaxis.tick_top()
+
+   # Background Image
+   p0,p1,p2,p3 = border()
+   ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
+          np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
+
+   plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
+   bgr = colormaps.bgr
+   plot_scalar(X,Y,thermal_height,fig,ax,vmin=0,vmax=4,lim=5,cmap='plasma')
+
+   ax.set_aspect('equal')
+   ax.set_xticks([])
+   ax.set_yticks([])
+   ax.set_xlim([mx,Mx])
+   ax.set_ylim([my,My])
+
+
+   ax.set_title(date.strftime('Thermal Height for - %d/%m/%Y %H:%M'),fontsize=50)
+   fig.tight_layout()
+   fsave = fol_save + tail + '.jpg'
+   print(fsave)
+   fig.savefig(fsave, dpi=65, quality=90) #,dpi=80,quality=100)
+   #plt.show()
+   plt.close('all')
+
 if __name__ == '__main__':
    import sys
    try:
@@ -267,7 +325,8 @@ if __name__ == '__main__':
    files = [f.replace('spd','') for f in files]
    for f in files:
       tail = f.split('/')[-1].split('.')[0]
-      plot_wind(fname,tail, prop='Surface wind')   # surface wind
-      plot_wind(fname,tail.replace('sfcwind','blwind'), prop='BL wind')
-      plot_wind(fname,tail.replace('sfcwind','bltopwind'), prop='top BL wind')
-      plot_cape(fname,tail.replace('sfcwind','cape'))
+      #plot_wind(fname,tail, prop='Surface wind')   # surface wind
+      #plot_wind(fname,tail.replace('sfcwind','blwind'), prop='BL wind')
+      #plot_wind(fname,tail.replace('sfcwind','bltopwind'), prop='top BL wind')
+      #plot_cape(fname,tail.replace('sfcwind','cape'))
+      plot_thermal_height(fname,tail.replace('sfcwind','wstar'))
