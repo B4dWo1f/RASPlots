@@ -94,42 +94,6 @@ def plot_background(img,ext,pueblos,takeoffs,ax=None):
    ax.scatter(px,py,c='r',s=1500,zorder=13,marker='*')
 
 
-def plot_scalar(X,Y,S, fig=None, ax=None, cbar=True,
-                vmin=0,vmax=40,lim=40,Nl=4,cmap='Paired'):
-   """
-   X: longitude of the data
-   Y: latitude of the data
-   S: data to plot
-   """
-   if fig is None: fig = plt.figure()
-   if ax is None: ax = plt.gca()
-   C = ax.contourf(X,Y,S, levels=range(0,lim,Nl), extend='max',
-                   antialiased=True,
-                   cmap=cmap,
-                   vmin=0, vmax=lim,
-                   zorder=10,alpha=0.3)
-   if cbar:
-      divider = make_axes_locatable(ax)
-      cax = divider.append_axes("right", size="1.5%", pad=0.2)
-      cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
-      cbar.set_clim(0, lim)
-      cbar.ax.set_ylabel('Km/h',fontsize=fs)
-      ticklabs = cbar.ax.get_yticklabels()
-      cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
-
-def plot_vector(X,Y,U,V,ax=None):
-   """
-   ** X,Y must be the (n,) arrays that would be passed to np.meshgrid(x,y)
-   X: longitude of the data
-   Y: latitude of the data
-   U: longitudinal components of the vector field
-   V: latitudinal components of the vector field
-   """
-   if ax is None: ax = plt.gca()
-   ax.streamplot(X,Y, U,V, color='k',linewidth=1., density=3.5,
-                           arrowstyle='->',arrowsize=5,
-                           zorder=12)
-
 def plot_wind(fol,tail,prop=''):
    fol_save = fol.replace('DATA','PLOTS')
    os.system('mkdir -p %s'%(fol_save))
@@ -170,8 +134,25 @@ def plot_wind(fol,tail,prop=''):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
-   plot_vector(x,y,U,V)
-   plot_scalar(X,Y,S,fig,ax,cmap = 'Paired')
+   # vector field
+   ax.streamplot(x,y, U,V, color='k',linewidth=1., density=3.5,
+                           arrowstyle='->',arrowsize=5,
+                           zorder=12)
+   # scalar field
+   delta = 4
+   vmin,vmax = 0,56+delta
+   C = ax.contourf(X,Y,S, levels=range(vmin,vmax,delta), extend='max',
+                   antialiased=True,
+                   cmap=colormaps.WindSpeed,
+                   vmin=vmin, vmax=vmax,
+                   zorder=10,alpha=0.3)
+   divider = make_axes_locatable(ax)
+   cax = divider.append_axes("right", size="1.5%", pad=0.2)
+   cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
+   cbar.set_clim(vmin, vmax-delta)
+   cbar.ax.set_ylabel('Km/h',fontsize=fs)
+   ticklabs = cbar.ax.get_yticklabels()
+   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
 
    ax.set_aspect('equal')
    ax.set_xticks([])
@@ -225,8 +206,20 @@ def plot_cape(fol,tail):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
-   bgr = colormaps.bgr
-   plot_scalar(X,Y,cape,fig,ax,vmax=6000,lim=6000,cmap=bgr)
+   delta = 100
+   vmin,vmax=0,6000+delta
+   C = ax.contourf(X,Y,cape, levels=range(vmin,vmax,delta), extend='max',
+                   antialiased=True,
+                   cmap=colormaps.bgr,
+                   vmin=vmin, vmax=vmax,
+                   zorder=10,alpha=0.3)
+   divider = make_axes_locatable(ax)
+   cax = divider.append_axes("right", size="1.5%", pad=0.2)
+   cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
+   cbar.set_clim(vmin, vmax)
+   cbar.ax.set_ylabel('Km/h',fontsize=fs)
+   ticklabs = cbar.ax.get_yticklabels()
+   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
 
    ax.set_aspect('equal')
    ax.set_xticks([])
@@ -263,7 +256,7 @@ def plot_thermal_height(fol,tail):
    my,My = np.min(Y),np.max(Y)
 
 
-   ## Read CAPE data
+   ## Read Thermal Height data
    thermal_height = np.loadtxt(thermal_height, skiprows=4) / 100  # m/s
 
    # Prepare XY grid
@@ -280,17 +273,18 @@ def plot_thermal_height(fol,tail):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
-   bgr = colormaps.bgr
-   #plot_scalar(X,Y,thermal_height,fig,ax,vmin=0,vmax=4,lim=5,Nl=0.4,cmap='plasma')
-   C = ax.contourf(X,Y,thermal_height, levels=np.linspace(0,3,11), extend='max',
-                   antialiased=True,
-                   cmap='Paired',
-                   vmin=0, vmax=4,
+   #bgr = colormaps.bgr
+   delta=0.2
+   vmin,vmax = 0,3.4+delta
+   C = ax.contourf(X,Y,thermal_height, levels=np.arange(vmin,vmax,delta),
+                   extend='max', antialiased=True,
+                   cmap=colormaps.Thermals,
+                   vmin=vmin, vmax=vmax,
                    zorder=10,alpha=0.3)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
-   cbar.set_clim(0, 3)
+   cbar.set_clim(vmin, vmax-delta)
    cbar.ax.set_ylabel('m/s',fontsize=fs)
    ticklabs = cbar.ax.get_yticklabels()
    cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
@@ -347,7 +341,6 @@ def plot_BL_height(fol,tail):
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
    bgr = colormaps.bgr
-   #plot_scalar(X,Y,thermal_height,fig,ax,vmin=0,vmax=4,lim=5,Nl=0.4,cmap='plasma')
    delta=200
    vmin = 800
    vmax = 3600
@@ -402,9 +395,9 @@ if __name__ == '__main__':
    files = [f.replace('spd','') for f in files]
    for f in files:
       tail = f.split('/')[-1].split('.')[0]
-      plot_wind(fname,tail, prop='Surface wind')   # surface wind
-      plot_wind(fname,tail.replace('sfcwind','blwind'), prop='BL wind')
-      plot_wind(fname,tail.replace('sfcwind','bltopwind'), prop='top BL wind')
-      plot_cape(fname,tail.replace('sfcwind','cape'))
+      #plot_wind(fname,tail, prop='Surface wind')   # surface wind
+      #plot_wind(fname,tail.replace('sfcwind','blwind'), prop='BL wind')
+      #plot_wind(fname,tail.replace('sfcwind','bltopwind'), prop='top BL wind')
+      #plot_cape(fname,tail.replace('sfcwind','cape'))
       plot_thermal_height(fname,tail.replace('sfcwind','wstar'))
-      plot_BL_height(fname,tail.replace('sfcwind','hbl'))
+      #plot_BL_height(fname,tail.replace('sfcwind','hbl'))

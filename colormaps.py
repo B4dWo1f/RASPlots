@@ -5,20 +5,6 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 import numpy as np
 
-# Blue-Green-Red
-cdict={'red': ((0., 0., 0.),(0.6, 0.0, 0.0),(1.0, 1.0, 1.0)),
-       'green': ((0., 0.0, 0.0),(0.4, 1.0, 1.0),(0.6, 1.0, 1.0),(1., 0.0, 0.0)),
-       'blue': ((0., 1.0, 1.0),(0.4, 0.0, 0.0),(1.0, 0.0, 0.0))}
-bgr = LinearSegmentedColormap('bgr',cdict,256)
-
-# Grey scale from black to transparent along black-white direction
-color_array = [(0,0,0,a) for a in np.linspace(0,0.9,100)]
-greys = LinearSegmentedColormap.from_list(name='cloud_cover',colors=color_array)
-   
-# Red scale from red to transparent along red-white direction
-color_array = [(1,0,0,a) for a in np.linspace(0,0.9,100)]
-reds = LinearSegmentedColormap.from_list(name='cape',colors=color_array)
-
 
 def mycmap(stops,Ns=[]):
    """
@@ -47,6 +33,95 @@ def mycmap(stops,Ns=[]):
          cols.append( tuple((1-a)*col0 + a*col1) )
    return ListedColormap(cols)
 
+
+# Blue-Green-Red
+cdict={'red': ((0., 0., 0.),(0.6, 0.0, 0.0),(1.0, 1.0, 1.0)),
+       'green': ((0., 0.0, 0.0),(0.4, 1.0, 1.0),(0.6, 1.0, 1.0),(1., 0.0, 0.0)),
+       'blue': ((0., 1.0, 1.0),(0.4, 0.0, 0.0),(1.0, 0.0, 0.0))}
+bgr = LinearSegmentedColormap('bgr',cdict,256)
+
+# Grey scale from black to transparent along black-white direction
+color_array = [(0,0,0,a) for a in np.linspace(0,0.9,100)]
+greys = LinearSegmentedColormap.from_list(name='cloud_cover',colors=color_array)
+   
+# Red scale from red to transparent along red-white direction
+color_array = [(1,0,0,a) for a in np.linspace(0,0.9,100)]
+reds = LinearSegmentedColormap.from_list(name='cape',colors=color_array)
+
+## Wind Speed ##################################################################
+col0 = np.array([178, 223, 138])
+col1 = np.array([ 51, 160,  44])
+col2 = np.array([166, 206, 227])
+col3 = np.array([ 31, 120, 180])
+col4 = np.array([253, 191, 111])
+col5 = np.array([255, 127,   0])
+col6 = np.array([251, 154, 153])
+col7 = np.array([227,  26,  28])
+col8 = np.array([202, 178, 214])
+col9 = np.array([106,  61, 154])
+col10 = np.array([255, 255, 153])
+col11 = np.array([177,  89,  40])
+col12 = np.array([ 90, 219, 229])
+col13 = np.array([  0, 158, 170])
+
+cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
+cols += [col12,col13,col13]
+
+stops = [C/255 for C in cols]
+WindSpeed = mycmap(stops,1)
+################################################################################
+
+## Thermals_uri ################################################################
+col0 = np.array([  0,   0, 255])
+col1 = np.array([  0,  93, 255])
+col2 = np.array([  0, 193, 255])
+col3 = np.array([  1, 246, 225])
+col4 = np.array([  4, 215, 131])
+col5 = np.array([  6, 187,  44])
+col6 = np.array([ 66, 197,  10])
+col7 = np.array([160, 225,   6])
+col8 = np.array([248, 252,   0])
+col9 = np.array([255, 224,   0])
+col10 = np.array([255, 189,   0])
+col11 = np.array([255, 149,   0])
+col12 = np.array([255,  84,   0])
+col13 = np.array([255,  24,   0])
+col14 = np.array([219,   0,  29])
+col15 = np.array([153,   0,  82])
+col16 = np.array([ 92,   0, 132])
+
+cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
+cols += [col12,col13,col14,col15,col16,col16]
+
+stops = [C/255 for C in cols]
+Thermals_uri = mycmap(stops,1)
+################################################################################
+
+## Thermals ####################################################################
+col0 = np.array([178, 223, 138])
+col1 = np.array([115, 192,  91])
+col2 = np.array([ 51, 160,  44])
+col3 = np.array([166, 206, 227])
+col4 = np.array([ 99, 163, 203])
+col5 = np.array([ 31, 120, 180])
+col6 = np.array([253, 191, 111])
+col7 = np.array([254, 159,  56])
+col8 = np.array([255, 127,   0])
+col9 = np.array([251, 154, 153])
+col10 = np.array([239,  90,  91])
+col11 = np.array([227,  26,  28])
+col12 = np.array([202, 178, 214])
+col13 = np.array([154, 120, 184])
+col14 = np.array([106,  61, 154])
+col15 = np.array([ 90, 219, 229])
+col16 = np.array([  0, 158, 170])
+
+cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
+cols += [col12,col13,col14,col15,col16,col16]
+
+stops = [C/255 for C in cols]
+Thermals = mycmap(stops,1)
+################################################################################
 
 if __name__ == '__main__':
    
