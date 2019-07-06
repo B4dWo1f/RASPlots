@@ -217,7 +217,7 @@ def plot_cape(fol,tail):
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
    cbar.set_clim(vmin, vmax)
-   cbar.ax.set_ylabel('Km/h',fontsize=fs)
+   cbar.ax.set_ylabel('J/Kg',fontsize=fs)
    ticklabs = cbar.ax.get_yticklabels()
    cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
 
@@ -353,7 +353,7 @@ def plot_BL_height(fol,tail):
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
    cbar.set_clim(vmin, vmax-2*delta)
-   cbar.ax.set_ylabel('m/s',fontsize=fs)
+   cbar.ax.set_ylabel('m',fontsize=fs)
    ticklabs = cbar.ax.get_yticklabels()
    cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
 
