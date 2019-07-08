@@ -64,6 +64,29 @@ col11 = np.array([177,  89,  40])
 col12 = np.array([ 90, 219, 229])
 col13 = np.array([  0, 158, 170])
 
+cols = [col0,col1,col2,col3,col4,col5] #,col6,col7,col8,col9,col9]
+
+stops = [C/255 for C in cols]
+Ns = [3, 7, 15, 28, 28]
+CAPE = mycmap(stops, Ns)
+################################################################################
+
+## Wind Speed ##################################################################
+col0 = np.array([178, 223, 138])
+col1 = np.array([ 51, 160,  44])
+col2 = np.array([166, 206, 227])
+col3 = np.array([ 31, 120, 180])
+col4 = np.array([253, 191, 111])
+col5 = np.array([255, 127,   0])
+col6 = np.array([251, 154, 153])
+col7 = np.array([227,  26,  28])
+col8 = np.array([202, 178, 214])
+col9 = np.array([106,  61, 154])
+col10 = np.array([255, 255, 153])
+col11 = np.array([177,  89,  40])
+col12 = np.array([ 90, 219, 229])
+col13 = np.array([  0, 158, 170])
+
 cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
 cols += [col12,col13,col13]
 
@@ -139,6 +162,6 @@ if __name__ == '__main__':
    y = np.sin(x)
    
    fig, ax = plt.subplots()
-   C = ax.scatter(x,y,c=y,s=40,cmap=cm)
+   C = ax.scatter(x,y,c=y,s=40,cmap=CAPE)
    fig.colorbar(C)
    plt.show()

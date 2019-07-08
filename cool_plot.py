@@ -210,7 +210,7 @@ def plot_cape(fol,tail):
    vmin,vmax=0,6000+delta
    C = ax.contourf(X,Y,cape, levels=range(vmin,vmax,delta), extend='max',
                    antialiased=True,
-                   cmap=colormaps.bgr,
+                   cmap=colormaps.CAPE,
                    vmin=vmin, vmax=vmax,
                    zorder=10,alpha=0.3)
    divider = make_axes_locatable(ax)
