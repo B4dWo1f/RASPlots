@@ -206,6 +206,23 @@ def plot_cape(fol,tail):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
+   # Plot wind
+   spd = fol +  tail.replace('cape','sfcwind')  + 'spd.data'
+   dire = fol + tail.replace('cape','sfcwind')  + 'dir.data'
+   sc = fol.split('/')[-5].lower()
+   X = np.load(here+f'/{sc}_lons.npy')
+   Y = np.load(here+f'/{sc}_lats.npy')
+   mx,Mx = np.min(X),np.max(X)
+   my,My = np.min(Y),np.max(Y)
+   # Calculate Vx and Vy
+   S = np.loadtxt(spd, skiprows=4) * 3.6 # km/h
+   D = np.radians(np.loadtxt(dire, skiprows=4))  
+   U = -S*np.sin(D)
+   V = -S*np.cos(D)
+   ax.streamplot(x,y, U,V, color='k',linewidth=1., density=3.5,
+                           arrowstyle='->',arrowsize=5,
+                           zorder=12)
+   # Plot property
    delta = 100
    vmin,vmax=0,6000+delta
    C = ax.contourf(X,Y,cape, levels=range(vmin,vmax,delta), extend='max',
@@ -273,6 +290,22 @@ def plot_thermal_height(fol,tail):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
+   # Plot wind
+   spd = fol +  tail.replace('wstar','sfcwind')  + 'spd.data'
+   dire = fol + tail.replace('wstar','sfcwind')  + 'dir.data'
+   sc = fol.split('/')[-5].lower()
+   X = np.load(here+f'/{sc}_lons.npy')
+   Y = np.load(here+f'/{sc}_lats.npy')
+   mx,Mx = np.min(X),np.max(X)
+   my,My = np.min(Y),np.max(Y)
+   # Calculate Vx and Vy
+   S = np.loadtxt(spd, skiprows=4) * 3.6 # km/h
+   D = np.radians(np.loadtxt(dire, skiprows=4))  
+   U = -S*np.sin(D)
+   V = -S*np.cos(D)
+   ax.streamplot(x,y, U,V, color='k',linewidth=1., density=3.5,
+                           arrowstyle='->',arrowsize=5,
+                           zorder=12)
    #bgr = colormaps.bgr
    delta=0.2
    vmin,vmax = 0,3.4+delta
@@ -340,6 +373,23 @@ def plot_BL_height(fol,tail):
           np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
 
    plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
+   # Plot wind
+   spd = fol +  tail.replace('hbl','sfcwind')  + 'spd.data'
+   dire = fol + tail.replace('hbl','sfcwind')  + 'dir.data'
+   sc = fol.split('/')[-5].lower()
+   X = np.load(here+f'/{sc}_lons.npy')
+   Y = np.load(here+f'/{sc}_lats.npy')
+   mx,Mx = np.min(X),np.max(X)
+   my,My = np.min(Y),np.max(Y)
+   # Calculate Vx and Vy
+   S = np.loadtxt(spd, skiprows=4) * 3.6 # km/h
+   D = np.radians(np.loadtxt(dire, skiprows=4))  
+   U = -S*np.sin(D)
+   V = -S*np.cos(D)
+   ax.streamplot(x,y, U,V, color='k',linewidth=1., density=3.5,
+                           arrowstyle='->',arrowsize=5,
+                           zorder=12)
+   # Plot property
    bgr = colormaps.bgr
    delta=200
    vmin = 800
