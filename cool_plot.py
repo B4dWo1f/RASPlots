@@ -25,6 +25,7 @@ params = {'figure.dpi': 150,
 matplotlib.rcParams.update(params)
 figsize=(32,19)
 fs = 35   # fontsize
+alpha = 0.3
 
 
 
@@ -145,7 +146,7 @@ def plot_wind(fol,tail,prop=''):
                    antialiased=True,
                    cmap=colormaps.WindSpeed,
                    vmin=vmin, vmax=vmax,
-                   zorder=10,alpha=0.3)
+                   zorder=10,alpha=alpha)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
@@ -229,7 +230,7 @@ def plot_cape(fol,tail):
                    antialiased=True,
                    cmap=colormaps.CAPE,
                    vmin=vmin, vmax=vmax,
-                   zorder=10,alpha=0.3)
+                   zorder=10,alpha=alpha)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
@@ -313,7 +314,7 @@ def plot_thermal_height(fol,tail):
                    extend='max', antialiased=True,
                    cmap=colormaps.Thermals,
                    vmin=vmin, vmax=vmax,
-                   zorder=10,alpha=0.3)
+                   zorder=10,alpha=alpha)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
@@ -398,7 +399,7 @@ def plot_BL_height(fol,tail):
                    antialiased=True,
                    cmap='Paired',
                    vmin=vmin, vmax=vmax,
-                   zorder=10,alpha=0.3)
+                   zorder=10,alpha=alpha)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))

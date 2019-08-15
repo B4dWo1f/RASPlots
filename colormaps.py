@@ -91,7 +91,7 @@ cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
 cols += [col12,col13,col13]
 
 stops = [C/255 for C in cols]
-WindSpeed = mycmap(stops,1)
+WindSpeed1 = mycmap(stops,1)
 ################################################################################
 
 ## Thermals_uri ################################################################
@@ -144,6 +144,30 @@ cols += [col12,col13,col14,col15,col16,col16]
 
 stops = [C/255 for C in cols]
 Thermals = mycmap(stops,1)
+################################################################################
+
+## Wind Speed 1 ################################################################
+col0 = np.array([239, 239, 239])
+col1 = np.array([166, 206, 227])
+col2 = np.array([ 31, 120, 180])
+col3 = np.array([178, 223, 138])
+col4 = np.array([ 51, 160,  44])
+col5 = np.array([248, 253, 133])
+col6 = np.array([255, 228,   0])
+col7 = np.array([253, 191, 111])
+col8 = np.array([255, 127,   0])
+col9 = np.array([251, 154, 153])
+col10 = np.array([227,  26,  28])
+col11 = np.array([202, 178, 214])
+col12 = np.array([106,  61, 154])
+col13 = np.array([148,  0, 87])
+col14 = np.array([148,  0, 87])
+
+cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
+cols += [col12,col13,col14]
+
+stops = [C/255 for C in cols]
+WindSpeed = mycmap(stops,1)
 ################################################################################
 
 if __name__ == '__main__':
