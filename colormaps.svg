@@ -10,13 +10,16 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="819.23035pt"
-   height="958.42676pt"
-   viewBox="0 0 289.00627 338.11166"
+   width="1311.3966pt"
+   height="998.51019pt"
+   viewBox="0 0 462.63159 352.25221"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="colormaps.svg">
+   sodipodi:docname="colormaps.svg"
+   inkscape:export-filename="/home/n03l/WindSpeed.png"
+   inkscape:export-xdpi="100.106"
+   inkscape:export-ydpi="100.106">
   <defs
      id="defs2">
     <marker
@@ -121,13 +124,13 @@
      inkscape:cx="315.40314"
      inkscape:cy="600.54511"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g1256"
      showgrid="false"
-     inkscape:window-width="3200"
+     inkscape:window-width="1920"
      inkscape:window-height="1671"
      inkscape:window-x="0"
      inkscape:window-y="55"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:bbox-paths="true"
      inkscape:bbox-nodes="true"
@@ -249,14 +252,14 @@
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-         x="-108.65139"
+         x="-112.01036"
          y="-6.8749547"
          id="text1875"><tspan
            sodipodi:role="line"
            id="tspan1873"
-           x="-108.65139"
+           x="-112.01036"
            y="-6.8749547"
-           style="stroke-width:0.26458332">WindSpeed</tspan></text>
+           style="stroke-width:0.26458332">WindSpeed1</tspan></text>
       <g
          id="g1066">
         <g
@@ -563,15 +566,16 @@
       <text
          id="text1107"
          y="-7.0222325"
-         x="29.941448"
+         x="27.500273"
          style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
          xml:space="preserve"><tspan
            style="stroke-width:0.26458332"
            y="-7.0222325"
-           x="29.941448"
+           x="27.500273"
            id="tspan1105"
            sodipodi:role="line">Thermals_uri</tspan></text>
       <g
+         transform="translate(-2.4411755)"
          id="g1147">
         <g
            id="g1673"
@@ -1095,7 +1099,7 @@
     </g>
     <g
        id="g1335"
-       transform="translate(-87.113162,-6.431173)">
+       transform="translate(-2.9756132,-6.431173)">
       <rect
          ry="0.070158243"
          y="246.60886"
