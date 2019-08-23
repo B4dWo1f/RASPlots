@@ -77,4 +77,5 @@ if __name__ == '__main__':
          if '.data' == l[-5:]:
             if 'curr' in l:
                if l.split('.')[0] in props:
-                  get_and_place(url+l, fol)
+                  if '.w2.' in l: get_and_place(url+l, fol)
+                  else: pass
