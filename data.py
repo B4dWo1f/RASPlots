@@ -2,6 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 import common
+import random
+import string
 from urllib.request import Request, urlopen, urlretrieve
 from bs4 import BeautifulSoup
 import datetime as dt
@@ -17,9 +19,14 @@ def make_request(url):
    html_doc= html_doc.read()
    return html_doc
 
+def randomString(stringLength=10):
+   """Generate a random string of fixed length """
+   letters = string.ascii_lowercase
+   return ''.join(random.choice(letters) for i in range(stringLength))
+
 import re
 def get_and_place(url,base='RASP'):
-   ftemp = '/tmp/temporal.data'
+   ftemp = '/tmp/'+ randomString(5) + '.data'  #'/tmp/temporal.data'
    urlretrieve(url, ftemp)
    date = open(ftemp,'r').read().strip().splitlines()[3]
    pattern = r'Day= ([ ^\W\w\d_ ]*) ([ ^\W\w\d_ ]*) ([ ^\W\w\d_ ]*) ([ ^\W\w\d_ ]*) ValidLST= ([ ^\W\w\d_ ]*) ([ ^\W\w\d_ ]*) ValidZ= ([ ^\W\w\d_ ]*) Fcst= ([ ^\W\w\d_ ]*)'
@@ -63,7 +70,7 @@ if __name__ == '__main__':
 
    #props = ['sfcwindspd','sfcwinddir','cape','blcloudpct']
    # + [f'sounding{i}' for i in range(15)]
-   for f in folders:
+   def bring(f):
       print('Going for',f)
       url = 'http://raspuri.mooo.com/RASP/%s/FCST/'%(f)
       html_doc = make_request(url)
@@ -79,3 +86,9 @@ if __name__ == '__main__':
                if l.split('.')[0] in props:
                   if '.w2.' in l: get_and_place(url+l, fol)
                   else: pass
+
+   import multiprocessing as sub
+   pool = sub.Pool(4)
+
+   #for f in folders:
+   Res = pool.map(bring, folders)
