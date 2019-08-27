@@ -16,6 +16,8 @@ log_help.screen_handler(LG,lv='info')
 
 import numpy as np
 import datetime as dt
+import matplotlib as mpl
+mpl.use('Agg')   # For crontab running
 import matplotlib.pyplot as plt
 from time import sleep
 from random import random
@@ -23,7 +25,7 @@ import common
 import plots
 
 
-C = common.load('full.ini')
+C = common.load(here+'/full.ini')
 
 C.date = dt.datetime.now() - dt.timedelta(hours = 5)
 

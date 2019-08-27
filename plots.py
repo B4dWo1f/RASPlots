@@ -3,7 +3,8 @@
 
 import re
 import numpy as np
-import matplotlib
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -26,7 +27,7 @@ params = {'figure.dpi': 150,
           'axes.grid': True,
           'figure.figsize': (9.6, 7.2),
           'figure.dpi': 150}
-matplotlib.rcParams.update(params)
+mpl.rcParams.update(params)
 figsize=(32,19)
 fs = 35   # fontsize
 
@@ -38,8 +39,8 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
    date = '/'.join(folder.split('/')[-3:]) + '/' + time
    date = dt.datetime.strptime(date, '%Y/%m/%d/%H:%M')
    sc = folder.split('/')[-4].lower()
-   X = np.load(f'{sc}_lons.npy')
-   Y = np.load(f'{sc}_lats.npy')
+   X = np.load(here + f'/{sc}_lons.npy')
+   Y = np.load(here + f'/{sc}_lats.npy')
    mx,Mx = np.min(X),np.max(X)
    my,My = np.min(Y),np.max(Y)
 
@@ -186,9 +187,11 @@ def get_valid_date(line):
    return prop,dt.datetime.strptime(date,'%d %b %Y %H%M %Z')
 
 
-def plot_background(lats='lats.npy',lons='lons.npy',hasl='hagl.npy',
+def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
+                    hasl=here+'/hagl.npy',
                     ve=100, cmap='gray',
-                    roads='roads',takeoffs='takeoffs.csv',cities='cities.csv',
+                    roads=here+'/roads', takeoffs=here+'/takeoffs.csv',
+                    cities=here+'/cities.csv',
                     ax=None):
    """
     Plots the terrain data stored in the hasl file. lats and lons files are
@@ -216,7 +219,7 @@ def plot_background(lats='lats.npy',lons='lons.npy',hasl='hagl.npy',
       Xroad,Yroad = np.loadtxt(froad,unpack=True)
       #ax.plot(Xroad, Yroad,'k',lw=8)
       lws = {'A':6, 'E':6, 'M':5, 'AV':5, 'SG':5, 'CL':5, 'EX':5, 'N':4}
-      key = froad.replace('roads/','').replace('.csv','')
+      key = froad.split('roads/')[-1].replace('.csv','')
       key = " ".join(re.findall("[a-zA-Z]+", key))
       lw = lws[key]
       ax.plot(Xroad, Yroad,'k',lw=lw+2,zorder=1)
@@ -252,7 +255,6 @@ def plot_background(lats='lats.npy',lons='lons.npy',hasl='hagl.npy',
    for i in range(len(names)):
       ax.text(Xt[i]-0.09*len(names[i])/6, Yt[i]-0.01, names[i],
               bbox=dict(facecolor='white', alpha=0.4), fontsize=fs-3, zorder=13)
-
 
 #def plot_background_google(img,ext,pueblos,takeoffs,ax=None):
 #   """
