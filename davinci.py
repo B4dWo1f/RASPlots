@@ -71,7 +71,7 @@ for day in C.run_days:
          fig.tight_layout()
          # Save plot
          fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
-         fig.savefig(fname)
+         fig.savefig(fname, dpi=65, quality=90)
          LG.debug(f'Ploted {prop}')
       fig, ax = plt.subplots(figsize=figsize)
       # Plot background
@@ -86,7 +86,7 @@ for day in C.run_days:
          fig.tight_layout()
          # Save plot
          fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
-         fig.savefig(fname)
+         fig.savefig(fname, dpi=65, quality=90)
          LG.debug(f'Ploted {prop}')
 
          # Clean up
