@@ -52,13 +52,26 @@ for day in C.run_days:
    if not os.path.isdir(save_fol):
       LG.warning(f'Creating folder {save_fol}')
       os.system(f'mkdir -p {save_fol}')
+      os.system(f'mkdir -p {save_fol}/A')
+      os.system(f'mkdir -p {save_fol}/B')
+      os.system(f'mkdir -p {save_fol}/C')
    else: pass
    def plotting(hora):
       sleep(5*random())
       LG.info(f"Starting plots for hour: {hora} UTC")
       H,M = map(int,hora.split(':'))
       date = date_run.replace(hour=H+UTCshift, minute=M)
+      props = C.props
+      try:
+         props.remove('blwinddir')
+         props.remove('blwindspd')
+         props.remove('bltopwinddir')
+         props.remove('bltopwindspd')
+         props.remove('sfcwindspd')
+         props.remove('sfcwinddir')
+      except ValueError: pass
       for prop in ['blwind','bltopwind']:
+         figsize=(32,19)
          LG.info(f'Plotting {prop}')
          fig, ax = plt.subplots(figsize=figsize)
          # Plot background
@@ -72,11 +85,15 @@ for day in C.run_days:
          # Save plot
          fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
          fig.savefig(fname, dpi=65, quality=90)
+         plots.zooms(save_fol,hora,prop,fig,ax)
          LG.debug(f'Ploted {prop}')
       fig, ax = plt.subplots(figsize=figsize)
       # Plot background
       plots.plot_background(ve=ve, ax=ax)
-      for prop in ['sfcwind','cape','wstar','hbl']:
+      for prop in ['sfcwind'] + props:
+         #,'cape','wstar','hbl']: # change for resto of C.props
+         figsize=(32,19)
+         fig.set_size_inches(figsize)
          LG.info(f'Plotting {prop}')
          # Returns streamplot, contourf, cbar
          sp,cf,cb = plots.plot_prop(fol, hora, prop, fig=fig,ax=ax)
@@ -87,6 +104,7 @@ for day in C.run_days:
          # Save plot
          fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
          fig.savefig(fname, dpi=65, quality=90)
+         plots.zooms(save_fol,hora,prop,fig,ax)
          LG.debug(f'Ploted {prop}')
 
          # Clean up
@@ -104,5 +122,19 @@ for day in C.run_days:
 
    pool = sub.Pool(2)
    Res = pool.map(plotting, all_hour)
+   props = list(set([x.replace('spd','').replace('dir','') for x in C.props]))
+   for prop in props:
+      files = os.popen(f'ls {save_fol}/*_{prop}.jpg').read().strip().splitlines()
+      files = sorted(files,key=lambda x:float(x.split('/')[-1].split('_')[0]))
+      tmp_file = '/tmp/video.txt'
+      with open(tmp_file,'w') as f:
+         for fname in files:
+            N=10
+            for _ in range(N):
+               f.write(fname+'\n')
+      com = f'mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4'
+      com += f' -o {save_fol}/{prop}.mp4'
+      com += f' -mf type=jpeg:fps={N} mf://@{tmp_file}'
+      os.system(com)
 
 LG.info('Done!')

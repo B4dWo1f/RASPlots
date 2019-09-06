@@ -188,7 +188,7 @@ def get_valid_date(line):
 
 
 def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
-                    hasl=here+'/hagl.npy',
+                    hasl=here+'/hasl.npy',
                     ve=100, cmap='gray',
                     roads=here+'/roads', takeoffs=here+'/takeoffs.csv',
                     cities=here+'/cities.csv',
@@ -211,7 +211,7 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    d_y = np.max(Y)-np.min(Y)
    dy,dx = X.shape
 
-   ls = LightSource(azdeg=315, altdeg=45)
+   ls = LightSource(azdeg=315, altdeg=50)
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
    ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),aspect=d_y/d_x,origin='lower',interpolation='lanczos', cmap=cmap, extent=ext,zorder=0)
    files = os.popen(f'ls {roads}/*.csv').read().strip().split()
@@ -255,6 +255,50 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    for i in range(len(names)):
       ax.text(Xt[i]-0.09*len(names[i])/6, Yt[i]-0.01, names[i],
               bbox=dict(facecolor='white', alpha=0.4), fontsize=fs-3, zorder=13)
+
+
+def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):
+   """
+    Apply the harcoded lims for the plots
+    Arcones
+           +------------------ 41.428272,-3.027596
+           |                            |
+           |                            |
+    40.711015,-4.302319 ----------------+
+    Cebreros
+           +------------------ 40.946453,-3.564694
+           |                            |
+           |                            |
+    40.171926,-5.079508 ----------------+
+    Pedro Bernardo
+           +------------------ 40.733445,-4.393813
+           |                            |
+           |                            |
+    39.972178,-6.030375 ----------------+
+   """
+   #ARCONES
+   ax.set_xlim([-4.302319,-3.2])
+   ax.set_ylim([40.711015,41.428272])
+   fsz = figsize[0]/1.2,figsize[1]
+   fig.set_size_inches(fsz)  #igsize[0]/1.2,figsize[1])
+   fname =  save_fol + '/A/' + hora.replace(':','')+'_'+prop+'.jpg'
+   fig.savefig(fname, dpi=65, quality=90)
+   # CEBREROS
+   ax.set_xlim([-5.079508,-3.564694])
+   ax.set_ylim([40.171926,40.946453])
+   fsz = figsize[0]/1.1,figsize[1]/1.2
+   fig.set_size_inches(fsz)  #igsize[0]/1.1,figsize[1]/1.2)
+   fname =  save_fol + '/B/' + hora.replace(':','')+'_'+prop+'.jpg'
+   fig.savefig(fname, dpi=65, quality=90)
+   # PEDRO BERNARDO
+   ax.set_xlim([-6.030375,-4.393813])
+   ax.set_ylim([39.972178,40.733445])
+   fsz = figsize[0],figsize[1]/1.2
+   fig.set_size_inches(fsz)  #igsize[0],figsize[1]/1.2)
+   fname =  save_fol + '/C/' + hora.replace(':','')+'_'+prop+'.jpg'
+   fig.savefig(fname, dpi=65, quality=90)
+
+
 
 #def plot_background_google(img,ext,pueblos,takeoffs,ax=None):
 #   """
