@@ -9,9 +9,11 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.colors import LightSource
+from matplotlib.collections import PolyCollection, LineCollection
 import datetime as dt
 from random import choice
 import colormaps
+from common import listfiles
 import os
 here = os.path.dirname(os.path.realpath(__file__))
 import logging
@@ -225,81 +227,63 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
    ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),aspect=d_y/d_x,origin='lower',interpolation='lanczos', cmap=cmap, extent=ext,zorder=0)
    # Provincias
-   files = os.popen(f'ls {ccaa}/*.npy').read().strip().splitlines()
-   for fccaa in files:
-      Mccaa = np.load(fccaa)
-      ax.plot(Mccaa[:,0],Mccaa[:,1],'k',lw=2.5,zorder=2)
-   files = os.popen(f'ls {provincias}/*.npy').read().strip().splitlines()
-   for fccaa in files:
-      Mccaa = np.load(fccaa)
-      ax.plot(Mccaa[:,0],Mccaa[:,1],'k',lw=1.5,zorder=2)
-   # poblaciones
-   files = os.popen(f'ls {poblaciones}/*.npy').read().strip().splitlines()
-   for flake in files:
-      Mlake = np.load(flake)
-      ax.add_patch(plt.Polygon(Mlake, fill=True,
-                               color='C7', edgecolor=None, zorder=2,alpha=0.9))
-      ax.plot(Mlake[:,0],Mlake[:,1],c='C7',lw=2,zorder=2)
+   files = listfiles(f'{ccaa}')
+   verts = [np.load(fccaa) for fccaa in files]
+   coll = LineCollection(verts, color='k',lw=2.5,zorder=4)
+   ax.add_collection(coll)
+   files = listfiles(f'{provincias}')
+   verts = [np.load(fccaa) for fccaa in files]
+   coll = LineCollection(verts, color='k',lw=2,zorder=4)
+   ax.add_collection(coll)
+     ## poblaciones
+     #files = listfiles(f'{poblaciones}') + listfiles(f'{damns}')
+     #verts = [np.load(flake) for flake in files]
+     #coll = PolyCollection(verts, color='C7',zorder=1,alpha=0.9)
+     #ax.add_collection(coll)
    # Lakes
-   files = os.popen(f'ls {lakes}/*.npy').read().strip().splitlines()
-   for flake in files:
-      Mlake = np.load(flake)
-      ax.add_patch(plt.Polygon(Mlake, fill=True,
-                               color='C0', edgecolor=None,zorder=1))
-      ax.plot(Mlake[:,0],Mlake[:,1],c='C0',zorder=1)
-   files = os.popen(f'ls {damns}/*.npy').read().strip().splitlines()
-   for flake in files:
-      Mlake = np.load(flake)
-      ax.add_patch(plt.Polygon(Mlake, fill=True,
-                               color='C0', edgecolor=None,zorder=1))
-      ax.plot(Mlake[:,0],Mlake[:,1],c='C0',zorder=1)
+   files = listfiles(f'{lakes}') + listfiles(f'{damns}')
+   verts = [np.load(flake) for flake in files]
+   coll = PolyCollection(verts, color='C0',zorder=1)
+   ax.add_collection(coll)
    # Rivers
-   files = os.popen(f'ls -1S {rivers}/*.npy').read().strip().splitlines()
-   for friver in files[:100]:
-      Mriver = np.load(friver)
-      ax.plot(Mriver[:,0],Mriver[:,1],c='C0',lw=1.5,zorder=1)
+   files = listfiles(f'{rivers}')
+   verts = [np.load(friver) for friver in files]
+   coll = LineCollection(verts, color='C0',lw=1.5,zorder=1)
+   ax.add_collection(coll)
    # Roads
-   files = os.popen(f'ls {roads}/*.csv').read().strip().splitlines()
+   files = listfiles(f'{roads}')
    for froad in files:
       Xroad,Yroad = np.loadtxt(froad,unpack=True)
-      #ax.plot(Xroad, Yroad,'k',lw=8)
       lws = {'A':6, 'E':6, 'M':5, 'AV':5, 'SG':5, 'CL':5, 'EX':5, 'N':4}
       key = froad.split(f'{roads}/')[-1].replace('.csv','')
       key = " ".join(re.findall("[a-zA-Z]+", key))
       lw = lws[key]
       ax.plot(Xroad, Yroad,'k',lw=lw+2,zorder=2)
       ax.plot(Xroad, Yroad,'w',lw=lw,zorder=3)
+
    # Takeoffs
-   Xt,Yt = [],[]
-   takeoffs = open(takeoffs,'r').read().strip().splitlines()
-   txt = ''
-   for i in range(len(takeoffs)):
-      line = takeoffs[i]
-      ll = line.split()
-      x,y = float(ll[1]),float(ll[0])
-      Xt.append(x)
-      Yt.append(y)
-      nam = ' '.join(ll[2:])
-      ax.text(x+0.025,y,str(i+1),bbox=dict(facecolor='white', alpha=0.5),
-                                                      fontsize=fs, zorder=13)
-      txt += f'{i+1}: {nam}\n'
-   txt = txt[:-1]
-   ## Legend for takeoffs
-   ax.text(0.01,0.665,txt,bbox=dict(facecolor='white', alpha=0.7),
-                               transform=ax.transAxes, fontsize=fs, zorder=33)
+   Yt,Xt = np.loadtxt(takeoffs,usecols=(0,1),unpack=True)
    ax.scatter(Xt,Yt, c='C3',s=300,zorder=20)
+   txt = np.loadtxt(takeoffs,usecols=(2,),dtype=str)
+   for i in range(len(txt)):
+      ax.text(Xt[i]+0.025,Yt[i],str(i+1),bbox=dict(facecolor='white',
+                                                   alpha=0.5),
+                                                   fontsize=fs, zorder=33)
+   msg = ''
+   for i in range(len(txt)):
+      msg += f'{i+1}: {txt[i]}\n'
+   msg = msg[:-1]
+   ## Legend for takeoffs
+   ax.text(0.01,0.665,msg,bbox=dict(facecolor='white', alpha=0.7),
+                               transform=ax.transAxes, fontsize=fs, zorder=33)
 
    # Cities
-   Xt,Yt,names = [],[],[]
-   for l in open(cities,'r').read().strip().splitlines():
-      ll = l.split()
-      Xt.append( float(ll[1]) )
-      Yt.append( float(ll[0]) )
-      names.append( ' '.join(ll[2:]) )
-   #ax.scatter(Xt,Yt, c='C3',s=900,zorder=20, marker='*')
+   Yt,Xt = np.loadtxt(cities,usecols=(0,1),unpack=True)
+   names = np.loadtxt(cities,usecols=(2,),dtype=str)
    for i in range(len(names)):
       ax.text(Xt[i]-0.09*len(names[i])/6, Yt[i]-0.01, names[i],
               bbox=dict(facecolor='white', alpha=0.4), fontsize=fs-3, zorder=13)
+   #ax.scatter(Xt,Yt, c='C3',s=900,zorder=20, marker='*')
 
 
 def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):

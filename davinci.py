@@ -91,7 +91,6 @@ for day in C.run_days:
       # Plot background
       plots.plot_background(ve=ve, ax=ax)
       for prop in ['sfcwind'] + props:
-         #,'cape','wstar','hbl']: # change for resto of C.props
          figsize=(32,19)
          fig.set_size_inches(figsize)
          LG.info(f'Plotting {prop}')
@@ -117,16 +116,15 @@ for day in C.run_days:
          cb.remove()
       plt.close('all')
       LG.debug(f"Done for hour: {date_run.strftime('%d/%m/%Y')}-{hora}")
-   #for hora in ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
-   #             '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']:
 
    pool = sub.Pool(2)
    Res = pool.map(plotting, all_hour)
    props = list(set([x.replace('spd','').replace('dir','') for x in C.props]))
-   for prop in props:
+#### XXX to be place as an external script #####################################
+   def timelapse(prop):
       files = os.popen(f'ls {save_fol}/*_{prop}.jpg').read().strip().splitlines()
       files = sorted(files,key=lambda x:float(x.split('/')[-1].split('_')[0]))
-      tmp_file = '/tmp/video.txt'
+      tmp_file = f'/tmp/video{int(1+1000*random())}.txt'
       with open(tmp_file,'w') as f:
          for fname in files:
             N=10
@@ -136,5 +134,8 @@ for day in C.run_days:
       com += f' -o {save_fol}/{prop}.mp4'
       com += f' -mf type=jpeg:fps={N} mf://@{tmp_file}'
       os.system(com)
+      os.system(f'rm {tmp_file}')
+   pool = sub.Pool(2)
+   Res = pool.map(timelapse, props)
 
 LG.info('Done!')

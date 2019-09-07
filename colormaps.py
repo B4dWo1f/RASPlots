@@ -168,6 +168,10 @@ cols += [col12,col13,col14]
 
 stops = [C/255 for C in cols]
 WindSpeed = mycmap(stops,1)
+
+cols = [col0,col2,col4,col6,col8,col10,col12,col13]
+color_array = [C/255 for C in cols]
+CAPE1 = LinearSegmentedColormap.from_list(name='CAPE1',colors=color_array)
 ################################################################################
 
 if __name__ == '__main__':

@@ -5,6 +5,8 @@ import numpy as np
 import datetime as dt
 from configparser import ConfigParser, ExtendedInterpolation
 from os.path import expanduser
+from os import listdir
+from os.path import isfile, join
 import os
 here = os.path.dirname(os.path.realpath(__file__))
 
@@ -70,6 +72,9 @@ def find_best_fcst(date,Rfolder):
    for f in ['SC2','SC2+1','SC4+2','SC4+3']:
       fol = Rfolder+'DATA/w2/'+f+'/'+date.strftime('%Y/%m/%d')
       if os.path.isdir(fol): return fol
+
+def listfiles(folder):
+   return [join(folder,f) for f in listdir(folder) if isfile(join(folder, f))]
 
 if __name__ == '__main__':
    C = load()
