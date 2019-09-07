@@ -15,6 +15,7 @@ import colormaps
 import os
 here = os.path.dirname(os.path.realpath(__file__))
 import logging
+import log_help
 LG = logging.getLogger(__name__)
 
 
@@ -61,6 +62,7 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
    elif prop == 'hbl':
       return hbl(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
 
+@log_help.timer(LG)
 def cape(X,Y,fbase,fig=None,ax=None):
    """
     Specific code to plot the CAPE
@@ -72,7 +74,7 @@ def cape(X,Y,fbase,fig=None,ax=None):
                    antialiased=True,
                    cmap=colormaps.CAPE,
                    vmin=vmin, vmax=vmax,
-                   zorder=10,alpha=0.3)
+                   zorder=12,alpha=0.3)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
@@ -82,6 +84,7 @@ def cape(X,Y,fbase,fig=None,ax=None):
    cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
    return None,Cf,cbar
 
+@log_help.timer(LG)
 def wind(X,Y,fbase,fig=None,ax=None):
    """
     Specific code to plot the wind (either surface, avg, ot top BL)
@@ -100,7 +103,7 @@ def wind(X,Y,fbase,fig=None,ax=None):
    
    Sp = ax.streamplot(x,y, U,V, color='k',linewidth=1., density=3.5,
                                 arrowstyle='->',arrowsize=5,
-                                zorder=12)
+                                zorder=11)
    delta = 4
    vmin,vmax = 0,56+delta
    Cf = ax.contourf(X,Y,S, levels=range(vmin,vmax,delta), extend='max',
@@ -117,6 +120,7 @@ def wind(X,Y,fbase,fig=None,ax=None):
    cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
    return Sp, Cf, cbar
 
+@log_help.timer(LG)
 def wstar(X,Y,fbase,fig=None,ax=None):
    Wstar = np.loadtxt(fbase+'.data',skiprows=4) /100
    delta=0.2
@@ -125,7 +129,7 @@ def wstar(X,Y,fbase,fig=None,ax=None):
                    extend='max', antialiased=True,
                    cmap=colormaps.Thermals,
                    vmin=vmin, vmax=vmax,
-                   zorder=10,alpha=0.3)
+                   zorder=12,alpha=0.3)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
@@ -135,6 +139,7 @@ def wstar(X,Y,fbase,fig=None,ax=None):
    cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
    return None,Cf,cbar
 
+@log_help.timer(LG)
 def hbl(X,Y,fbase,fig=None,ax=None):
    Hbl = np.loadtxt(fbase+'.data',skiprows=4)
    delta=200
@@ -143,7 +148,7 @@ def hbl(X,Y,fbase,fig=None,ax=None):
                    antialiased=True,
                    cmap='Paired',
                    vmin=vmin, vmax=vmax,
-                   zorder=10,alpha=0.3)
+                   zorder=12,alpha=0.3)
    divider = make_axes_locatable(ax)
    cax = divider.append_axes("right", size="1.5%", pad=0.2)
    cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
@@ -187,10 +192,15 @@ def get_valid_date(line):
    return prop,dt.datetime.strptime(date,'%d %b %Y %H%M %Z')
 
 
+@log_help.timer(LG)
 def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
                     hasl=here+'/hasl.npy',
                     ve=100, cmap='gray',
-                    roads=here+'/roads', takeoffs=here+'/takeoffs.csv',
+                    roads=here+'/roads', lakes=here+'/lagos',
+                    damns=here+'/embalses', rivers=here+'/rios',
+                    poblaciones=here+'/poblaciones',
+                    ccaa=here+'/ccaa', provincias=here+'/provincias',
+                    takeoffs=here+'/takeoffs.csv',
                     cities=here+'/cities.csv',
                     ax=None):
    """
@@ -214,16 +224,51 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    ls = LightSource(azdeg=315, altdeg=50)
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
    ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),aspect=d_y/d_x,origin='lower',interpolation='lanczos', cmap=cmap, extent=ext,zorder=0)
-   files = os.popen(f'ls {roads}/*.csv').read().strip().split()
+   # Provincias
+   files = os.popen(f'ls {ccaa}/*.npy').read().strip().splitlines()
+   for fccaa in files:
+      Mccaa = np.load(fccaa)
+      ax.plot(Mccaa[:,0],Mccaa[:,1],'k',lw=2.5,zorder=2)
+   files = os.popen(f'ls {provincias}/*.npy').read().strip().splitlines()
+   for fccaa in files:
+      Mccaa = np.load(fccaa)
+      ax.plot(Mccaa[:,0],Mccaa[:,1],'k',lw=1.5,zorder=2)
+   # poblaciones
+   files = os.popen(f'ls {poblaciones}/*.npy').read().strip().splitlines()
+   for flake in files:
+      Mlake = np.load(flake)
+      ax.add_patch(plt.Polygon(Mlake, fill=True,
+                               color='C7', edgecolor=None, zorder=2,alpha=0.9))
+      ax.plot(Mlake[:,0],Mlake[:,1],c='C7',lw=2,zorder=2)
+   # Lakes
+   files = os.popen(f'ls {lakes}/*.npy').read().strip().splitlines()
+   for flake in files:
+      Mlake = np.load(flake)
+      ax.add_patch(plt.Polygon(Mlake, fill=True,
+                               color='C0', edgecolor=None,zorder=1))
+      ax.plot(Mlake[:,0],Mlake[:,1],c='C0',zorder=1)
+   files = os.popen(f'ls {damns}/*.npy').read().strip().splitlines()
+   for flake in files:
+      Mlake = np.load(flake)
+      ax.add_patch(plt.Polygon(Mlake, fill=True,
+                               color='C0', edgecolor=None,zorder=1))
+      ax.plot(Mlake[:,0],Mlake[:,1],c='C0',zorder=1)
+   # Rivers
+   files = os.popen(f'ls -1S {rivers}/*.npy').read().strip().splitlines()
+   for friver in files[:100]:
+      Mriver = np.load(friver)
+      ax.plot(Mriver[:,0],Mriver[:,1],c='C0',lw=1.5,zorder=1)
+   # Roads
+   files = os.popen(f'ls {roads}/*.csv').read().strip().splitlines()
    for froad in files:
       Xroad,Yroad = np.loadtxt(froad,unpack=True)
       #ax.plot(Xroad, Yroad,'k',lw=8)
       lws = {'A':6, 'E':6, 'M':5, 'AV':5, 'SG':5, 'CL':5, 'EX':5, 'N':4}
-      key = froad.split('roads/')[-1].replace('.csv','')
+      key = froad.split(f'{roads}/')[-1].replace('.csv','')
       key = " ".join(re.findall("[a-zA-Z]+", key))
       lw = lws[key]
-      ax.plot(Xroad, Yroad,'k',lw=lw+2,zorder=1)
-      ax.plot(Xroad, Yroad,'w',lw=lw,zorder=2)
+      ax.plot(Xroad, Yroad,'k',lw=lw+2,zorder=2)
+      ax.plot(Xroad, Yroad,'w',lw=lw,zorder=3)
    # Takeoffs
    Xt,Yt = [],[]
    takeoffs = open(takeoffs,'r').read().strip().splitlines()
