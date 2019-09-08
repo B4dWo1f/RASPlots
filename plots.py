@@ -262,9 +262,9 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
       ax.plot(Xroad, Yroad,'w',lw=lw,zorder=3)
 
    # Takeoffs
-   Yt,Xt = np.loadtxt(takeoffs,usecols=(0,1),unpack=True)
+   Yt,Xt = np.loadtxt(takeoffs,usecols=(0,1),delimiter=',',unpack=True)
    ax.scatter(Xt,Yt, c='C3',s=300,zorder=20)
-   txt = np.loadtxt(takeoffs,usecols=(2,),dtype=str)
+   txt = np.loadtxt(takeoffs,usecols=(2,),delimiter=',',dtype=str)
    for i in range(len(txt)):
       ax.text(Xt[i]+0.025,Yt[i],str(i+1),bbox=dict(facecolor='white',
                                                    alpha=0.5),
@@ -278,8 +278,8 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
                                transform=ax.transAxes, fontsize=fs, zorder=33)
 
    # Cities
-   Yt,Xt = np.loadtxt(cities,usecols=(0,1),unpack=True)
-   names = np.loadtxt(cities,usecols=(2,),dtype=str)
+   Yt,Xt = np.loadtxt(cities,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(cities,usecols=(2,),delimiter=',',dtype=str)
    for i in range(len(names)):
       ax.text(Xt[i]-0.09*len(names[i])/6, Yt[i]-0.01, names[i],
               bbox=dict(facecolor='white', alpha=0.4), fontsize=fs-3, zorder=13)
