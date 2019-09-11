@@ -47,6 +47,9 @@ for day in C.run_days:
    date_run = C.date + day*dt.timedelta(days=1)
    LG.info(f"Starting plots for {date_run.strftime('%d/%m/%Y')}")
    fol = common.find_best_fcst(date_run,C.root_folder)
+   if fol == None:
+      LG.critical(f"Data for {date_run.strftime('%d/%m/%Y')} not available")
+      continue
    save_fol = fol.replace('DATA','PLOTS')
    LG.info(f'Folder: {save_fol}')
    if not os.path.isdir(save_fol):
