@@ -63,6 +63,11 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
       return wstar(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
    elif prop == 'hbl':
       return hbl(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
+   elif prop == 'bsratio':
+      return bsratio(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
+   else: 
+      LG.critical(f'{prop} not implemented')
+      return None
 
 def my_cbar(fig,ax,img,units,fs):
    divider = make_axes_locatable(ax)
@@ -85,13 +90,6 @@ def cape(X,Y,fbase,fig=None,ax=None):
                    cmap=colormaps.CAPE,
                    vmin=vmin, vmax=vmax,
                    zorder=12,alpha=0.3)
-   #divider = make_axes_locatable(ax)
-   #cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   #cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
-   #cbar.set_clim(vmin, vmax)
-   #cbar.ax.set_ylabel('J/Kg',fontsize=fs)
-   #ticklabs = cbar.ax.get_yticklabels()
-   #cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
    cbar = my_cbar(fig,ax,Cf,'J/Kg',fs)
    return None,Cf,cbar
 
@@ -122,31 +120,33 @@ def wind(X,Y,fbase,fig=None,ax=None):
                            cmap=colormaps.WindSpeed,
                            vmin=vmin, vmax=vmax,
                            zorder=10,alpha=0.3)
-   #divider = make_axes_locatable(ax)
-   #cax = divider.new_vertical(size="2.95%", pad=0.25, pack_start=True)
-   #fig.add_axes(cax)
-   #cbar = fig.colorbar(Cf, cax=cax, orientation="horizontal")
-   #cbar.ax.set_xlabel('Km/h',fontsize=fs)
    cbar = my_cbar(fig,ax,Cf,'Km/h',fs)
    return Sp, Cf, cbar
 
 @log_help.timer(LG)
-def wstar(X,Y,fbase,fig=None,ax=None):
-   Wstar = np.loadtxt(fbase+'.data',skiprows=4) /100
-   delta=0.2
-   vmin,vmax = 0,3.4+delta
-   Cf = ax.contourf(X,Y,Wstar, levels=np.arange(vmin,vmax,delta),
+def bsratio(X,Y,fbase,fig=None,ax=None):
+   BSratio = np.loadtxt(fbase+'.data',skiprows=4)
+   delta=2
+   vmin,vmax = 0,28+delta
+   Cf = ax.contourf(X,Y,BSratio, levels=np.arange(vmin,vmax,delta),
                    extend='max', antialiased=True,
-                   cmap=colormaps.Thermals,
+                   cmap=colormaps.WindSpeed,
                    vmin=vmin, vmax=vmax,
                    zorder=12,alpha=0.3)
-   #divider = make_axes_locatable(ax)
-   #cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   #cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
-   #cbar.set_clim(vmin, vmax-delta)
-   #cbar.ax.set_ylabel('m/s',fontsize=fs)
-   #ticklabs = cbar.ax.get_yticklabels()
-   #cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   cbar = my_cbar(fig,ax,Cf,'',fs)
+   return None,Cf,cbar
+
+
+@log_help.timer(LG)
+def wstar(X,Y,fbase,fig=None,ax=None):
+   Wstar = np.loadtxt(fbase+'.data',skiprows=4) /100
+   delta=0.25
+   vmin,vmax = 0,3.5+delta
+   Cf = ax.contourf(X,Y,Wstar, levels=np.arange(vmin,vmax,delta),
+                   extend='max', antialiased=True,
+                   cmap=colormaps.WindSpeed,
+                   vmin=vmin, vmax=vmax,
+                   zorder=12,alpha=0.3)
    cbar = my_cbar(fig,ax,Cf,'m/s',fs)
    return None,Cf,cbar
 
@@ -154,19 +154,12 @@ def wstar(X,Y,fbase,fig=None,ax=None):
 def hbl(X,Y,fbase,fig=None,ax=None):
    Hbl = np.loadtxt(fbase+'.data',skiprows=4)
    delta=200
-   vmin,vmax = 800, 3600
+   vmin,vmax = 800, 3600+delta
    Cf = ax.contourf(X,Y,Hbl, levels=range(vmin,vmax,delta), extend='both',
                    antialiased=True,
-                   cmap='Paired',
+                   cmap=colormaps.WindSpeed,  #'Paired',
                    vmin=vmin, vmax=vmax,
                    zorder=12,alpha=0.3)
-   #divider = make_axes_locatable(ax)
-   #cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   #cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
-   #cbar.set_clim(vmin, vmax-2*delta)
-   #cbar.ax.set_ylabel('m',fontsize=fs)
-   #ticklabs = cbar.ax.get_yticklabels()
-   #cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
    cbar = my_cbar(fig,ax,Cf,'m',fs)
    return None,Cf,cbar
 

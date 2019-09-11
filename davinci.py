@@ -34,7 +34,7 @@ LG.info(f'UTCshift: {UTCshift}')
 
 titles= {'blwind':'BL Wind','bltopwind':'BL Top Wind','sfcwind':'Surface Wind',
          'cape': 'CAPE', 'wstar':'Thermal Updraft Velocity',
-         'hbl':'Height of BL Top'}
+         'hbl':'Height of BL Top','bsratio':'Buoyancy/Shear Ratio'}
 
 
 import multiprocessing as sub
