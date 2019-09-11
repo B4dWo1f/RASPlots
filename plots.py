@@ -31,7 +31,7 @@ params = {'figure.dpi': 150,
           'figure.figsize': (9.6, 7.2),
           'figure.dpi': 150}
 mpl.rcParams.update(params)
-figsize=(32,19)
+figsize=(30,20)
 fs = 35   # fontsize
 
 
@@ -64,6 +64,14 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
    elif prop == 'hbl':
       return hbl(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
 
+def my_cbar(fig,ax,img,units,fs):
+   divider = make_axes_locatable(ax)
+   cax = divider.new_vertical(size="2.95%", pad=0.25, pack_start=True)
+   fig.add_axes(cax)
+   cbar = fig.colorbar(img, cax=cax, orientation="horizontal")
+   cbar.ax.set_xlabel(units,fontsize=fs)
+   return cbar
+
 @log_help.timer(LG)
 def cape(X,Y,fbase,fig=None,ax=None):
    """
@@ -77,13 +85,14 @@ def cape(X,Y,fbase,fig=None,ax=None):
                    cmap=colormaps.CAPE,
                    vmin=vmin, vmax=vmax,
                    zorder=12,alpha=0.3)
-   divider = make_axes_locatable(ax)
-   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
-   cbar.set_clim(vmin, vmax)
-   cbar.ax.set_ylabel('J/Kg',fontsize=fs)
-   ticklabs = cbar.ax.get_yticklabels()
-   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   #divider = make_axes_locatable(ax)
+   #cax = divider.append_axes("right", size="1.5%", pad=0.2)
+   #cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
+   #cbar.set_clim(vmin, vmax)
+   #cbar.ax.set_ylabel('J/Kg',fontsize=fs)
+   #ticklabs = cbar.ax.get_yticklabels()
+   #cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   cbar = my_cbar(fig,ax,Cf,'J/Kg',fs)
    return None,Cf,cbar
 
 @log_help.timer(LG)
@@ -113,13 +122,12 @@ def wind(X,Y,fbase,fig=None,ax=None):
                            cmap=colormaps.WindSpeed,
                            vmin=vmin, vmax=vmax,
                            zorder=10,alpha=0.3)
-   divider = make_axes_locatable(ax)
-   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
-   cbar.set_clim(vmin, vmax-delta)
-   cbar.ax.set_ylabel('Km/h',fontsize=fs)
-   ticklabs = cbar.ax.get_yticklabels()
-   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   #divider = make_axes_locatable(ax)
+   #cax = divider.new_vertical(size="2.95%", pad=0.25, pack_start=True)
+   #fig.add_axes(cax)
+   #cbar = fig.colorbar(Cf, cax=cax, orientation="horizontal")
+   #cbar.ax.set_xlabel('Km/h',fontsize=fs)
+   cbar = my_cbar(fig,ax,Cf,'Km/h',fs)
    return Sp, Cf, cbar
 
 @log_help.timer(LG)
@@ -132,13 +140,14 @@ def wstar(X,Y,fbase,fig=None,ax=None):
                    cmap=colormaps.Thermals,
                    vmin=vmin, vmax=vmax,
                    zorder=12,alpha=0.3)
-   divider = make_axes_locatable(ax)
-   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
-   cbar.set_clim(vmin, vmax-delta)
-   cbar.ax.set_ylabel('m/s',fontsize=fs)
-   ticklabs = cbar.ax.get_yticklabels()
-   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   #divider = make_axes_locatable(ax)
+   #cax = divider.append_axes("right", size="1.5%", pad=0.2)
+   #cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
+   #cbar.set_clim(vmin, vmax-delta)
+   #cbar.ax.set_ylabel('m/s',fontsize=fs)
+   #ticklabs = cbar.ax.get_yticklabels()
+   #cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   cbar = my_cbar(fig,ax,Cf,'m/s',fs)
    return None,Cf,cbar
 
 @log_help.timer(LG)
@@ -151,13 +160,14 @@ def hbl(X,Y,fbase,fig=None,ax=None):
                    cmap='Paired',
                    vmin=vmin, vmax=vmax,
                    zorder=12,alpha=0.3)
-   divider = make_axes_locatable(ax)
-   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-   cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
-   cbar.set_clim(vmin, vmax-2*delta)
-   cbar.ax.set_ylabel('m',fontsize=fs)
-   ticklabs = cbar.ax.get_yticklabels()
-   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   #divider = make_axes_locatable(ax)
+   #cax = divider.append_axes("right", size="1.5%", pad=0.2)
+   #cbar = fig.colorbar(Cf, cax=cax) #,boundaries=range(0,lim_wind,5))
+   #cbar.set_clim(vmin, vmax-2*delta)
+   #cbar.ax.set_ylabel('m',fontsize=fs)
+   #ticklabs = cbar.ax.get_yticklabels()
+   #cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
+   cbar = my_cbar(fig,ax,Cf,'m',fs)
    return None,Cf,cbar
 
 
@@ -229,7 +239,7 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    # Provincias
    files = listfiles(f'{ccaa}')
    verts = [np.load(fccaa) for fccaa in files]
-   coll = LineCollection(verts, color='k',lw=2.5,zorder=4)
+   coll = LineCollection(verts, color='k',lw=3,zorder=4)
    ax.add_collection(coll)
    files = listfiles(f'{provincias}')
    verts = [np.load(fccaa) for fccaa in files]
@@ -274,7 +284,7 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
       msg += f'{i+1}: {txt[i]}\n'
    msg = msg[:-1]
    ## Legend for takeoffs
-   ax.text(0.01,0.665,msg,bbox=dict(facecolor='white', alpha=0.7),
+   ax.text(0.01,0.584,msg,bbox=dict(facecolor='white', alpha=0.7),
                                transform=ax.transAxes, fontsize=fs, zorder=33)
 
    # Cities
@@ -312,6 +322,7 @@ def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):
    fig.set_size_inches(fsz)  #igsize[0]/1.2,figsize[1])
    fname =  save_fol + '/A/' + hora.replace(':','')+'_'+prop+'.jpg'
    fig.savefig(fname, dpi=65, quality=90)
+   os.system(f'convert {fname} -crop 1325x1000+170+165 {fname}')
    # CEBREROS
    ax.set_xlim([-5.079508,-3.564694])
    ax.set_ylim([40.171926,40.946453])
@@ -319,6 +330,7 @@ def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):
    fig.set_size_inches(fsz)  #igsize[0]/1.1,figsize[1]/1.2)
    fname =  save_fol + '/B/' + hora.replace(':','')+'_'+prop+'.jpg'
    fig.savefig(fname, dpi=65, quality=90)
+   os.system(f'convert {fname} -crop 1420x900+200+100 {fname}')
    # PEDRO BERNARDO
    ax.set_xlim([-6.030375,-4.393813])
    ax.set_ylim([39.972178,40.733445])
@@ -326,6 +338,7 @@ def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):
    fig.set_size_inches(fsz)  #igsize[0],figsize[1]/1.2)
    fname =  save_fol + '/C/' + hora.replace(':','')+'_'+prop+'.jpg'
    fig.savefig(fname, dpi=65, quality=90)
+   os.system(f'convert {fname} -crop 1565x900+220+95 {fname}')
 
 
 

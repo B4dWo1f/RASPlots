@@ -41,7 +41,7 @@ import multiprocessing as sub
 all_hour = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
             '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
 
-figsize=(32,19)
+figsize=(30,20)
 ve=100
 for day in C.run_days:
    date_run = C.date + day*dt.timedelta(days=1)
@@ -51,6 +51,7 @@ for day in C.run_days:
       LG.critical(f"Data for {date_run.strftime('%d/%m/%Y')} not available")
       continue
    save_fol = fol.replace('DATA','PLOTS')
+   save_fol = '/'.join(save_fol.split('/')[:-3])
    LG.info(f'Folder: {save_fol}')
    if not os.path.isdir(save_fol):
       LG.warning(f'Creating folder {save_fol}')
@@ -74,7 +75,7 @@ for day in C.run_days:
          props.remove('sfcwinddir')
       except ValueError: pass
       for prop in ['blwind','bltopwind']:
-         figsize=(32,19)
+         figsize=(30,20)
          LG.info(f'Plotting {prop}')
          fig, ax = plt.subplots(figsize=figsize)
          # Plot background
@@ -84,17 +85,18 @@ for day in C.run_days:
          # Plot settings
          title = titles[prop] + ' - ' + date.strftime('%d/%m/%Y %H:%M')
          ax.set_title(title, fontsize=50)
-         fig.tight_layout()
          # Save plot
          fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
          fig.savefig(fname, dpi=65, quality=90)
+         com_crop = f'convert {fname} -crop 1563x1040+220+149 {fname}'
+         os.system(com_crop)
          plots.zooms(save_fol,hora,prop,fig,ax)
          LG.debug(f'Ploted {prop}')
       fig, ax = plt.subplots(figsize=figsize)
       # Plot background
       plots.plot_background(ve=ve, ax=ax)
       for prop in ['sfcwind'] + props:
-         figsize=(32,19)
+         figsize=(30,20)
          fig.set_size_inches(figsize)
          LG.info(f'Plotting {prop}')
          # Returns streamplot, contourf, cbar
@@ -102,10 +104,11 @@ for day in C.run_days:
          # Plot settings
          title = titles[prop] + ' - ' + date.strftime('%d/%m/%Y %H:%M')
          ax.set_title(title, fontsize=50)
-         fig.tight_layout()
          # Save plot
          fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
          fig.savefig(fname, dpi=65, quality=90)
+         com_crop = f'convert {fname} -crop 1563x1040+220+149 {fname}'
+         os.system(com_crop)
          plots.zooms(save_fol,hora,prop,fig,ax)
          LG.debug(f'Ploted {prop}')
 
