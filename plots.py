@@ -105,8 +105,11 @@ def wind(X,Y,fbase,fig=None,ax=None):
 
    spd = fbase+'spd.data'
    ori = fbase+'dir.data'
-   S = np.loadtxt(spd,skiprows=4) * 3.6
-   D = np.radians(np.loadtxt(ori,skiprows=4))
+   try:
+      S = np.loadtxt(spd,skiprows=4) * 3.6
+      D = np.radians(np.loadtxt(ori,skiprows=4))
+   except OSError: return None   # not FileNotFoundError, because we are 
+                                 # trying to access a non-existing folder
    U = -S*np.sin(D)
    V = -S*np.cos(D)
    

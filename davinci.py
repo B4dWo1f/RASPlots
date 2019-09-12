@@ -41,7 +41,7 @@ import multiprocessing as sub
 all_hour = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00',
             '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
 
-figsizes = {'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,20),'SC4+3':(30,25)}
+figsizes = {'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)}
 crops = {'SC2':  '1563x1040+220+149', 'SC2+1':'1563x1040+220+149',
          'SC4+2':'1563x1350+220+149', 'SC4+3':'1563x1350+220+149'}
 
@@ -56,6 +56,9 @@ for day in C.run_days:
    save_fol = fol.replace('DATA','PLOTS')
    save_fol = '/'.join(save_fol.split('/')[:-3])
    sc = save_fol.split('/')[-1]
+   hasl = here + f'/terrain/{sc.lower()}_hasl.npy'
+   lats = here + f'/terrain/{sc.lower()}_lats.npy'
+   lons = here + f'/terrain/{sc.lower()}_lons.npy'
    LG.info(f'Folder: {save_fol}')
    if not os.path.isdir(save_fol):
       LG.warning(f'Creating folder {save_fol}')
@@ -83,9 +86,12 @@ for day in C.run_days:
          LG.info(f'Plotting {prop}')
          fig, ax = plt.subplots(figsize=figsize)
          # Plot background
-         plots.plot_background(ve=ve, ax=ax)
+         plots.plot_background(ve=ve, ax=ax,lats=lats, lons=lons, hasl=hasl)
          # Returns streamplot, contourf, cbar
-         sp,cf,cb = plots.plot_prop(fol, hora, prop, fig=fig,ax=ax)
+         try: sp,cf,cb = plots.plot_prop(fol, hora, prop, fig=fig,ax=ax)
+         except TypeError:
+            LG.critical(f'Error processing {fol}')
+            continue
          # Plot settings
          title = titles[prop] + ' - ' + date.strftime('%d/%m/%Y %H:%M')
          ax.set_title(title, fontsize=50)
@@ -98,7 +104,7 @@ for day in C.run_days:
          LG.debug(f'Ploted {prop}')
       fig, ax = plt.subplots(figsize=figsize)
       # Plot background
-      plots.plot_background(ve=ve, ax=ax)
+      plots.plot_background(ve=ve, ax=ax,lats=lats, lons=lons, hasl=hasl)
       for prop in ['sfcwind'] + props:
          figsize = figsizes[sc]
          fig.set_size_inches(figsize)
