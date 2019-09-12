@@ -1,24 +1,22 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
-import re
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
-import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.colors import LightSource
 from matplotlib.collections import PolyCollection, LineCollection
+import re
 import datetime as dt
-from random import choice
-import colormaps
-from common import listfiles
 import os
 here = os.path.dirname(os.path.realpath(__file__))
 import logging
 import log_help
 LG = logging.getLogger(__name__)
+import colormaps
+from common import listfiles, find_best_fcst, check_folders, callback_error
 
 
 
@@ -34,6 +32,118 @@ mpl.rcParams.update(params)
 figsize=(30,20)
 fs = 35   # fontsize
 
+figsizes = {'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)}
+crops = {'SC2':  '1563x1040+220+149', 'SC2+1':'1563x1040+220+149',
+         'SC4+2':'1563x1350+220+149', 'SC4+3':'1563x1350+220+149'}
+
+#def plot_all_properties(C,date_run,hora,UTCshift=2,ve=100,zoom=True,ck=True):
+def plot_all_properties(args):
+   """
+   This function should plot all properties for a given time and date
+   In the case of missing data it should return:
+      - FileNotFoundError: for missing specific file
+      - OSError: for missing folder
+   """
+   C,date_run,hora,UTCshift,ve,zoom,ck = args
+   titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
+            'sfcwind':'Surface Wind', 'cape': 'CAPE',
+            'wstar':'Thermal Updraft Velocity', 'hbl':'Height of BL Top',
+            'bsratio':'Buoyancy/Shear Ratio'}
+   fol = find_best_fcst(date_run,C.root_folder)
+   save_fol = fol.replace('DATA','PLOTS')
+   save_fol = '/'.join(save_fol.split('/')[:-3])
+   sc = save_fol.split('/')[-1]
+   if ck: check_folders([save_fol, save_fol+'/A', save_fol+'/B', save_fol+'/C'])
+   figsize = figsizes[sc]
+
+   # Terrain files
+   hasl = here + f'/terrain/{sc.lower()}_hasl.npy'
+   lats = here + f'/terrain/{sc.lower()}_lats.npy'
+   lons = here + f'/terrain/{sc.lower()}_lons.npy'
+   LG.info(f"Starting plots for hour: {hora} UTC")
+   H,M = map(int,hora.split(':'))
+   date = date_run.replace(hour=H, minute=M)
+   props = C.props
+   try:
+      props.remove('blwinddir')
+      props.remove('blwindspd')
+      props.remove('bltopwinddir')
+      props.remove('bltopwindspd')
+      props.remove('sfcwindspd')
+      props.remove('sfcwinddir')
+   except ValueError: pass
+   for prop in ['blwind','bltopwind']:
+      # Check integrity of data before plotting anything
+      fbase = fol+date.strftime('/%H%M_')+prop
+      data_file = fbase+'spd.data'
+      if not os.path.isfile(data_file):
+         LG.error(f'Missing file {data_file}')
+         callback_error()
+         continue
+
+      # Proceed to PLOT the data
+      LG.info(f'Plotting {prop}')
+      fig, ax = plt.subplots(figsize=figsize)
+      ## Background
+      plot_background(ve=ve, ax=ax,lats=lats, lons=lons, hasl=hasl)
+      # Returns streamplot, contourf, cbar
+      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
+      ## Settings
+      date_title = date.replace(hour=H+UTCshift, minute=M)
+      title = titles[prop] + ' - ' + date_title.strftime('%d/%m/%Y %H:%M')
+      ax.set_title(title, fontsize=50)
+      ## Save plot
+      fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
+      fig.savefig(fname, dpi=65, quality=90)
+      LG.debug(f'Saved to {fname}')
+      com_crop = f'convert {fname} -crop {crops[sc]} {fname}'
+      os.system(com_crop)
+      if zoom: zooms(save_fol,hora,prop,fig,ax)
+      LG.debug(f'Ploted {prop}')
+   plt.close('all')
+   fig, ax = plt.subplots(figsize=figsize)
+   # Plot background
+   plot_background(ve=ve, ax=ax,lats=lats, lons=lons, hasl=hasl)
+   for prop in ['sfcwind'] + props:
+      # Check integrity of data before plotting anything
+      fbase = fol+date.strftime('/%H%M_')+prop
+      if 'wind' in prop: data_file = fbase+'spd.data'
+      else: data_file = fbase+'.data'
+      if not os.path.isfile(data_file):
+         LG.error(f'Missing file {data_file}')
+         continue
+
+      # Proceed to PLOT the data
+      fig.set_size_inches(figsize)
+      LG.info(f'Plotting {prop}')
+      # Returns streamplot, contourf, cbar
+      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
+      ## Plot settings
+      date_title = date.replace(hour=H+UTCshift, minute=M)
+      title = titles[prop] + ' - ' + date_title.strftime('%d/%m/%Y %H:%M')
+      ax.set_title(title, fontsize=50)
+      ## Save plot
+      fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
+      fig.savefig(fname, dpi=65, quality=90)
+      LG.debug(f'Saved to {fname}')
+      ## fix cropping
+      com_crop = f'convert {fname} -crop {crops[sc]} {fname}'
+      os.system(com_crop)
+      if zoom: zooms(save_fol,hora,prop,fig,ax)
+      LG.debug(f'Ploted {prop}')
+
+      # Clean up
+      for coll in cf.collections:
+         #plt.gca().collections.remove(coll)
+         coll.remove()
+      #if sp != None:
+      #   sp.lines.remove()
+      #   sp.arrows.remove()
+      cb.remove()
+   plt.close('all')
+   LG.debug(f"Done for hour: {date_run.strftime('%d/%m/%Y')}-{hora}")
+
+
 
 def plot_prop(folder,time,prop,fig=None,ax=None):
    """
@@ -42,8 +152,8 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
    date = '/'.join(folder.split('/')[-3:]) + '/' + time
    date = dt.datetime.strptime(date, '%Y/%m/%d/%H:%M')
    sc = folder.split('/')[-4].lower()
-   X = np.load(here + f'/{sc}_lons.npy')
-   Y = np.load(here + f'/{sc}_lats.npy')
+   X = np.load(here + f'/grids/{sc}_lons.npy')
+   Y = np.load(here + f'/grids/{sc}_lats.npy')
    mx,Mx = np.min(X),np.max(X)
    my,My = np.min(Y),np.max(Y)
 
@@ -82,7 +192,11 @@ def cape(X,Y,fbase,fig=None,ax=None):
    """
     Specific code to plot the CAPE
    """
-   CAPE = np.loadtxt(fbase+'.data',skiprows=4)
+   CAPE = fbase+'.data'
+   if not os.path.isfile(CAPE):
+      LG.error('Missing file {CAPE}')
+      raise FileNotFoundError
+   else: CAPE = np.loadtxt(CAPE,skiprows=4)
    delta = 100
    vmin,vmax=0,6000+delta
    Cf = ax.contourf(X,Y,CAPE, levels=range(vmin,vmax,delta), extend='max',
@@ -103,13 +217,18 @@ def wind(X,Y,fbase,fig=None,ax=None):
    x = np.linspace(mx,Mx,X.shape[1])
    y = np.linspace(my,My,X.shape[0])
 
+   # Checking integrity of data
    spd = fbase+'spd.data'
    ori = fbase+'dir.data'
-   try:
-      S = np.loadtxt(spd,skiprows=4) * 3.6
-      D = np.radians(np.loadtxt(ori,skiprows=4))
-   except OSError: return None   # not FileNotFoundError, because we are 
-                                 # trying to access a non-existing folder
+   #if not os.path.isfile(spd):
+   #   LG.error('Missing file {spd}')
+   #   raise FileNotFoundError
+   #elif not os.path.isfile(ori):
+   #   LG.error('Missing file {ori}')
+   #   raise FileNotFoundError
+
+   S = np.loadtxt(spd,skiprows=4) * 3.6
+   D = np.radians(np.loadtxt(ori,skiprows=4))
    U = -S*np.sin(D)
    V = -S*np.cos(D)
    
@@ -128,7 +247,11 @@ def wind(X,Y,fbase,fig=None,ax=None):
 
 @log_help.timer(LG)
 def bsratio(X,Y,fbase,fig=None,ax=None):
-   BSratio = np.loadtxt(fbase+'.data',skiprows=4)
+   BSratio = fbase+'.data'
+   if not os.path.isfile(BSratio):
+      LG.error('Missing file {BSratio}')
+      raise FileNotFoundError
+   else: BSratio = np.loadtxt(BSratio,skiprows=4)
    delta=2
    vmin,vmax = 0,28+delta
    Cf = ax.contourf(X,Y,BSratio, levels=np.arange(vmin,vmax,delta),
@@ -142,7 +265,11 @@ def bsratio(X,Y,fbase,fig=None,ax=None):
 
 @log_help.timer(LG)
 def wstar(X,Y,fbase,fig=None,ax=None):
-   Wstar = np.loadtxt(fbase+'.data',skiprows=4) /100
+   Wstar = fbase+'.data'
+   if not os.path.isfile(Wstar):
+      LG.error('Missing file {Wstar}')
+      raise FileNotFoundError
+   else: Wstar = np.loadtxt(Wstar,skiprows=4) /100
    delta=0.25
    vmin,vmax = 0,3.5+delta
    Cf = ax.contourf(X,Y,Wstar, levels=np.arange(vmin,vmax,delta),
@@ -155,7 +282,11 @@ def wstar(X,Y,fbase,fig=None,ax=None):
 
 @log_help.timer(LG)
 def hbl(X,Y,fbase,fig=None,ax=None):
-   Hbl = np.loadtxt(fbase+'.data',skiprows=4)
+   Hbl = fbase+'.data'
+   if not os.path.isfile(Hbl):
+      LG.error('Missing file {Hbl}')
+      raise FileNotFoundError
+   else: Hbl = np.loadtxt(Hbl,skiprows=4)
    delta=200
    vmin,vmax = 800, 3600+delta
    Cf = ax.contourf(X,Y,Hbl, levels=range(vmin,vmax,delta), extend='both',
@@ -675,7 +806,6 @@ if __name__ == '__main__':
       except ValueError: pass
    fname = fnam + max(fols).strftime('%Y/%m/%d/')
    #fname = fnam+'FCST' +'/'+ now.strftime('%Y/%m/%d')
-   print('Plotting data from',fname)
    com = 'ls %s/*sfcwindspd*.data'%(fname)
    files = os.popen(com).read().strip().split()
    files = [f.replace('spd','') for f in files]
