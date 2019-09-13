@@ -47,9 +47,21 @@ titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
 def plot_all_properties(args):
    """
    This function should plot all properties for a given time and date
-   In the case of missing data it should return:
-      - FileNotFoundError: for missing specific file
-      - OSError: for missing folder
+   blwind,bltopwind are plotted first since their streamplots will be
+   overwritten.
+   sfcwind streamplot will remain on top of all other properties
+   *This behaviour could fail  if another property with "wind" is added and it
+   is shorted after sfcwind
+   args:
+   C: common.Config containing all the parameters
+   date_run: date to plot the forecasts
+   hora: hour to plot the forecasts
+   UTCshift: current local UTC-shift
+   ve: vertical exaggeration
+   zoom: plot zoom plots
+   ck: check & create missing folders
+   Doc on terrain plots:
+   https://matplotlib.org/3.1.0/gallery/specialty_plots/topographic_hillshading.html
    """
    C,date_run,hora,UTCshift,ve,zoom,ck = args
    LG.info(f"Starting plots for hour: {hora} UTC")
@@ -132,7 +144,10 @@ def plot_all_properties(args):
 
 def plot_prop(folder,time,prop,fig=None,ax=None):
    """
-     This function
+     This function sets the limits in the map and calls the corresponding
+     plotting function.
+     The code for each property is kept separate in case of further
+     customization
    """
    date = '/'.join(folder.split('/')[-3:]) + '/' + time
    date = dt.datetime.strptime(date, '%Y/%m/%d/%H:%M')
@@ -148,8 +163,6 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
    ax.set_xlim([mx,Mx])
    ax.set_ylim([my,My])
 
-   #_, valid_date = get_valid_date(date)
-   #ax.set_title(fbase.split('/')[-1]+valid_date.date.strftime('%d/%m/%Y ')+hora, fontsize=50)
    if 'wind' in prop:
       return wind(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
    elif prop == 'cape':
@@ -165,6 +178,7 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
       return None
 
 def my_cbar(fig,ax,img,units,fs):
+   """ Custom colorbar settings """
    divider = make_axes_locatable(ax)
    cax = divider.new_vertical(size="2.95%", pad=0.25, pack_start=True)
    fig.add_axes(cax)
@@ -174,9 +188,7 @@ def my_cbar(fig,ax,img,units,fs):
 
 @log_help.timer(LG)
 def cape(X,Y,fbase,fig=None,ax=None):
-   """
-    Specific code to plot the CAPE
-   """
+   """ Specific code to plot the CAPE """
    CAPE = fbase+'.data'
    if not os.path.isfile(CAPE):
       LG.error('Missing file {CAPE}')
@@ -194,9 +206,7 @@ def cape(X,Y,fbase,fig=None,ax=None):
 
 @log_help.timer(LG)
 def wind(X,Y,fbase,fig=None,ax=None):
-   """
-    Specific code to plot the wind (either surface, avg, ot top BL)
-   """
+   """ Specific code to plot the wind (either surface, avg, ot top BL) """
    mx,Mx = np.min(X),np.max(X)
    my,My = np.min(Y),np.max(Y)
    x = np.linspace(mx,Mx,X.shape[1])
@@ -205,13 +215,8 @@ def wind(X,Y,fbase,fig=None,ax=None):
    # Checking integrity of data
    spd = fbase+'spd.data'
    ori = fbase+'dir.data'
-   #if not os.path.isfile(spd):
-   #   LG.error('Missing file {spd}')
-   #   raise FileNotFoundError
-   #elif not os.path.isfile(ori):
-   #   LG.error('Missing file {ori}')
-   #   raise FileNotFoundError
 
+   # Read wind files and build UV arrays
    S = np.loadtxt(spd,skiprows=4) * 3.6
    D = np.radians(np.loadtxt(ori,skiprows=4))
    U = -S*np.sin(D)
@@ -232,6 +237,7 @@ def wind(X,Y,fbase,fig=None,ax=None):
 
 @log_help.timer(LG)
 def bsratio(X,Y,fbase,fig=None,ax=None):
+   """ Specific code to plot the B/S ratio """
    BSratio = fbase+'.data'
    if not os.path.isfile(BSratio):
       LG.error('Missing file {BSratio}')
@@ -250,6 +256,7 @@ def bsratio(X,Y,fbase,fig=None,ax=None):
 
 @log_help.timer(LG)
 def wstar(X,Y,fbase,fig=None,ax=None):
+   """ Specific code to plot the Thermal updraft velocity """
    Wstar = fbase+'.data'
    if not os.path.isfile(Wstar):
       LG.error('Missing file {Wstar}')
@@ -267,6 +274,7 @@ def wstar(X,Y,fbase,fig=None,ax=None):
 
 @log_help.timer(LG)
 def hbl(X,Y,fbase,fig=None,ax=None):
+   """ Specific code to plot the BL height """
    Hbl = fbase+'.data'
    if not os.path.isfile(Hbl):
       LG.error('Missing file {Hbl}')
@@ -357,11 +365,12 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    verts = [np.load(fccaa) for fccaa in files]
    coll = LineCollection(verts, color='k',lw=2,zorder=4)
    ax.add_collection(coll)
-     ## poblaciones
-     #files = listfiles(f'{poblaciones}') + listfiles(f'{damns}')
-     #verts = [np.load(flake) for flake in files]
-     #coll = PolyCollection(verts, color='C7',zorder=1,alpha=0.9)
-     #ax.add_collection(coll)
+   if False:   #XXX not worth it
+      # poblaciones
+      files = listfiles(f'{poblaciones}') + listfiles(f'{damns}')
+      verts = [np.load(flake) for flake in files]
+      coll = PolyCollection(verts, color='C7',zorder=1,alpha=0.9)
+      ax.add_collection(coll)
    # Lakes
    files = listfiles(f'{lakes}') + listfiles(f'{damns}')
    verts = [np.load(flake) for flake in files]
@@ -412,20 +421,20 @@ def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):
    """
     Apply the harcoded lims for the plots
     Arcones
-           +------------------ 41.428272,-3.027596
-           |                            |
-           |                            |
-    40.711015,-4.302319 ----------------+
+           +--------------- 41.428272,-3.027596
+           |                         |
+           |                         |
+    40.711015,-4.302319 -------------+
     Cebreros
-           +------------------ 40.946453,-3.564694
-           |                            |
-           |                            |
-    40.171926,-5.079508 ----------------+
+           +--------------- 40.946453,-3.564694
+           |                         |
+           |                         |
+    40.171926,-5.079508 -------------+
     Pedro Bernardo
-           +------------------ 40.733445,-4.393813
-           |                            |
-           |                            |
-    39.972178,-6.030375 ----------------+
+           +--------------- 40.733445,-4.393813
+           |                         |
+           |                         |
+    39.972178,-6.030375 -------------+
    """
    #ARCONES
    ax.set_xlim([-4.302319,-3.2])
@@ -452,326 +461,6 @@ def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):
    fig.savefig(fname, dpi=65, quality=90)
    os.system(f'convert {fname} -crop 1565x900+220+95 {fname}')
 
-
-
-#def plot_background_google(img,ext,pueblos,takeoffs,ax=None):
-#   """
-#    obsolete
-#    Sets an image as background for other plots. It also marks the villages
-#   stored in pueblos.csv
-#   """
-#   if ax is None: ax = plt.gca()
-#   img = mpimg.imread(img) #here+'/Gmap1.jpg')
-#   #yshape,xshape,_ = img.shape
-#   ax.imshow(img, aspect='equal', extent=ext,zorder=1,origin='lower')
-#   ## Pueblos
-#   px,py = [],[]
-#   villages = open(pueblos,'r').read().strip().splitlines()
-#   txt = ''
-#   for i in range(len(villages)):
-#      line = villages[i]
-#      ll = line.split()
-#      a_x,a_y = float(ll[1]),float(ll[0])
-#      px.append(a_x)
-#      py.append(a_y)
-#      nam = ' '.join(ll[2:])
-#      ax.text(a_x+0.025,a_y,str(i),bbox=dict(facecolor='white', alpha=0.5),
-#                                                      fontsize=fs, zorder=13)
-#      txt += f'{i}: {nam}\n'
-#   txt = txt[:-1]
-#   ax.text(0.01,0.665,txt,bbox=dict(facecolor='white', alpha=0.7),
-#                               transform=ax.transAxes, fontsize=fs, zorder=13)
-#   ax.scatter(px,py,c='r',s=200,zorder=11)
-#   px,py = [],[]
-#   villages = open(takeoffs,'r').read().strip().splitlines()
-#   for i in range(len(villages)):
-#      line = villages[i]
-#      ll = line.split()
-#      a_x,a_y = float(ll[1]),float(ll[0])
-#      px.append(a_x)
-#      py.append(a_y)
-#   ax.scatter(px,py,c='r',s=1500,zorder=13,marker='*')
-#
-#
-#def plot_wind(fol,tail,prop=''):
-#   """
-#   Obsolete?
-#   """
-#   fol_save = fol.replace('DATA','PLOTS')
-#   os.system('mkdir -p %s'%(fol_save))
-#
-#   spd = fol +  tail  + 'spd.data'
-#   dire = fol + tail  + 'dir.data'
-#
-#   # Forecast valid for day:
-#   date = open(spd,'r').read().strip().splitlines()[1]
-#   _, date = get_valid_date(date)
-#
-#   # Read latitude and longitude info
-#   # convert lat,lon to pixel
-#   sc = fol.split('/')[-5].lower()
-#   X = np.load(here+f'/{sc}_lons.npy')
-#   Y = np.load(here+f'/{sc}_lats.npy')
-#   mx,Mx = np.min(X),np.max(X)
-#   my,My = np.min(Y),np.max(Y)
-#
-#
-#   # Calculate Vx and Vy
-#   S = np.loadtxt(spd, skiprows=4) * 3.6 # km/h
-#   D = np.radians(np.loadtxt(dire, skiprows=4))  
-#   U = -S*np.sin(D)
-#   V = -S*np.cos(D)
-#
-#   # Prepare streamplot
-#   x = np.linspace(mx,Mx,X.shape[1])
-#   y = np.linspace(my,My,X.shape[0])
-#
-#   # Create Plot
-#   fig, ax = plt.subplots(figsize=figsize)
-#   ax.xaxis.tick_top()
-#
-#   # Background Image
-#   p0,p1,p2,p3 = border()
-#   ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
-#          np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
-#
-#   plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
-#   # vector field
-#   ax.streamplot(x,y, U,V, color='k',linewidth=1., density=3.5,
-#                           arrowstyle='->',arrowsize=5,
-#                           zorder=12)
-#   # scalar field
-#   delta = 4
-#   vmin,vmax = 0,56+delta
-#   C = ax.contourf(X,Y,S, levels=range(vmin,vmax,delta), extend='max',
-#                   antialiased=True,
-#                   cmap=colormaps.WindSpeed,
-#                   vmin=vmin, vmax=vmax,
-#                   zorder=10,alpha=0.3)
-#   divider = make_axes_locatable(ax)
-#   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-#   cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
-#   cbar.set_clim(vmin, vmax-delta)
-#   cbar.ax.set_ylabel('Km/h',fontsize=fs)
-#   ticklabs = cbar.ax.get_yticklabels()
-#   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
-#
-#   ax.set_aspect('equal')
-#   ax.set_xticks([])
-#   ax.set_yticks([])
-#   ax.set_xlim([mx,Mx])
-#   ax.set_ylim([my,My])
-#
-#
-#   ax.set_title(date.strftime(prop+' for - %d/%m/%Y %H:%M'),fontsize=50)
-#   fig.tight_layout()
-#   fsave = fol_save + tail + '.jpg'
-#   fig.savefig(fsave, dpi=65, quality=90) #,dpi=80,quality=100)
-#   #plt.show()
-#   plt.close('all')
-#
-#
-#
-#def plot_cape(fol,tail):
-#   fol_save = fol.replace('DATA','PLOTS')
-#   os.system('mkdir -p %s'%(fol_save))
-#
-#   cape = fol + tail + '.data'
-#
-#   # Forecast valid for day:
-#   date = open(cape,'r').read().strip().splitlines()[1]
-#   _, date = get_valid_date(date)
-#
-#   # Read latitude and longitude info
-#   # convert lat,lon to pixel
-#   sc = fol.split('/')[-5].lower()
-#   X = np.load(here+f'/{sc}_lons.npy')
-#   Y = np.load(here+f'/{sc}_lats.npy')
-#   mx,Mx = np.min(X),np.max(X)
-#   my,My = np.min(Y),np.max(Y)
-#
-#
-#   ## Read CAPE data
-#   cape = np.loadtxt(cape, skiprows=4)
-#
-#   # Prepare XY grid
-#   x = np.linspace(mx,Mx,X.shape[1])
-#   y = np.linspace(my,My,X.shape[0])
-#
-#   # Create Plot
-#   fig, ax = plt.subplots(figsize=figsize)
-#   ax.xaxis.tick_top()
-#
-#   # Background Image
-#   p0,p1,p2,p3 = border()
-#   ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
-#          np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
-#
-#   plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
-#   delta = 100
-#   vmin,vmax=0,6000+delta
-#   C = ax.contourf(X,Y,cape, levels=range(vmin,vmax,delta), extend='max',
-#                   antialiased=True,
-#                   cmap=colormaps.CAPE,
-#                   vmin=vmin, vmax=vmax,
-#                   zorder=10,alpha=0.3)
-#   divider = make_axes_locatable(ax)
-#   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-#   cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
-#   cbar.set_clim(vmin, vmax)
-#   cbar.ax.set_ylabel('J/Kg',fontsize=fs)
-#   ticklabs = cbar.ax.get_yticklabels()
-#   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
-#
-#   ax.set_aspect('equal')
-#   ax.set_xticks([])
-#   ax.set_yticks([])
-#   ax.set_xlim([mx,Mx])
-#   ax.set_ylim([my,My])
-#
-#
-#   ax.set_title(date.strftime('CAPE for - %d/%m/%Y %H:%M'),fontsize=50)
-#   fig.tight_layout()
-#   fsave = fol_save + tail + '.jpg'
-#   fig.savefig(fsave, dpi=65, quality=90) #,dpi=80,quality=100)
-#   #plt.show()
-#   plt.close('all')
-#
-#
-#
-#def plot_thermal_height(fol,tail):
-#   fol_save = fol.replace('DATA','PLOTS')
-#   os.system('mkdir -p %s'%(fol_save))
-#
-#   thermal_height = fol + tail + '.data'
-#
-#   # Forecast valid for day:
-#   date = open(thermal_height,'r').read().strip().splitlines()[1]
-#   _, date = get_valid_date(date)
-#
-#   # Read latitude and longitude info
-#   # convert lat,lon to pixel
-#   sc = fol.split('/')[-5].lower()
-#   X = np.load(here+f'/{sc}_lons.npy')
-#   Y = np.load(here+f'/{sc}_lats.npy')
-#   mx,Mx = np.min(X),np.max(X)
-#   my,My = np.min(Y),np.max(Y)
-#
-#
-#   ## Read Thermal Height data
-#   thermal_height = np.loadtxt(thermal_height, skiprows=4) / 100  # m/s
-#
-#   # Prepare XY grid
-#   x = np.linspace(mx,Mx,X.shape[1])
-#   y = np.linspace(my,My,X.shape[0])
-#
-#   # Create Plot
-#   fig, ax = plt.subplots(figsize=figsize)
-#   ax.xaxis.tick_top()
-#
-#   # Background Image
-#   p0,p1,p2,p3 = border()
-#   ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
-#          np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
-#
-#   plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
-#   #bgr = colormaps.bgr
-#   delta=0.2
-#   vmin,vmax = 0,3.4+delta
-#   C = ax.contourf(X,Y,thermal_height, levels=np.arange(vmin,vmax,delta),
-#                   extend='max', antialiased=True,
-#                   cmap=colormaps.Thermals,
-#                   vmin=vmin, vmax=vmax,
-#                   zorder=10,alpha=0.3)
-#   divider = make_axes_locatable(ax)
-#   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-#   cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
-#   cbar.set_clim(vmin, vmax-delta)
-#   cbar.ax.set_ylabel('m/s',fontsize=fs)
-#   ticklabs = cbar.ax.get_yticklabels()
-#   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
-#
-#   ax.set_aspect('equal')
-#   ax.set_xticks([])
-#   ax.set_yticks([])
-#   ax.set_xlim([mx,Mx])
-#   ax.set_ylim([my,My])
-#
-#
-#   ax.set_title(date.strftime('Thermal Height for - %d/%m/%Y %H:%M'),fontsize=50)
-#   fig.tight_layout()
-#   fsave = fol_save + tail + '.jpg'
-#   fig.savefig(fsave, dpi=65, quality=90) #,dpi=80,quality=100)
-#   #plt.show()
-#   plt.close('all')
-#
-#
-#def plot_BL_height(fol,tail):
-#   fol_save = fol.replace('DATA','PLOTS')
-#   os.system('mkdir -p %s'%(fol_save))
-#
-#   BL_height = fol + tail + '.data'
-#
-#   # Forecast valid for day:
-#   date = open(BL_height,'r').read().strip().splitlines()[1]
-#   _, date = get_valid_date(date)
-#
-#   # Read latitude and longitude info
-#   # convert lat,lon to pixel
-#   sc = fol.split('/')[-5].lower()
-#   X = np.load(here+f'/{sc}_lons.npy')
-#   Y = np.load(here+f'/{sc}_lats.npy')
-#   mx,Mx = np.min(X),np.max(X)
-#   my,My = np.min(Y),np.max(Y)
-#
-#
-#   ## Read CAPE data
-#   BL_height = np.loadtxt(BL_height, skiprows=4)
-#
-#   # Prepare XY grid
-#   x = np.linspace(mx,Mx,X.shape[1])
-#   y = np.linspace(my,My,X.shape[0])
-#
-#   # Create Plot
-#   fig, ax = plt.subplots(figsize=figsize)
-#   ax.xaxis.tick_top()
-#
-#   # Background Image
-#   p0,p1,p2,p3 = border()
-#   ext = [np.mean([p1[0],p0[0]]), np.mean([p2[0],p3[0]]),
-#          np.mean([p1[1],p2[1]]), np.mean([p0[1],p3[1]])]
-#
-#   plot_background(here+'/Gmap1.jpg',ext,here+'/takeoffs.csv',here+'/cities.csv',ax)
-#   bgr = colormaps.bgr
-#   delta=200
-#   vmin = 800
-#   vmax = 3600
-#   C = ax.contourf(X,Y,BL_height, levels=range(vmin,vmax,delta), extend='both',
-#                   antialiased=True,
-#                   cmap='Paired',
-#                   vmin=vmin, vmax=vmax,
-#                   zorder=10,alpha=0.3)
-#   divider = make_axes_locatable(ax)
-#   cax = divider.append_axes("right", size="1.5%", pad=0.2)
-#   cbar = fig.colorbar(C, cax=cax) #,boundaries=range(0,lim_wind,5))
-#   cbar.set_clim(vmin, vmax-2*delta)
-#   cbar.ax.set_ylabel('m',fontsize=fs)
-#   ticklabs = cbar.ax.get_yticklabels()
-#   cbar.ax.set_yticklabels(ticklabs, fontsize=fs)
-#
-#   ax.set_aspect('equal')
-#   ax.set_xticks([])
-#   ax.set_yticks([])
-#   ax.set_xlim([mx,Mx])
-#   ax.set_ylim([my,My])
-#
-#
-#   ax.set_title(date.strftime('BL Height for - %d/%m/%Y %H:%M'),fontsize=50)
-#   fig.tight_layout()
-#   fsave = fol_save + tail + '.jpg'
-#   fig.savefig(fsave, dpi=65, quality=90) #,dpi=80,quality=100)
-#   #plt.show()
-#   plt.close('all')
 
 if __name__ == '__main__':
    import sys
