@@ -51,8 +51,8 @@ def plot_all_properties(args):
       - FileNotFoundError: for missing specific file
       - OSError: for missing folder
    """
-   LG.info(f"Starting plots for hour: {hora} UTC")
    C,date_run,hora,UTCshift,ve,zoom,ck = args
+   LG.info(f"Starting plots for hour: {hora} UTC")
    fol = find_best_fcst(date_run,C.root_folder)
    save_fol = fol.replace('DATA','PLOTS')
    save_fol = '/'.join(save_fol.split('/')[:-3])
