@@ -30,11 +30,18 @@ params = {'figure.dpi': 150,
           'figure.dpi': 150}
 mpl.rcParams.update(params)
 figsize=(30,20)
-fs = 35   # fontsize
+fs = 35      # fontsize legends
+fs_st = 55   # fontsize suptitle
+fs_t = 40   # fontsize title
 
 figsizes = {'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)}
-crops = {'SC2':  '1563x1040+220+149', 'SC2+1':'1563x1040+220+149',
-         'SC4+2':'1563x1350+220+149', 'SC4+3':'1563x1350+220+149'}
+crops = {'SC2':  '1563x1054+220+118', 'SC2+1':'1563x1054+220+118',
+         'SC4+2':'1563x1335+220+149', 'SC4+3':'1563x1335+220+149'}
+
+titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
+         'sfcwind':'Surface Wind', 'cape': 'CAPE',
+         'wstar':'Thermal Updraft Velocity', 'hbl':'Height of BL Top',
+         'bsratio':'Buoyancy/Shear Ratio'}
 
 #def plot_all_properties(C,date_run,hora,UTCshift=2,ve=100,zoom=True,ck=True):
 def plot_all_properties(args):
@@ -44,11 +51,8 @@ def plot_all_properties(args):
       - FileNotFoundError: for missing specific file
       - OSError: for missing folder
    """
+   LG.info(f"Starting plots for hour: {hora} UTC")
    C,date_run,hora,UTCshift,ve,zoom,ck = args
-   titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
-            'sfcwind':'Surface Wind', 'cape': 'CAPE',
-            'wstar':'Thermal Updraft Velocity', 'hbl':'Height of BL Top',
-            'bsratio':'Buoyancy/Shear Ratio'}
    fol = find_best_fcst(date_run,C.root_folder)
    save_fol = fol.replace('DATA','PLOTS')
    save_fol = '/'.join(save_fol.split('/')[:-3])
@@ -56,56 +60,32 @@ def plot_all_properties(args):
    if ck: check_folders([save_fol, save_fol+'/A', save_fol+'/B', save_fol+'/C'])
    figsize = figsizes[sc]
 
+   # Set time and date for forecat
+   H,M = map(int,hora.split(':'))
+   date = date_run.replace(hour=H, minute=M)
+
    # Terrain files
    hasl = here + f'/terrain/{sc.lower()}_hasl.npy'
    lats = here + f'/terrain/{sc.lower()}_lats.npy'
    lons = here + f'/terrain/{sc.lower()}_lons.npy'
-   LG.info(f"Starting plots for hour: {hora} UTC")
-   H,M = map(int,hora.split(':'))
-   date = date_run.replace(hour=H, minute=M)
+   
+   # Sort properties to plot
    props = C.props
-   try:
-      props.remove('blwinddir')
-      props.remove('blwindspd')
-      props.remove('bltopwinddir')
-      props.remove('bltopwindspd')
-      props.remove('sfcwindspd')
-      props.remove('sfcwinddir')
-   except ValueError: pass
-   for prop in ['blwind','bltopwind']:
-      # Check integrity of data before plotting anything
-      fbase = fol+date.strftime('/%H%M_')+prop
-      data_file = fbase+'spd.data'
-      if not os.path.isfile(data_file):
-         LG.error(f'Missing file {data_file}')
-         callback_error()
-         continue
+   winds = [p for p in C.props if 'wind' in p]
+   winds = [p.replace('winddir','wind') for p in winds]
+   winds = [p.replace('windspd','wind') for p in winds]
+   winds = sorted(list(set(winds)))   # XXX Dangerous
+   rest = [p for p in C.props if 'wind' not in p]
+   props = winds+rest
 
-      # Proceed to PLOT the data
-      LG.info(f'Plotting {prop}')
-      fig, ax = plt.subplots(figsize=figsize)
-      ## Background
-      plot_background(ve=ve, ax=ax,lats=lats, lons=lons, hasl=hasl)
-      # Returns streamplot, contourf, cbar
-      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
-      ## Settings
-      date_title = date.replace(hour=H+UTCshift, minute=M)
-      title = titles[prop] + ' - ' + date_title.strftime('%d/%m/%Y %H:%M')
-      ax.set_title(title, fontsize=50)
-      ## Save plot
-      fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
-      fig.savefig(fname, dpi=65, quality=90)
-      LG.debug(f'Saved to {fname}')
-      com_crop = f'convert {fname} -crop {crops[sc]} {fname}'
-      os.system(com_crop)
-      if zoom: zooms(save_fol,hora,prop,fig,ax)
-      LG.debug(f'Ploted {prop}')
-   plt.close('all')
+   #Start plotting
    fig, ax = plt.subplots(figsize=figsize)
-   # Plot background
+   ## Plot background
    plot_background(ve=ve, ax=ax,lats=lats, lons=lons, hasl=hasl)
-   for prop in ['sfcwind'] + props:
-      # Check integrity of data before plotting anything
+   remove_wind = True
+   for prop in props:
+      if prop == 'sfcwind': remove_wind = False  #keep the sfcwind lines
+      ## Check integrity of data before plotting anything
       fbase = fol+date.strftime('/%H%M_')+prop
       if 'wind' in prop: data_file = fbase+'spd.data'
       else: data_file = fbase+'.data'
@@ -113,15 +93,17 @@ def plot_all_properties(args):
          LG.error(f'Missing file {data_file}')
          continue
 
-      # Proceed to PLOT the data
+      ## PLOT the data
       fig.set_size_inches(figsize)
       LG.info(f'Plotting {prop}')
-      # Returns streamplot, contourf, cbar
-      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
+      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)   #streamplot, contourf, cbar
       ## Plot settings
       date_title = date.replace(hour=H+UTCshift, minute=M)
-      title = titles[prop] + ' - ' + date_title.strftime('%d/%m/%Y %H:%M')
-      ax.set_title(title, fontsize=50)
+      title = date_title.strftime('%a %d/%m/%Y %H:%M')
+      ax.set_title(title, fontsize=fs_t)
+      x0 = (fig.subplotpars.left + fig.subplotpars.right)/2
+      fig.suptitle(titles[prop], x=x0, y=0.906, horizontalalignment='center',
+                   fontsize=fs_st)
       ## Save plot
       fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
       fig.savefig(fname, dpi=65, quality=90)
@@ -132,13 +114,16 @@ def plot_all_properties(args):
       if zoom: zooms(save_fol,hora,prop,fig,ax)
       LG.debug(f'Ploted {prop}')
 
-      # Clean up
+      ## Clean up
       for coll in cf.collections:
          #plt.gca().collections.remove(coll)
          coll.remove()
-      #if sp != None:
-      #   sp.lines.remove()
-      #   sp.arrows.remove()
+      if remove_wind:
+         if sp != None:
+            sp.lines.remove()
+            # Remove arrows
+            keep = lambda x: not isinstance(x, mpl.patches.FancyArrowPatch)
+            ax.patches = [patch for patch in ax.patches if keep(patch)]
       cb.remove()
    plt.close('all')
    LG.debug(f"Done for hour: {date_run.strftime('%d/%m/%Y')}-{hora}")
