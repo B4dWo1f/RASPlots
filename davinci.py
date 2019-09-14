@@ -16,18 +16,13 @@ logging.basicConfig(level=logging.DEBUG,
 LG = logging.getLogger('main')
 log_help.screen_handler(LG,lv='info')
 ################################################################################
-##import matplotlib as mpl
-##mpl.use('Agg')   # For crontab running
-##import matplotlib.pyplot as plt
-#from time import sleep
-#from random import random
 import common
 import plots
 
 
 C = common.load(here+'/full.ini')
 
-C.date = dt.datetime.now() - dt.timedelta(hours = 5)
+#C.date = dt.datetime.now() - dt.timedelta(hours = 5)
 
 UTCshift = round((dt.datetime.now()-dt.datetime.utcnow()).total_seconds()/3600)
 LG.info(f'UTCshift: {UTCshift}')
@@ -36,6 +31,7 @@ all_hour = ['%02d:00'%(i) for i in range(6,18)]
 
 for day in C.run_days:
    date_run = C.date + day*dt.timedelta(days=1)
+   LG.info(f"Plotting {date_run.strftime('%d/%m/%Y')}")
 
    if C.parallel:
       LG.debug('Running in parallel')
@@ -49,6 +45,7 @@ for day in C.run_days:
    else:
       ck = True
       for hora in all_hour:
+         LG.info(f"Plotting {date_run.strftime('%d/%m/%Y-%H:%M')}")
          plots.plot_all_properties((C,date_run,hora,UTCshift,C.ve, C.zoom, ck))
          ck = False
 
