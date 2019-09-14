@@ -73,8 +73,9 @@ def plot_all_properties(args):
    figsize = figsizes[sc]
 
    # Set time and date for forecat
-   H,M = map(int,hora.split(':'))
-   date = date_run.replace(hour=H, minute=M)
+   mytime = dt.datetime.strptime(hora,'%H:%M').time()
+   date = dt.datetime.combine(date_run, mytime)
+   LG.info(f"Plotting all properties for {date.strftime('%d/%m/%Y-%H:%M')}")
 
    # Terrain files
    hasl = here + f'/terrain/{sc.lower()}_hasl.npy'
@@ -108,9 +109,10 @@ def plot_all_properties(args):
       ## PLOT the data
       fig.set_size_inches(figsize)
       LG.info(f'Plotting {prop}')
-      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)   #streamplot, contourf, cbar
+      # Return streamplot, contourf, cbar for later manipulation
+      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
       ## Plot settings
-      date_title = date.replace(hour=H+UTCshift, minute=M)
+      date_title = date + dt.timedelta(hours = UTCshift)
       title = date_title.strftime('%a %d/%m/%Y %H:%M')
       ax.set_title(title, fontsize=fs_t)
       x0 = (fig.subplotpars.left + fig.subplotpars.right)/2
@@ -119,7 +121,7 @@ def plot_all_properties(args):
       ## Save plot
       fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
       fig.savefig(fname, dpi=65, quality=90)
-      LG.debug(f'Saved to {fname}')
+      LG.debug('Saved to %s'%('/'.join(fname.split('/')[-4:])))
       ## fix cropping
       com_crop = f'convert {fname} -crop {crops[sc]} {fname}'
       os.system(com_crop)
