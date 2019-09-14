@@ -5,13 +5,20 @@ import numpy as np
 import datetime as dt
 from configparser import ConfigParser, ExtendedInterpolation
 from os.path import expanduser
+from os import listdir
+from os.path import isfile, join
 import os
 here = os.path.dirname(os.path.realpath(__file__))
+import logging
+import log_help
+LG = logging.getLogger(__name__)
+
 
 now = dt.datetime.now
 
 class Config(object):
-   def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[]):
+   def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
+                     parallel=True,zoom=True,ve=100):
       if Rfolder[-1] != '/': Rfolder += '/'
       self.root_folder = Rfolder
       self.lats = lats
@@ -20,6 +27,9 @@ class Config(object):
       self.run_days = run_days
       self.date = date
       self.props = props
+      self.parallel = parallel
+      self.zoom = zoom
+      self.ve = ve
    def __str__(self):
       msg =  f'Data stored in: {self.root_folder}\n'
       msg += f'Terrain files:  {self.lats}  {self.lons}  {self.hagl}\n'
@@ -47,9 +57,12 @@ def load(fname='config.ini'):
    try:
       date = config['run']['date']
       date = dt.datetime.strptime(date, '%Y/%m/%d')
-   except KeyError: date = dt.datetime.now()  # XXX
+   except KeyError: date = dt.datetime.now().date()  # XXX
    props = [x.strip() for x in config['run']['props'].split(',')]
-   return Config(Rfolder,lats,lons,hagl,run,date,props)
+   parallel = eval(config['run']['parallel'].capitalize())
+   zoom = eval(config['run']['zoom'].capitalize())
+   ve = int(config['plots']['ve'])
+   return Config(Rfolder,lats,lons,hagl,run,date,props,parallel,zoom,ve)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    if root[-1] != '/': root += '/'
@@ -70,6 +83,17 @@ def find_best_fcst(date,Rfolder):
    for f in ['SC2','SC2+1','SC4+2','SC4+3']:
       fol = Rfolder+'DATA/w2/'+f+'/'+date.strftime('%Y/%m/%d')
       if os.path.isdir(fol): return fol
+
+def listfiles(folder):
+   return [join(folder,f) for f in listdir(folder) if isfile(join(folder, f))]
+
+def check_folders(folders):
+   for folder in folders:
+      LG.warning(f'Creating folder {folder}')
+      os.system(f'mkdir -p {folder}')
+
+def callback_error():
+   pass
 
 if __name__ == '__main__':
    C = load()

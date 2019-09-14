@@ -53,7 +53,7 @@ def get_and_place(url,base='RASP'):
    os.rename(ftemp, fname)
 
 if __name__ == '__main__':
-   C = common.load(here+'/config.ini')
+   C = common.load(here+'/full.ini')
 
    fol = C.root_folder
    props = C.props

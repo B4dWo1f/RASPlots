@@ -71,7 +71,7 @@ Ns = [3, 7, 15, 28, 28]
 CAPE = mycmap(stops, Ns)
 ################################################################################
 
-## Wind Speed ##################################################################
+## Wind Speed 1 ################################################################
 col0 = np.array([178, 223, 138])
 col1 = np.array([ 51, 160,  44])
 col2 = np.array([166, 206, 227])
@@ -120,7 +120,7 @@ stops = [C/255 for C in cols]
 Thermals_uri = mycmap(stops,1)
 ################################################################################
 
-## Thermals ####################################################################
+## Thermals 1 ##################################################################
 col0 = np.array([178, 223, 138])
 col1 = np.array([115, 192,  91])
 col2 = np.array([ 51, 160,  44])
@@ -143,10 +143,36 @@ cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
 cols += [col12,col13,col14,col15,col16,col16]
 
 stops = [C/255 for C in cols]
-Thermals = mycmap(stops,1)
+Thermals1 = mycmap(stops,1)
 ################################################################################
 
-## Wind Speed 1 ################################################################
+## Thermals ####################################################################
+col0 = np.array([239, 239, 239])
+col1 = np.array([203, 223, 233])
+col2 = np.array([166, 206, 227])
+col3 = np.array([ 31, 120, 180])
+col4 = np.array([208, 231, 189])
+col5 = np.array([178, 223, 138])
+col6 = np.array([ 51, 160,  44])
+col7 = np.array([244, 246, 186])
+col8 = np.array([248, 253, 133])
+col9 = np.array([255, 228,   0])
+col10 = np.array([246, 215, 175])
+col11 = np.array([253, 191, 111])
+col12 = np.array([255, 127,   0])
+col13 = np.array([245, 197, 196])
+col14 = np.array([251, 154, 153])
+col15 = np.array([227,  26,  28])
+col16 = np.array([227,  26,  28])
+
+cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
+cols += [col12,col13,col14,col15,col16,col16]
+
+stops = [C/255 for C in cols]
+Thermals = ListedColormap(stops,1)
+################################################################################
+
+## Wind Speed ##################################################################
 col0 = np.array([239, 239, 239])
 col1 = np.array([166, 206, 227])
 col2 = np.array([ 31, 120, 180])
@@ -167,7 +193,11 @@ cols = [col0,col1,col2,col3,col4,col5,col6,col7,col8,col9,col10,col11]
 cols += [col12,col13,col14]
 
 stops = [C/255 for C in cols]
-WindSpeed = mycmap(stops,1)
+WindSpeed = ListedColormap(stops)    # mycmap(stops,1)
+
+cols = [col0,col2,col4,col6,col8,col10,col12,col13]
+color_array = [C/255 for C in cols]
+CAPE1 = LinearSegmentedColormap.from_list(name='CAPE1',colors=color_array)
 ################################################################################
 
 if __name__ == '__main__':
