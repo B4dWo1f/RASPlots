@@ -27,7 +27,7 @@ C = common.load(here+'/full.ini')
 UTCshift = round((dt.datetime.now()-dt.datetime.utcnow()).total_seconds()/3600)
 LG.info(f'UTCshift: {UTCshift}')
 
-all_hour = ['%02d:00'%(i) for i in range(6,18)]
+all_hour = ['%02d:00'%(i) for i in range(6,19)]
 
 for day in C.run_days:
    date_run = C.date + day*dt.timedelta(days=1)
