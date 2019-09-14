@@ -10,6 +10,16 @@ import datetime as dt
 import os
 here = os.path.dirname(os.path.realpath(__file__))
 HOME = os.getenv('HOME')
+################################## LOGGING #####################################
+import logging
+import log_help
+logging.basicConfig(level=logging.DEBUG,
+                 format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
+                 datefmt='%Y/%m/%d-%H:%M:%S',
+                 filename = here+'/data.log', filemode='w')
+LG = logging.getLogger('main')
+log_help.screen_handler(LG,lv='info')
+################################################################################
 
 
 def make_request(url):
@@ -51,12 +61,18 @@ def get_and_place(url,base='RASP'):
    com = 'mkdir -p '+'/'.join(fname.split('/')[:-1])
    os.system(com)
    os.rename(ftemp, fname)
+   LG.debug('saved %s'%('/'.join(fname.split('/')[-7:])))
 
 if __name__ == '__main__':
+   import multiprocessing as sub
+
    C = common.load(here+'/full.ini')
 
    fol = C.root_folder
    props = C.props
+   LG.info(f'Storing data in {fol}')
+   LG.info( 'Downloading ' + ', '.join([str(p) for p in props]) )
+
    if fol[-1] == '/': fol = fol[:-1]
 
    folder_index = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
@@ -65,14 +81,10 @@ if __name__ == '__main__':
                     'fuentemilanos': 8, 'candelario': 10, 'pitolero': 11,
                     'pegalajar': 12,'otivar': 13}
 
-   tday = dt.datetime.now().date()
-   folders = [folder_index[x] for x in C.run_days]
-
-   #props = ['sfcwindspd','sfcwinddir','cape','blcloudpct']
-   # + [f'sounding{i}' for i in range(15)]
    def bring(f):
-      print('Going for',f)
+      LG.info(f'Going for {f}')
       url = 'http://raspuri.mooo.com/RASP/%s/FCST/'%(f)
+      LG.debug(f'Downloading from {url}')
       html_doc = make_request(url)
       S = BeautifulSoup(html_doc, 'html.parser')
       table = S.find('table')
@@ -84,11 +96,16 @@ if __name__ == '__main__':
          if '.data' == l[-5:]:
             if 'curr' in l:
                if l.split('.')[0] in props:
-                  if '.w2.' in l: get_and_place(url+l, fol)
+                  if '.w2.' in l:
+                     get_and_place(url+l, fol)
                   else: pass
 
-   import multiprocessing as sub
-   pool = sub.Pool(4)
+   tday = dt.datetime.now().date()
+   folders = [folder_index[x] for x in C.run_days]
 
-   #for f in folders:
-   Res = pool.map(bring, folders)
+   if C.parallel:
+      pool = sub.Pool(4)
+      Res = pool.map(bring, folders)
+   else:
+      for f in folders:
+         bring(f)
