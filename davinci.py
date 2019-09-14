@@ -50,23 +50,5 @@ for day in C.run_days:
          ck = False
 
    props = list(set([x.replace('spd','').replace('dir','') for x in C.props]))
-### XXX to be place as an external script ######################################
-#   def timelapse(prop):
-#      files = os.popen(f'ls {save_fol}/*_{prop}.jpg').read()
-#      files = files.strip().splitlines()
-#      files = sorted(files,key=lambda x:float(x.split('/')[-1].split('_')[0]))
-#      tmp_file = f'/tmp/video{int(1+1000*random())}.txt'
-#      with open(tmp_file,'w') as f:
-#         for fname in files:
-#            N=10
-#            for _ in range(N):
-#               f.write(fname+'\n')
-#      com = f'mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4'
-#      com += f' -o {save_fol}/{prop}.mp4'
-#      com += f' -mf type=jpeg:fps={N} mf://@{tmp_file}'
-#      os.system(com)
-#      os.system(f'rm {tmp_file}')
-#   pool = sub.Pool(2)
-#   Res = pool.map(timelapse, props)
 
 LG.info('Done!')
