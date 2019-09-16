@@ -11,7 +11,7 @@ import logging
 import log_help
 logging.basicConfig(level=logging.DEBUG,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
-                 datefmt='%Y/%m/%d-%H:%M:%S',
+                 datefmt='%Y/%m/%d-%H:%M',
                  filename = here+'/davinci.log', filemode='w')
 LG = logging.getLogger('main')
 log_help.screen_handler(LG,lv='info')

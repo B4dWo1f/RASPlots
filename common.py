@@ -17,13 +17,11 @@ LG = logging.getLogger(__name__)
 now = dt.datetime.now
 
 class Config(object):
-   def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
+   #def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
+   def __init__(self,Rfolder,run_days=[], date='', props=[],
                      parallel=True,zoom=True,ve=100):
       if Rfolder[-1] != '/': Rfolder += '/'
       self.root_folder = Rfolder
-      self.lats = lats
-      self.lons = lons
-      self.hagl = hagl
       self.run_days = run_days
       self.date = date
       self.props = props
@@ -46,23 +44,21 @@ def load(fname='config.ini'):
    config.read(fname)
    # System
    Rfolder = expanduser(config['system']['root_folder'])
-   ## Background
-   lats = config['background']['lats']
-   lons = config['background']['lons']
-   hagl = config['background']['hagl']
    try:
-      run = config['run']['days']
-      run = list(map(int,run.split(',')))
+      run = eval(config['run']['days'])
+      #run = config['run']['days']
+      #run = list(map(int,run.split(',')))
    except KeyError: run = []
    try:
       date = config['run']['date']
       date = dt.datetime.strptime(date, '%Y/%m/%d')
    except KeyError: date = dt.datetime.now().date()  # XXX
-   props = [x.strip() for x in config['run']['props'].split(',')]
+   #props = [x.strip() for x in config['run']['props'].split(',')]
+   props = eval(config['run']['props'])
    parallel = eval(config['run']['parallel'].capitalize())
    zoom = eval(config['run']['zoom'].capitalize())
    ve = int(config['plots']['ve'])
-   return Config(Rfolder,lats,lons,hagl,run,date,props,parallel,zoom,ve)
+   return Config(Rfolder,run,date,props,parallel,zoom,ve)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    if root[-1] != '/': root += '/'

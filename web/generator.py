@@ -115,6 +115,7 @@ def url_img(folder,sc,hour,prop,z=''):
 
 
 if __name__ == '__main__':
+   root_folder = '/var/www/html'
    folder = '../data/PLOTS/w2/'
    for sc in ['SC2','SC2+1','SC4+2','SC4+3']:
       for prop in ['sfcwind', 'blwind', 'bltopwind', 'cape', 'wstar', 'hbl','bsratio']:
@@ -126,7 +127,7 @@ if __name__ == '__main__':
                html = header()
                html += body(hour,prop,url_img(folder,sc,hour,prop,z),z,w0=950)
                html += closing()
-               if len(z)>0: fname = f'/var/www/html/{sc}/{z}/{prop}_{hour}.html'
-               else: fname = f'/var/www/html/{sc}/{prop}_{hour}.html'
+               if len(z)>0: fname = f'{root_folder}/{sc}/{z}/{prop}_{hour}.html'
+               else: fname = f'{root_folder}/{sc}/{prop}_{hour}.html'
                with open(fname,'w') as f:
                   f.write(html)
