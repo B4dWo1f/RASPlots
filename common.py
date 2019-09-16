@@ -45,14 +45,16 @@ def load(fname='config.ini'):
    # System
    Rfolder = expanduser(config['system']['root_folder'])
    try:
-      run = config['run']['days']
-      run = list(map(int,run.split(',')))
+      run = eval(config['run']['days'])
+      #run = config['run']['days']
+      #run = list(map(int,run.split(',')))
    except KeyError: run = []
    try:
       date = config['run']['date']
       date = dt.datetime.strptime(date, '%Y/%m/%d')
    except KeyError: date = dt.datetime.now().date()  # XXX
-   props = [x.strip() for x in config['run']['props'].split(',')]
+   #props = [x.strip() for x in config['run']['props'].split(',')]
+   props = eval(config['run']['props'])
    parallel = eval(config['run']['parallel'].capitalize())
    zoom = eval(config['run']['zoom'].capitalize())
    ve = int(config['plots']['ve'])
