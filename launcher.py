@@ -12,12 +12,12 @@ here = os.path.dirname(os.path.realpath(__file__))
 ################################## LOGGING #####################################
 import logging
 import log_help
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M',
                  filename = here+'/launcher.log', filemode='w')
 LG = logging.getLogger('main')
-log_help.screen_handler(LG,lv=logging.DEBUG)
+log_help.screen_handler(LG,lv=logging.INFO)
 ################################################################################
 
 
@@ -98,18 +98,30 @@ while not os.path.isfile('STOP'):
    ## Launch processes
    # Data
    LG.info('Running data')
-   p = sub.Popen(['./data.py'], stdout=sub.PIPE, shell=True)
-   (output, err) = p.communicate()
-   if err != None: LG.critical('Error running data.py')
+   p = sub.run('./data.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+   out = p.stdout.decode('utf-8').strip()
+   err = p.stderr.decode('utf-8').strip()
+   if err != '':
+      if 'ERROR' in err or 'CRITICAL' in err:
+         LG.critical('Error running data.py:')
+         LG.critical(err)
 
    # Davinci
    LG.info('Running davinci')
-   p = sub.Popen(['./davinci.py'], stdout=sub.PIPE, shell=True)
-   (output, err) = p.communicate()
-   if err != None: LG.critical('Error running davinci.py')
+   p = sub.run('./davinci.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+   out = p.stdout.decode('utf-8').strip()
+   err = p.stderr.decode('utf-8').strip()
+   if err != '':
+      if 'ERROR' in err or 'CRITICAL' in err:
+         LG.critical('Error running davinci.py:')
+         LG.critical(err)
 
    # Timelapses
    LG.info('Running timelapses')
-   p = sub.Popen(['./timelapses.py'], stdout=sub.PIPE, shell=True)
-   (output, err) = p.communicate()
-   if err != None: LG.critical('Error running ./timelapses.py')
+   p = sub.run('./timelapses.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+   out = p.stdout.decode('utf-8').strip()
+   err = p.stderr.decode('utf-8').strip()
+   if err != '':
+      if 'ERROR' in err or 'CRITICAL' in err:
+         LG.critical('Error running davinci.py:')
+         LG.critical(err)
