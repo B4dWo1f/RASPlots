@@ -75,4 +75,4 @@ for day in C.run_days:
          LG.debug(f'Timelapsing: {prop}')
          timelapse( (save_fol,prop,fps,dens) )
 
-
+LG.info('Done!')

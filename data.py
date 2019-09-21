@@ -109,3 +109,4 @@ if __name__ == '__main__':
    else:
       for f in folders:
          bring(f)
+   LG.info('Done!')

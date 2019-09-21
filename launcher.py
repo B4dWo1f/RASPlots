@@ -56,9 +56,9 @@ def get_latest_run(url):
 
 
 SCs = ['SC2','SC2+1','SC4+2','SC4+3']
-twait = 5   # minutes to check for new data
-toffset = 20   # the reported time accounts only for WRF, toffset estimates the
-               # delay required for NCL to make the plots and data files
+twait = 7   # minutes to check for new data
+toffset = twait # the reported time accounts only for WRF, toffset estimates
+                # the delay required for NCL to make the plots and data files
 
 while not os.path.isfile('STOP'):
    # Look for days to run
@@ -91,15 +91,6 @@ while not os.path.isfile('STOP'):
    config._interpolation = ExtendedInterpolation()
    config.read('template.ini')
    config['run']['days'] = str(run_days)
-   #config['system'] = {'root_folder': '~/Documents/RASP/'}
-   #config['run'] = {'days': run_days,
-   #                 'props': ['sfcwindspd', 'sfcwinddir',
-   #                           'blwindspd', 'blwinddir',
-   #                           'bltopwindspd', 'bltopwinddir',
-   #                           'cape', 'wstar', 'hbl', 'bsratio'],
-   #                 'parallel': True,
-   #                 'zoom': True}
-   #config['plots'] = {'ve': 100}
    
    with open('full.ini', 'w') as configfile:
       config.write(configfile)
