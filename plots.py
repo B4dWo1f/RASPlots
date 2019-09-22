@@ -35,7 +35,7 @@ fs_st = 55   # fontsize suptitle
 fs_t = 40   # fontsize title
 
 figsizes = {'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)}
-crops = {'SC2':  '1563x1054+220+118', 'SC2+1':'1563x1054+220+118',
+crops = {'SC2':  '1563x1060+220+118', 'SC2+1':'1563x1060+220+118',
          'SC4+2':'1563x1335+220+149', 'SC4+3':'1563x1335+220+149'}
 
 titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
