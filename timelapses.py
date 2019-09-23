@@ -9,12 +9,13 @@ from random import random
 ################################## LOGGING #####################################
 import logging
 import log_help
-logging.basicConfig(level=logging.DEBUG,
+lv = logging.WARNING
+logging.basicConfig(level=lv,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M:%S',
                  filename = here+'/timelapse.log', filemode='w')
 LG = logging.getLogger('main')
-log_help.screen_handler(LG,lv='info')
+log_help.screen_handler(LG, lv=lv)
 ################################################################################
 import common
 
@@ -75,4 +76,4 @@ for day in C.run_days:
          LG.debug(f'Timelapsing: {prop}')
          timelapse( (save_fol,prop,fps,dens) )
 
-
+LG.info('Done!')
