@@ -9,12 +9,12 @@ here = os.path.dirname(os.path.realpath(__file__))
 ################################## LOGGING #####################################
 import logging
 import log_help
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.WARNING,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M',
                  filename = here+'/davinci.log', filemode='w')
 LG = logging.getLogger('main')
-log_help.screen_handler(LG,lv='info')
+log_help.screen_handler(LG, lv=logging.WARNING)
 ################################################################################
 import common
 import plots
@@ -22,7 +22,9 @@ import plots
 
 C = common.load(here+'/full.ini')
 
-#C.date = dt.datetime.now() - dt.timedelta(hours = 5)
+
+SCs = ['SC2','SC2+1','SC4+2','SC4+3']
+
 
 UTCshift = round((dt.datetime.now()-dt.datetime.utcnow()).total_seconds()/3600)
 LG.info(f'UTCshift: {UTCshift}')
@@ -50,5 +52,8 @@ for day in C.run_days:
          ck = False
 
    props = list(set([x.replace('spd','').replace('dir','') for x in C.props]))
+   now = dt.datetime.now()
+   with open(SCs[day]+'.time','w') as myf:
+      myf.write(now.strftime('%d/%m/%Y-%H:%M')+'\n')
 
 LG.info('Done!')

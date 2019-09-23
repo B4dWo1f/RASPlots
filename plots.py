@@ -35,7 +35,7 @@ fs_st = 55   # fontsize suptitle
 fs_t = 40   # fontsize title
 
 figsizes = {'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)}
-crops = {'SC2':  '1563x1054+220+118', 'SC2+1':'1563x1054+220+118',
+crops = {'SC2':  '1563x1060+220+118', 'SC2+1':'1563x1060+220+118',
          'SC4+2':'1563x1335+220+149', 'SC4+3':'1563x1335+220+149'}
 
 titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
@@ -445,7 +445,7 @@ def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):
    fig.set_size_inches(fsz)  #igsize[0]/1.2,figsize[1])
    fname =  save_fol + '/A/' + hora.replace(':','')+'_'+prop+'.jpg'
    fig.savefig(fname, dpi=65, quality=90)
-   os.system(f'convert {fname} -crop 1325x1000+170+165 {fname}')
+   os.system(f'convert {fname} -crop 1325x1045+170+115 {fname}')
    # CEBREROS
    ax.set_xlim([-5.079508,-3.564694])
    ax.set_ylim([40.171926,40.946453])
