@@ -31,6 +31,9 @@ In order to plot the terrain we use matplotlib's hillshade function.
 Lakes and rivers have been taken from the [Ministerio de Agricultura, Alimentación y medio ambiente](https://servicio.mapama.gob.es/sia/visualizacion/descargas/mapas.jsp)
 
 ## Release notes
+v0.1.0
+Added script that tracks latest run and plots only the new information
+v0.0.3
 The terrain files have been checked for every grid.
 The web generator has been included in the code, thought it will be heavily modified or even moved to its own repo in the near future.
 Performance is now ~50s to download the data and ~25min for the plots
