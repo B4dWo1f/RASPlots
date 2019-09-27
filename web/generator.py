@@ -76,6 +76,7 @@ def body(hour,prop,url,z='',w0=1000):
    html += f'   <a href="/{sc}/{z}/hbl_{hour}.html">Height BL</a> | \n'
    html += f'   <a href="/{sc}/{z}/wstar_{hour}.html">Thermal Updraft Velocity</a> |\n'
    html += f'   <a href="/{sc}/{z}/bsratio_{hour}.html">B/S Ratio</a>\n'
+   html = html.replace('//','/')
    html += f'   </font>\n'
    html += f'   </p>\n\n'
    html +=  html_image(url,prop,hour,sc,w0=w0)
