@@ -74,8 +74,10 @@ def body(hour,prop,url,z='',w0=1000):
    html += f'   <a href="/{sc}/{z}/bltopwind_{hour}.html">BL top wind</a> | \n'
    html += f'   <a href="/{sc}/{z}/cape_{hour}.html">CAPE</a> | \n'
    html += f'   <a href="/{sc}/{z}/hbl_{hour}.html">Height BL</a> | \n'
-   html += f'   <a href="/{sc}/{z}/wstar_{hour}.html">Thermal Updraft Velocity</a> |\n'
-   html += f'   <a href="/{sc}/{z}/bsratio_{hour}.html">B/S Ratio</a>\n'
+   html += f'   <a href="/{sc}/{z}/wstar_{hour}.html">Thermals</a> | \n'
+   html += f'   <a href="/{sc}/{z}/bsratio_{hour}.html">B/S Ratio</a> | \n'
+   html += f'   <a href="/{sc}/{z}/blcloudpct_{hour}.html">Clouds</a>\n'
+   #html += f'   <a href="/{sc}/{z}/rain1_{hour}.html">Rain</a>\n'
    html = html.replace('//','/')
    html += f'   </font>\n'
    html += f'   </p>\n\n'
@@ -119,7 +121,7 @@ if __name__ == '__main__':
    root_folder = '/var/www/html'
    folder = '../data/PLOTS/w2/'
    for sc in ['SC2','SC2+1','SC4+2','SC4+3']:
-      for prop in ['sfcwind', 'blwind', 'bltopwind', 'cape', 'wstar', 'hbl','bsratio']:
+      for prop in ['sfcwind', 'blwind', 'bltopwind', 'cape', 'wstar', 'hbl', 'bsratio', 'blcloudpct']:
          for hora in ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
                       '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
                       '18:00']:

@@ -41,7 +41,16 @@ cdict={'red': ((0., 0., 0.),(0.6, 0.0, 0.0),(1.0, 1.0, 1.0)),
 bgr = LinearSegmentedColormap('bgr',cdict,256)
 
 # Grey scale from black to transparent along black-white direction
-color_array = [(0,0,0,a) for a in np.linspace(0,0.9,100)]
+def fermi(x,x0,t=1):
+   return 1/(np.exp((x-x0)/(t))+1)
+
+def color(x,x0=np.pi/1.5):
+   d = x0/5
+   trans = (1-fermi(x,x0-d,t=0.075))*0.75
+   w = fermi(x,x0+d,t=0.2)
+   return (w,w,w, trans)
+
+color_array = [color(a) for a in np.linspace(0,np.pi,100)]
 greys = LinearSegmentedColormap.from_list(name='cloud_cover',colors=color_array)
    
 # Red scale from red to transparent along red-white direction
@@ -194,6 +203,9 @@ cols += [col12,col13,col14]
 
 stops = [C/255 for C in cols]
 WindSpeed = ListedColormap(stops)    # mycmap(stops,1)
+
+stops = [(1,1,1,0)] + [C/255 for C in cols[1:]]
+Rain = ListedColormap(stops)    # mycmap(stops,1)
 
 cols = [col0,col2,col4,col6,col8,col10,col12,col13]
 color_array = [C/255 for C in cols]

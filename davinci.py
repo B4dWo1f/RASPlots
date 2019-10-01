@@ -9,12 +9,13 @@ here = os.path.dirname(os.path.realpath(__file__))
 ################################## LOGGING #####################################
 import logging
 import log_help
-logging.basicConfig(level=logging.WARNING,
+lv = logging.INFO
+logging.basicConfig(level=lv,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M',
                  filename = here+'/davinci.log', filemode='w')
 LG = logging.getLogger('main')
-log_help.screen_handler(LG, lv=logging.WARNING)
+log_help.screen_handler(LG, lv=lv)
 ################################################################################
 import common
 import plots
@@ -52,8 +53,10 @@ for day in C.run_days:
          ck = False
 
    props = list(set([x.replace('spd','').replace('dir','') for x in C.props]))
-   now = dt.datetime.now()
+   D = date_run.strftime('%d/%m/%Y')
+   now = dt.datetime.now().strftime('%d/%m/%Y-%H:%M')
+   LG.debug(f"Last plot for {D}: {now}")
    with open(SCs[day]+'.time','w') as myf:
-      myf.write(now.strftime('%d/%m/%Y-%H:%M')+'\n')
+      myf.write(f'{now}\n')
 
 LG.info('Done!')
