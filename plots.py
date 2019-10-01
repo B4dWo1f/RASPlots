@@ -242,7 +242,7 @@ def combi(X,Y,fclouds,frain,fig=None,ax=None):
                    cmap=colormaps.Rain,
                    norm=norm,
                    vmin=vmin, vmax=vmax,
-                   zorder=13,alpha=0.3)
+                   zorder=13) #,alpha=0.3)
    cbar = my_cbar(fig,ax,Cf,'mm',fs)
    return None,Cf,cbar
 

@@ -46,8 +46,8 @@ def fermi(x,x0,t=1):
 
 def color(x,x0=np.pi/1.5):
    d = x0/5
-   trans = (1-fermi(x,x0-d,t=0.075))*0.75
-   w = fermi(x,x0+d,t=0.2)
+   trans = (1-fermi(x,x0-d,t=0.075))*0.7
+   w = min([1,fermi(x,x0+d,t=0.2)+0.2])
    return (w,w,w, trans)
 
 color_array = [color(a) for a in np.linspace(0,np.pi,100)]
@@ -204,7 +204,8 @@ cols += [col12,col13,col14]
 stops = [C/255 for C in cols]
 WindSpeed = ListedColormap(stops)    # mycmap(stops,1)
 
-stops = [(1,1,1,0)] + [C/255 for C in cols[1:]]
+stops = [(1,1,1,0),(0.60392157, 0.90588235, 0.9254902,0.9)]
+stops += [np.append(C/255,0.9) for C in cols[2:]]
 Rain = ListedColormap(stops)    # mycmap(stops,1)
 
 cols = [col0,col2,col4,col6,col8,col10,col12,col13]
