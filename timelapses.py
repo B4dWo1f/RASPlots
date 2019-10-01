@@ -9,7 +9,7 @@ from random import random
 ################################## LOGGING #####################################
 import logging
 import log_help
-lv = logging.WARNING
+lv = logging.INFO
 logging.basicConfig(level=lv,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M:%S',

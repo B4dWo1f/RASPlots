@@ -13,12 +13,13 @@ HOME = os.getenv('HOME')
 ################################## LOGGING #####################################
 import logging
 import log_help
-logging.basicConfig(level=logging.INFO,
+lv = logging.INFO
+logging.basicConfig(level=lv,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M:%S',
                  filename = here+'/data.log', filemode='w')
 LG = logging.getLogger('main')
-log_help.screen_handler(LG, lv=logging.INFO)
+log_help.screen_handler(LG, lv=lv)
 ################################################################################
 
 
