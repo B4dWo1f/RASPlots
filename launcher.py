@@ -125,3 +125,5 @@ while not os.path.isfile('STOP'):
       if 'ERROR' in err or 'CRITICAL' in err:
          LG.critical('Error running davinci.py:')
          LG.critical(err)
+
+LG.info('Done!')
