@@ -440,7 +440,10 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
 
    ls = LightSource(azdeg=315, altdeg=50)
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
-   ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),aspect=d_y/d_x,origin='lower',interpolation='lanczos', cmap=cmap, extent=ext,zorder=0)
+   ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),
+             aspect=d_y/d_x,
+             origin='lower', interpolation='lanczos',
+             cmap=cmap, extent=ext, zorder=0)
    # Provincias
    files = listfiles(f'{ccaa}')
    verts = [np.load(fccaa) for fccaa in files]
