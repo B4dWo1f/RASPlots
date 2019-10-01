@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.colors import LightSource
 from matplotlib.collections import PolyCollection, LineCollection
+from matplotlib.colors import BoundaryNorm
 import re
 import datetime as dt
 import os
@@ -41,7 +42,7 @@ crops = {'SC2':  '1563x1060+220+118', 'SC2+1':'1563x1060+220+118',
 titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
          'sfcwind':'Surface Wind', 'cape': 'CAPE',
          'wstar':'Thermal Updraft Velocity', 'hbl':'Height of BL Top',
-         'bsratio':'Buoyancy/Shear Ratio'}
+         'bsratio':'Buoyancy/Shear Ratio', 'blcloudpct': '1h Accumulated Rain'}
 
 #def plot_all_properties(C,date_run,hora,UTCshift=2,ve=100,zoom=True,ck=True):
 def plot_all_properties(args):
@@ -110,7 +111,8 @@ def plot_all_properties(args):
       fig.set_size_inches(figsize)
       LG.info(f'Plotting {prop}')
       # Return streamplot, contourf, cbar for later manipulation
-      sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
+      try: sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
+      except FileNotFoundError: continue
       ## Plot settings
       date_title = date + dt.timedelta(hours = UTCshift)
       title = date_title.strftime('%a %d/%m/%Y %H:%M')
@@ -175,9 +177,13 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
       return hbl(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
    elif prop == 'bsratio':
       return bsratio(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
+   elif prop == 'blcloudpct':
+      return combi(X,Y,folder+date.strftime('/%H%M_')+prop,
+                       folder+date.strftime('/%H%M_')+'rain1',
+                       fig=fig,ax=ax)
    else: 
       LG.critical(f'{prop} not implemented')
-      return None
+      raise FileNotFoundError
 
 def my_cbar(fig,ax,img,units,fs):
    """ Custom colorbar settings """
@@ -205,6 +211,83 @@ def cape(X,Y,fbase,fig=None,ax=None):
                    zorder=12,alpha=0.3)
    cbar = my_cbar(fig,ax,Cf,'J/Kg',fs)
    return None,Cf,cbar
+
+@log_help.timer(LG)
+def combi(X,Y,fclouds,frain,fig=None,ax=None):
+   """ Specific code to plot a combination of clouds and rain """
+   clouds = fclouds+'.data'
+   rain = frain+'.data'
+   if not os.path.isfile(clouds) or not os.path.isfile(rain):
+      LG.error(f'Missing file {clouds}')
+      raise FileNotFoundError
+   else:
+      clouds = np.loadtxt(clouds, skiprows=4)
+      rain = np.loadtxt(rain, skiprows=4)
+   # Cloud
+   delta = 7
+   vmin,vmax=0,98+delta
+   Cf = ax.contourf(X,Y,clouds, levels=range(vmin,vmax,delta), extend='max',
+                   antialiased=True,
+                   cmap=colormaps.greys,
+                   vmin=vmin, vmax=vmax,
+                   zorder=12) #,alpha=0.7)
+   # Rain
+   levels = [0,1,2,4,6,8,10,15,20,25,30,40,50,60,70]
+   norm = BoundaryNorm(levels,len(levels))
+   vmin = min(levels)
+   vmax = max(levels)
+   Cf = ax.contourf(X,Y,rain, levels=levels, #range(vmin,vmax,delta),
+                   extend='max',
+                   antialiased=True,
+                   cmap=colormaps.Rain,
+                   norm=norm,
+                   vmin=vmin, vmax=vmax,
+                   zorder=13,alpha=0.3)
+   cbar = my_cbar(fig,ax,Cf,'mm',fs)
+   return None,Cf,cbar
+
+#@log_help.timer(LG)
+#def blcloudpct(X,Y,fbase,fig=None,ax=None):
+#   """ Specific code to plot the CAPE """
+#   clouds = fbase+'.data'
+#   if not os.path.isfile(clouds):
+#      LG.error('Missing file {clouds}')
+#      raise FileNotFoundError
+#   else: clouds = np.loadtxt(clouds, skiprows=4)
+#   delta = 7
+#   vmin,vmax=0,98+delta
+#   # Clouds
+#   Cf = ax.contourf(X,Y,clouds, levels=range(vmin,vmax,delta), extend='max',
+#                   antialiased=True,
+#                   cmap=colormaps.WindSpeed,
+#                   vmin=vmin, vmax=vmax,
+#                   zorder=12,alpha=0.3)
+#   cbar = my_cbar(fig,ax,Cf,'mm',fs)
+#   return None,Cf,cbar
+#
+#@log_help.timer(LG)
+#def rain1(X,Y,fbase,fig=None,ax=None):
+#   """ Specific code to plot the CAPE """
+#   rain = fbase+'.data'
+#   if not os.path.isfile(rain):
+#      LG.error('Missing file {clouds}')
+#      raise FileNotFoundError
+#   else: rain = np.loadtxt(rain, skiprows=4)
+#   #delta = 2
+#   #vmin,vmax=0,28+delta
+#   levels = [0,1,2,4,6,8,10,15,20,25,30,40,50,60,70]
+#   norm = BoundaryNorm(levels,len(levels))
+#   vmin = min(levels)
+#   vmax = max(levels)
+#   Cf = ax.contourf(X,Y,rain, levels=levels, #range(vmin,vmax,delta),
+#                   extend='max',
+#                   antialiased=True,
+#                   cmap=colormaps.WindSpeed,
+#                   norm=norm,
+#                   vmin=vmin, vmax=vmax,
+#                   zorder=12,alpha=0.3)
+#   cbar = my_cbar(fig,ax,Cf,'mm',fs)
+#   return None,Cf,cbar
 
 @log_help.timer(LG)
 def wind(X,Y,fbase,fig=None,ax=None):
