@@ -4,6 +4,7 @@
 import re
 import datetime as dt
 from urllib.request import Request, urlopen
+from urllib.error import URLError
 from configparser import ConfigParser, ExtendedInterpolation
 import subprocess as sub
 from time import sleep,time
@@ -24,8 +25,17 @@ log_help.screen_handler(LG,lv=logging.INFO)
 def make_request(url):
    """ Make http request """
    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-   html_doc = urlopen(req)
-   html_doc = html_doc.read().decode()
+   out = False
+   while not out:
+      try:
+         html = urlopen(req)
+         out = True
+      except URLError:
+         LG.error(f'URLError: {url}')
+         out = False
+   html_doc = html.read()
+   try: html_doc = html_doc.decode(html.headers.get_content_charset())
+   except TypeError: html_doc = html_doc.decode()
    return html_doc
 
 
