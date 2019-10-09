@@ -56,7 +56,7 @@ for day in C.run_days:
    D = date_run.strftime('%d/%m/%Y')
    now = dt.datetime.now().strftime('%d/%m/%Y-%H:%M')
    LG.debug(f"Last plot for {D}: {now}")
-   with open(SCs[day]+'.time','w') as myf:
+   with open(here+'/'+SCs[day]+'.time','w') as myf:
       myf.write(f'{now}\n')
 
 LG.info('Done!')
