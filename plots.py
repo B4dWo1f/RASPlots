@@ -99,6 +99,11 @@ def plot_all_properties(args):
    remove_wind = True
    for prop in props:
       if prop == 'sfcwind': remove_wind = False  #keep the sfcwind lines
+      #if prop == 'blcloudpct':
+      #   plot_background(ve=ve, ax=ax, lats=lats,
+      #                                 lons=lons,
+      #                                 hasl=hasl,
+      #                                 cmap=colormaps.TERRAIN)
       ## Check integrity of data before plotting anything
       fbase = fol+date.strftime('/%H%M_')+prop
       if 'wind' in prop: data_file = fbase+'spd.data'
@@ -440,9 +445,12 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
 
    ls = LightSource(azdeg=315, altdeg=50)
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
+   #if cmap = colormaps.TERRAIN: vmin,vmax = 200, 2600
+   #else: vmin,vmax = None,None
    ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),
              aspect=d_y/d_x,
              origin='lower', interpolation='lanczos',
+   #          vmin=vmin,vmax=vmax,
              cmap=cmap, extent=ext, zorder=0)
    # Provincias
    files = listfiles(f'{ccaa}')
