@@ -124,9 +124,8 @@ p = sub.run(here+'/data.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
 out = p.stdout.decode('utf-8').strip()
 err = p.stderr.decode('utf-8').strip()
 if err != '':
-   if 'ERROR' in err or 'CRITICAL' in err:
-      LG.critical('Error running data.py:')
-      LG.critical(err)
+   LG.critical('Error running data.py:')
+   LG.critical(err)
 
 # Davinci
 LG.info('Running davinci')
@@ -134,9 +133,8 @@ p = sub.run(here+'/davinci.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
 out = p.stdout.decode('utf-8').strip()
 err = p.stderr.decode('utf-8').strip()
 if err != '':
-   if 'ERROR' in err or 'CRITICAL' in err:
-      LG.critical('Error running davinci.py:')
-      LG.critical(err)
+   LG.critical('Error running davinci.py:')
+   LG.critical(err)
 
 # Timelapses
 LG.info('Running timelapses')
@@ -144,9 +142,8 @@ p = sub.run(here+'/timelapses.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
 out = p.stdout.decode('utf-8').strip()
 err = p.stderr.decode('utf-8').strip()
 if err != '':
-   if 'ERROR' in err or 'CRITICAL' in err:
-      LG.critical('Error running davinci.py:')
-      LG.critical(err)
+   LG.critical('Error running davinci.py:')
+   LG.critical(err)
 
 LG.info('Done!')
 os.system(f"rm {run_file}")
