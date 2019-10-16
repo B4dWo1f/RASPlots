@@ -213,6 +213,24 @@ color_array = [C/255 for C in cols]
 CAPE1 = LinearSegmentedColormap.from_list(name='CAPE1',colors=color_array)
 ################################################################################
 
+
+## Topography ##################################################################
+col0 = np.array((149,177,104))
+#4
+col1 = np.array((225,216,222))
+#11
+col2 = np.array((167,102,113))
+
+stops = [col0/255,col1/255,col2/255]
+
+Ns = [4,11]
+TERRAIN = mycmap(stops,Ns=Ns)
+
+stops = list(reversed(stops))
+Ns = [11,4]
+TERRAIN3D = mycmap(stops,Ns=Ns)
+################################################################################
+
 if __name__ == '__main__':
    
    col0 = np.array((25,255,0))
@@ -229,6 +247,6 @@ if __name__ == '__main__':
    y = np.sin(x)
    
    fig, ax = plt.subplots()
-   C = ax.scatter(x,y,c=y,s=40,cmap=CAPE)
+   C = ax.scatter(x,y,c=y,s=40,cmap=TERRAIN)
    fig.colorbar(C)
    plt.show()
