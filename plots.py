@@ -443,7 +443,7 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
 
    ls = LightSource(azdeg=315, altdeg=50)
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
-   if cmap == colormaps.TERRAIN3D: vmin,vmax = 0.3,None
+   if cmap != 'gray': vmin,vmax = 0.4,1
    else: vmin,vmax = None,None
    ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),
              aspect=d_y/d_x,
