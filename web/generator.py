@@ -38,8 +38,29 @@ def html_image(url,domain,prop,hour,sc,w0=1000):
    html += f'   </p>\n\n'
    return html
 
+def footer_hours(UTCshift,domain,sc,z,prop):
+   foot = f'   <p align="center">\n'
+   foot += f'   <font size="+1">\n'
+   for h in range(8,20):
+      futc = '%04d'%((h-UTCshift)*100)
+      foot += f'   <a href="/{domain}/{sc}/{z}/{prop}_{futc}.html">{h}:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_0700.html">9:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_0800.html">10:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_0900.html">11:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1000.html">12:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1100.html">13:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1200.html">14:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1300.html">15:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1400.html">16:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1500.html">17:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1600.html">18:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1700.html">19:00</a> | \n'.replace('//','/')
+   #html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1800.html">20:00</a>\n'.replace('//','/')
+   foot += f'   </font>\n'
+   foot += f'   </p>\n'
+   return foot
 
-def body(hour,domain,prop,url,z='',w0=1000):
+def body(hour,domain,prop,url,UTCshift,sc,z='',w0=1000):
    """
    w0: width to be displayed in the web
    """
@@ -89,23 +110,7 @@ def body(hour,domain,prop,url,z='',w0=1000):
    html += f'   </font>\n'
    html += f'   </p>\n\n'
    html +=  html_image(url,domain,prop,hour,sc,w0=w0)
-   html += f'   <p align="center">\n'
-   html += f'   <font size="+1">\n'
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_0600.html">8:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_0700.html">9:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_0800.html">10:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_0900.html">11:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1000.html">12:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1100.html">13:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1200.html">14:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1300.html">15:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1400.html">16:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1500.html">17:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1600.html">18:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1700.html">19:00</a> | \n'.replace('//','/')
-   html += f'   <a href="/{domain}/{sc}/{z}/{prop}_1800.html">20:00</a>\n'.replace('//','/')
-   html += f'   </font>\n'
-   html += f'   </p>\n'
+   html += footer_hours(UTCshift,domain,sc,z,prop)
    html += f'   <p align="center">\n'
    html += f'   <font size="+1">\n'
    html += f'   <a href="/{domain}/SC2/{z}/{prop}_{hour}.html">Hoy</a> | \n'.replace('//','/')
@@ -139,7 +144,7 @@ if __name__ == '__main__':
                for z in ['','A','B','C']:
                   html = header()
                   url = url_img(folder,sc,hour,prop,z)
-                  html += body(hour,domain,prop,url,z,w0=950)
+                  html += body(hour,domain,prop,url,UTCshift,sc,z,w0=950)
                   html += closing()
                   if len(z)>0: fname = f'{root_folder}/{domain}/{sc}/{z}/{prop}_{hour}.html'
                   else: fname = f'{root_folder}/{domain}/{sc}/{prop}_{hour}.html'
