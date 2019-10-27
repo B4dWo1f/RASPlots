@@ -35,9 +35,12 @@ fs = 35      # fontsize legends
 fs_st = 55   # fontsize suptitle
 fs_t = 40   # fontsize title
 
-figsizes = {'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)}
-crops = {'SC2':  '1563x1060+220+118', 'SC2+1':'1563x1060+220+118',
-         'SC4+2':'1563x1335+220+149', 'SC4+3':'1563x1335+220+149'}
+figsizes={'w2':{'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)},
+          'd2':{'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,20),'SC4+3':(30,20)}}
+crops = {'w2':{'SC2':  '1563x1060+220+118', 'SC2+1':'1563x1060+220+118',
+               'SC4+2':'1563x1335+220+149', 'SC4+3':'1563x1335+220+149'},
+         'd2':{'SC2':  '1460x1150+270+65', 'SC2+1':'1460x1150+270+65',
+               'SC4+2':'1460x1150+270+65', 'SC4+3':'1460x1150+270+65'}}
 
 titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
          'sfcwind':'Surface Wind', 'cape': 'CAPE',
@@ -66,90 +69,99 @@ def plot_all_properties(args):
    """
    C,date_run,hora,UTCshift,ve,zoom,ck = args
    LG.info(f"Starting plots for hour: {hora} UTC")
-   fol = find_best_fcst(date_run,C.root_folder)
-   save_fol = fol.replace('DATA','PLOTS')
-   save_fol = '/'.join(save_fol.split('/')[:-3])
-   sc = save_fol.split('/')[-1]
-   if ck: check_folders([save_fol, save_fol+'/A', save_fol+'/B', save_fol+'/C'])
-   figsize = figsizes[sc]
+   domains = C.domains
+   ves = {'w2':100, 'd2':5}
+   zoomsd = {'w2':True, 'd2':False}
+   ytitles = {'w2':0.906,'d2':0.9465}
+   for domain in domains:
+      LG.info(f"Starting domain: {domain}")
+      fol = find_best_fcst(date_run,C.root_folder,domain)
+      save_fol = fol.replace('DATA','PLOTS')
+      save_fol = '/'.join(save_fol.split('/')[:-3])
+      sc = save_fol.split('/')[-1]
+      if ck: check_folders([save_fol, save_fol+'/A', save_fol+'/B', save_fol+'/C'])
+      figsize = figsizes[domain][sc]
 
-   # Set time and date for forecat
-   mytime = dt.datetime.strptime(hora,'%H:%M').time()
-   date = dt.datetime.combine(date_run, mytime)
-   LG.info(f"Plotting all properties for {date.strftime('%d/%m/%Y-%H:%M')}")
+      # Set time and date for forecat
+      mytime = dt.datetime.strptime(hora,'%H:%M').time()
+      date = dt.datetime.combine(date_run, mytime)
+      LG.info(f"Plotting all properties for {date.strftime('%d/%m/%Y-%H:%M')}")
 
-   # Terrain files
-   hasl = here + f'/terrain/{sc.lower()}_hasl.npy'
-   lats = here + f'/terrain/{sc.lower()}_lats.npy'
-   lons = here + f'/terrain/{sc.lower()}_lons.npy'
-   
-   # Sort properties to plot
-   props = C.props
-   winds = [p for p in C.props if 'wind' in p]
-   winds = [p.replace('winddir','wind') for p in winds]
-   winds = [p.replace('windspd','wind') for p in winds]
-   winds = sorted(list(set(winds)))   # XXX Dangerous
-   rest = [p for p in C.props if 'wind' not in p]
-   props = winds+rest
+      # Terrain files
+      hasl = here + f'/terrain/{domain}/{sc.lower()}_hasl.npy'
+      lats = here + f'/terrain/{domain}/{sc.lower()}_lats.npy'
+      lons = here + f'/terrain/{domain}/{sc.lower()}_lons.npy'
+      
+      # Sort properties to plot
+      props = C.props
+      winds = [p for p in C.props if 'wind' in p]
+      winds = [p.replace('winddir','wind') for p in winds]
+      winds = [p.replace('windspd','wind') for p in winds]
+      winds = sorted(list(set(winds)))   # XXX Dangerous
+      rest = [p for p in C.props if 'wind' not in p]
+      props = winds+rest
 
-   #Start plotting
-   fig, ax = plt.subplots(figsize=figsize)
-   ## Plot background
-   plot_background(ve=ve, ax=ax, lats=lats, lons=lons, hasl=hasl)
-   remove_wind = True
-   for prop in props:
-      if prop == 'sfcwind': remove_wind = False  #keep the sfcwind lines
-      if prop == 'blcloudpct':
-         plot_background(ve=ve, ax=ax, lats=lats, lons=lons,
-                                       hasl=hasl, cmap=colormaps.TERRAIN3D)
-      ## Check integrity of data before plotting anything
-      fbase = fol+date.strftime('/%H%M_')+prop
-      if 'wind' in prop: data_file = fbase+'spd.data'
-      else: data_file = fbase+'.data'
-      if not os.path.isfile(data_file):
-         LG.error(f'Missing file {data_file}')
-         continue
+      #Start plotting
+      remove_wind = True
+      ve = ves[domain]
+      zoom = zoomsd[domain]
+      ## Plot background
+      fig, ax = plt.subplots(figsize=figsize)
+      plot_background(ve=ve,ax=ax, lats=lats,lons=lons,hasl=hasl,domain=domain)
+      for prop in props:
+         if prop == 'sfcwind': remove_wind = False  #keep the sfcwind lines
+         if prop == 'blcloudpct':
+            plot_background(ve=ve, ax=ax, lats=lats, lons=lons, hasl=hasl,
+                                   domain=domain, cmap=colormaps.TERRAIN3D)
+         ## Check integrity of data before plotting anything
+         fbase = fol+date.strftime('/%H%M_')+prop
+         if 'wind' in prop: data_file = fbase+'spd.data'
+         else: data_file = fbase+'.data'
+         if not os.path.isfile(data_file):
+            LG.error(f'Missing file {data_file}')
+            continue
 
-      ## PLOT the data
-      fig.set_size_inches(figsize)
-      LG.info(f'Plotting {prop}')
-      # Return streamplot, contourf, cbar for later manipulation
-      try: sp,cf,cb = plot_prop(fol, hora, prop, fig=fig,ax=ax)
-      except FileNotFoundError: continue
-      ## Plot settings
-      date_title = date + dt.timedelta(hours = UTCshift)
-      title = date_title.strftime('%a %d/%m/%Y %H:%M')
-      ax.set_title(title, fontsize=fs_t)
-      x0 = (fig.subplotpars.left + fig.subplotpars.right)/2
-      fig.suptitle(titles[prop], x=x0, y=0.906, horizontalalignment='center',
-                   fontsize=fs_st)
-      ## Save plot
-      fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
-      fig.savefig(fname, dpi=65, quality=90)
-      LG.debug('Saved to %s'%('/'.join(fname.split('/')[-4:])))
-      ## fix cropping
-      com_crop = f'convert {fname} -crop {crops[sc]} {fname}'
-      os.system(com_crop)
-      if zoom: zooms(save_fol,hora,prop,fig,ax)
-      LG.debug(f'Ploted {prop}')
+         ## PLOT the data
+         fig.set_size_inches(figsize)
+         LG.info(f'Plotting {prop}')
+         # Return streamplot, contourf, cbar for later manipulation
+         try: sp,cf,cb = plot_prop(fol, hora, domain, prop, fig=fig,ax=ax)
+         except FileNotFoundError: continue
+         ## Plot settings
+         date_title = date + dt.timedelta(hours = UTCshift)
+         title = date_title.strftime('%a %d/%m/%Y %H:%M')
+         ax.set_title(title, fontsize=fs_t)
+         x0 = (fig.subplotpars.left + fig.subplotpars.right)/2
+         fig.suptitle(titles[prop], x=x0, y=ytitles[domain],
+                      horizontalalignment='center', fontsize=fs_st)
+         ## Save plot
+         fname =  save_fol + '/' + hora.replace(':','')+'_'+prop+'.jpg'
+         fig.savefig(fname, dpi=65, quality=90)
+         LG.debug('Saved to %s'%('/'.join(fname.split('/')[-4:])))
+         ## fix cropping
+         com_crop = f'convert {fname} -crop {crops[domain][sc]} {fname}'
+         os.system(com_crop)
+         if zoom: zooms(save_fol,hora,prop,fig,ax)
+         LG.debug(f'Ploted {prop}')
 
-      ## Clean up
-      for coll in cf.collections:
-         #plt.gca().collections.remove(coll)
-         coll.remove()
-      if remove_wind:
-         if sp != None:
-            sp.lines.remove()
-            # Remove arrows
-            keep = lambda x: not isinstance(x, mpl.patches.FancyArrowPatch)
-            ax.patches = [patch for patch in ax.patches if keep(patch)]
-      cb.remove()
-   plt.close('all')
-   LG.debug(f"Done for hour: {date_run.strftime('%d/%m/%Y')}-{hora}")
+         ## Clean up
+         for coll in cf.collections:
+            #plt.gca().collections.remove(coll)
+            coll.remove()
+         if remove_wind:
+            if sp != None:
+               sp.lines.remove()
+               # Remove arrows
+               keep = lambda x: not isinstance(x, mpl.patches.FancyArrowPatch)
+               ax.patches = [patch for patch in ax.patches if keep(patch)]
+         cb.remove()
+      plt.close('all')
+      LG.debug(f"Done for hour: {date_run.strftime('%d/%m/%Y')}-{hora}")
+   LG.debug(f"Done for domain: {domain}")
 
 
 
-def plot_prop(folder,time,prop,fig=None,ax=None):
+def plot_prop(folder,time,domain,prop,fig=None,ax=None):
    """
      This function sets the limits in the map and calls the corresponding
      plotting function.
@@ -159,12 +171,11 @@ def plot_prop(folder,time,prop,fig=None,ax=None):
    date = '/'.join(folder.split('/')[-3:]) + '/' + time
    date = dt.datetime.strptime(date, '%Y/%m/%d/%H:%M')
    sc = folder.split('/')[-4].lower()
-   X = np.load(here + f'/grids/{sc}_lons.npy')
-   Y = np.load(here + f'/grids/{sc}_lats.npy')
+   X = np.load(here + f'/grids/{domain}/{sc}_lons.npy')
+   Y = np.load(here + f'/grids/{domain}/{sc}_lats.npy')
    mx,Mx = np.min(X),np.max(X)
    my,My = np.min(Y),np.max(Y)
 
-   ax.set_aspect('equal')
    ax.set_xticks([])
    ax.set_yticks([])
    ax.set_xlim([mx,Mx])
@@ -415,7 +426,7 @@ def get_valid_date(line):
 @log_help.timer(LG)
 def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
                     hasl=here+'/hasl.npy',
-                    ve=100, cmap='gray',
+                    ve=100, domain='w2', cmap='gray',
                     roads=here+'/roads', lakes=here+'/lagos',
                     damns=here+'/embalses', rivers=here+'/rios',
                     poblaciones=here+'/poblaciones',
@@ -446,7 +457,7 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    if cmap != 'gray': vmin,vmax = 0.4,1
    else: vmin,vmax = None,None
    ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),
-             aspect=d_y/d_x,
+             aspect=1.75*d_y/d_x,
              origin='lower', interpolation='lanczos',
              vmin=vmin, vmax=vmax,
              cmap=cmap, extent=ext, zorder=0)

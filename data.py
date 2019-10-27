@@ -71,6 +71,7 @@ if __name__ == '__main__':
 
    fol = C.root_folder
    props = C.props
+   domains = C.domains
    LG.info(f'Storing data in {fol}')
    LG.info( 'Downloading ' + ', '.join([str(p) for p in props]) )
 
@@ -97,8 +98,8 @@ if __name__ == '__main__':
          if '.data' == l[-5:]:
             if 'curr' in l:
                if l.split('.')[0] in props:
-                  if '.w2.' in l:
-                     get_and_place(url+l, fol)
+                  for domain in domains:
+                     if domain in l: get_and_place(url+l, fol)
                   else: pass
 
    tday = dt.datetime.now().date()

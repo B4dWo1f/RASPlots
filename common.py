@@ -18,12 +18,13 @@ now = dt.datetime.now
 
 class Config(object):
    #def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
-   def __init__(self,Rfolder,run_days=[], date='', props=[],
+   def __init__(self,Rfolder,run_days=[], date='', domains=[], props=[],
                      parallel=True,zoom=True,ve=100):
       if Rfolder[-1] != '/': Rfolder += '/'
       self.root_folder = Rfolder
       self.run_days = run_days
       self.date = date
+      self.domains = domains
       self.props = props
       self.parallel = parallel
       self.zoom = zoom
@@ -32,7 +33,8 @@ class Config(object):
       msg =  f'Data stored in: {self.root_folder}\n'
       msg += f'Terrain files:  {self.lats}  {self.lons}  {self.hagl}\n'
       if len(self.run_days) != 0: msg += f'Run for: {self.run_days}\n'
-      if len(self.props) != 0: msg += 'Properties: ' + ', '.join(self.props)
+      if len(self.domains)!=0: msg += 'Domains: ' + ', '.join(self.domains)
+      if len(self.props)!=0: msg += 'Properties: ' + ', '.join(self.props)
       return msg
 
 def load(fname='config.ini'):
@@ -54,11 +56,12 @@ def load(fname='config.ini'):
       date = dt.datetime.strptime(date, '%Y/%m/%d')
    except KeyError: date = dt.datetime.now().date()  # XXX
    #props = [x.strip() for x in config['run']['props'].split(',')]
+   domains = eval(config['run']['domains'])
    props = eval(config['run']['props'])
    parallel = eval(config['run']['parallel'].capitalize())
    zoom = eval(config['run']['zoom'].capitalize())
    ve = int(config['plots']['ve'])
-   return Config(Rfolder,run,date,props,parallel,zoom,ve)
+   return Config(Rfolder,run,date,domains,props,parallel,zoom,ve)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    if root[-1] != '/': root += '/'
@@ -75,9 +78,9 @@ def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    root_folder = root + data+'/'+grid+'/'+fol
    return root_folder+'/'+fcst_time.strftime('%Y/%m/%d/%H%M_')
 
-def find_best_fcst(date,Rfolder):
+def find_best_fcst(date,Rfolder,domain):
    for f in ['SC2','SC2+1','SC4+2','SC4+3']:
-      fol = Rfolder+'DATA/w2/'+f+'/'+date.strftime('%Y/%m/%d')
+      fol = f'{Rfolder}/DATA/{domain}/{f}/'+date.strftime('%Y/%m/%d')
       if os.path.isdir(fol): return fol
 
 def listfiles(folder):

@@ -30,7 +30,7 @@ SCs = ['SC2','SC2+1','SC4+2','SC4+3']
 UTCshift = round((dt.datetime.now()-dt.datetime.utcnow()).total_seconds()/3600)
 LG.info(f'UTCshift: {UTCshift}')
 
-all_hour = ['%02d:00'%(i) for i in range(6,19)]
+all_hour = ['%02d:00'%(i) for i in range(6,19)]  #XXX UTC. Should be local?
 
 for day in C.run_days:
    date_run = C.date + day*dt.timedelta(days=1)
