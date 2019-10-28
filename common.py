@@ -20,7 +20,7 @@ class Config(object):
    #def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
    def __init__(self,Rfolder,run_days=[], date='', domains=[], props=[],
                      parallel=True,zoom=True,ve=100):
-      if Rfolder[-1] != '/': Rfolder += '/'
+      if Rfolder[-1] == '/': Rfolder = Rfolder[:-1]
       self.root_folder = Rfolder
       self.run_days = run_days
       self.date = date

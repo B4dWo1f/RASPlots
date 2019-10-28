@@ -45,7 +45,8 @@ crops = {'w2':{'SC2':  '1563x1060+220+118', 'SC2+1':'1563x1060+220+118',
 titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
          'sfcwind':'Surface Wind', 'cape': 'CAPE',
          'wstar':'Thermal Updraft Velocity', 'hbl':'Height of BL Top',
-         'bsratio':'Buoyancy/Shear Ratio', 'blcloudpct': '1h Accumulated Rain'}
+         'bsratio':'Buoyancy/Shear Ratio', 'blcloudpct': '1h Accumulated Rain',
+         'mslpress':'Mean Sea Level Pressure'}
 
 #def plot_all_properties(C,date_run,hora,UTCshift=2,ve=100,zoom=True,ck=True):
 def plot_all_properties(args):
@@ -109,10 +110,13 @@ def plot_all_properties(args):
       fig, ax = plt.subplots(figsize=figsize)
       plot_background(ve=ve,ax=ax, lats=lats,lons=lons,hasl=hasl,domain=domain)
       for prop in props:
-         if prop == 'sfcwind': remove_wind = False  #keep the sfcwind lines
+         if prop == 'sfcwind': remove_wind = True  #keep the sfcwind lines
          if prop == 'blcloudpct':
+            if domain == 'd2': cmap = colormaps.TERRAIN3D
+            else: cmap = 'gray'
+            #else: cmap = 'gray'
             plot_background(ve=ve, ax=ax, lats=lats, lons=lons, hasl=hasl,
-                                   domain=domain, cmap=colormaps.TERRAIN3D)
+                                   domain=domain, cmap=cmap)
          ## Check integrity of data before plotting anything
          fbase = fol+date.strftime('/%H%M_')+prop
          if 'wind' in prop: data_file = fbase+'spd.data'
@@ -192,9 +196,15 @@ def plot_prop(folder,time,domain,prop,fig=None,ax=None):
    elif prop == 'bsratio':
       return bsratio(X,Y,folder+date.strftime('/%H%M_')+prop,fig=fig,ax=ax)
    elif prop == 'blcloudpct':
-      return combi(X,Y,folder+date.strftime('/%H%M_')+prop,
-                       folder+date.strftime('/%H%M_')+'rain1',
-                       fig=fig,ax=ax)
+      if domain == 'd2':
+         return combi2(X,Y,folder+date.strftime('/%H%M_')+prop,
+                           folder+date.strftime('/%H%M_')+'rain1',
+                           folder+date.strftime('/%H%M_')+'mslpress',
+                           fig=fig,ax=ax)
+      else:
+         return combi(X,Y,folder+date.strftime('/%H%M_')+prop,
+                          folder+date.strftime('/%H%M_')+'rain1',
+                          fig=fig,ax=ax)
    else: 
       LG.critical(f'{prop} not implemented')
       raise FileNotFoundError
@@ -227,6 +237,52 @@ def cape(X,Y,fbase,fig=None,ax=None):
    return None,Cf,cbar
 
 @log_help.timer(LG)
+def combi2(X,Y,fclouds,frain,fpress,fig=None,ax=None):
+   """ Specific code to plot a combination of clouds and rain with pressure"""
+   clouds = fclouds+'.data'
+   rain = frain+'.data'
+   press = fpress+'.data'
+   if not os.path.isfile(clouds) or not os.path.isfile(rain) \
+                                 or not os.path.isfile(press):
+      LG.error(f'Missing file clouds')
+      raise FileNotFoundError
+   else:
+      clouds = np.loadtxt(clouds, skiprows=4)
+      rain = np.loadtxt(rain, skiprows=4)
+      press = np.loadtxt(press, skiprows=4)
+   # Cloud
+   delta = 7
+   vmin,vmax=0,98+delta
+   Cf = ax.contourf(X,Y,clouds, levels=range(vmin,vmax,delta), extend='max',
+                   antialiased=True,
+                   cmap=colormaps.greys,
+                   vmin=vmin, vmax=vmax,
+                   zorder=12) #,alpha=0.7)
+   # Rain
+   levels = [0,1,2,4,6,8,10,15,20,25,30,40,50,60,70]
+   norm = BoundaryNorm(levels,len(levels))
+   vmin = min(levels)
+   vmax = max(levels)
+   Cf = ax.contourf(X,Y,rain, levels=levels, #range(vmin,vmax,delta),
+                   extend='max',
+                   antialiased=True,
+                   cmap=colormaps.Rain,
+                   norm=norm,
+                   vmin=vmin, vmax=vmax,
+                   zorder=13) #,alpha=0.3)
+   cbar = my_cbar(fig,ax,Cf,'mm',fs)
+   # Pressure
+   Cf = ax.contour(X,Y,press,colors='k',linewidths=4,zorder=15)
+  # , levels=levels, #range(vmin,vmax,delta),
+  #                 extend='max',
+  #                 antialiased=True,
+  #                 cmap=colormaps.Rain,
+  #                 norm=norm,
+  #                 vmin=vmin, vmax=vmax,
+  #                 zorder=13) #,alpha=0.3)
+   plt.clabel(Cf, inline=True,fmt='%1d')
+   return None,Cf,cbar
+
 def combi(X,Y,fclouds,frain,fig=None,ax=None):
    """ Specific code to plot a combination of clouds and rain """
    clouds = fclouds+'.data'
@@ -456,19 +512,28 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
    if cmap != 'gray': vmin,vmax = 0.4,1
    else: vmin,vmax = None,None
-   ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),
+   Terrain  = ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy)
+   ax.imshow(Terrain, #ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),
              aspect=1.75*d_y/d_x,
              origin='lower', interpolation='lanczos',
              vmin=vmin, vmax=vmax,
              cmap=cmap, extent=ext, zorder=0)
+   
+   if domain == 'd2':
+      Sea = np.where(Z<1,-10,1)
+      ax.imshow(Sea, 
+                aspect=1.75*d_y/d_x,
+                origin='lower', interpolation='lanczos',
+                vmin=vmin, vmax=vmax,
+                cmap=colormaps.SeaMask, extent=ext, zorder=1)
    # Provincias
    files = listfiles(f'{ccaa}')
    verts = [np.load(fccaa) for fccaa in files]
-   coll = LineCollection(verts, color='k',lw=3,zorder=4)
+   coll = LineCollection(verts, color='k',lw=2,zorder=4)
    ax.add_collection(coll)
    files = listfiles(f'{provincias}')
    verts = [np.load(fccaa) for fccaa in files]
-   coll = LineCollection(verts, color='k',lw=2,zorder=4)
+   coll = LineCollection(verts, color='k',lw=1,zorder=4)
    ax.add_collection(coll)
    if False:   #XXX not worth it
       # poblaciones
@@ -497,29 +562,30 @@ def plot_background(lats=here+'/lats.npy',lons=here+'/lons.npy',
       ax.plot(Xroad, Yroad,'k',lw=lw+2,zorder=2)
       ax.plot(Xroad, Yroad,'w',lw=lw,zorder=3)
 
-   # Takeoffs
-   Yt,Xt = np.loadtxt(takeoffs,usecols=(0,1),delimiter=',',unpack=True)
-   ax.scatter(Xt,Yt, c='C3',s=300,zorder=20)
-   txt = np.loadtxt(takeoffs,usecols=(2,),delimiter=',',dtype=str)
-   for i in range(len(txt)):
-      ax.text(Xt[i]+0.025,Yt[i],str(i+1),bbox=dict(facecolor='white',
-                                                   alpha=0.5),
-                                                   fontsize=fs, zorder=33)
-   msg = ''
-   for i in range(len(txt)):
-      msg += f'{i+1}: {txt[i]}\n'
-   msg = msg[:-1]
-   ## Legend for takeoffs
-   ax.text(0.01,0.584,msg,bbox=dict(facecolor='white', alpha=0.7),
-                               transform=ax.transAxes, fontsize=fs, zorder=33)
+   if domain == 'w2':
+      # Takeoffs
+      Yt,Xt = np.loadtxt(takeoffs,usecols=(0,1),delimiter=',',unpack=True)
+      ax.scatter(Xt,Yt, c='C3',s=300,zorder=20)
+      txt = np.loadtxt(takeoffs,usecols=(2,),delimiter=',',dtype=str)
+      for i in range(len(txt)):
+         ax.text(Xt[i]+0.025,Yt[i],str(i+1),bbox=dict(facecolor='white',
+                                                      alpha=0.5),
+                                                      fontsize=fs, zorder=33)
+      msg = ''
+      for i in range(len(txt)):
+         msg += f'{i+1}: {txt[i]}\n'
+      msg = msg[:-1]
+      ## Legend for takeoffs
+      ax.text(0.01,0.584,msg,bbox=dict(facecolor='white', alpha=0.7),
+                                  transform=ax.transAxes, fontsize=fs, zorder=33)
 
-   # Cities
-   Yt,Xt = np.loadtxt(cities,usecols=(0,1),delimiter=',',unpack=True)
-   names = np.loadtxt(cities,usecols=(2,),delimiter=',',dtype=str)
-   for i in range(len(names)):
-      ax.text(Xt[i]-0.09*len(names[i])/6, Yt[i]-0.01, names[i],
-              bbox=dict(facecolor='white', alpha=0.4), fontsize=fs-3, zorder=13)
-   #ax.scatter(Xt,Yt, c='C3',s=900,zorder=20, marker='*')
+      # Cities
+      Yt,Xt = np.loadtxt(cities,usecols=(0,1),delimiter=',',unpack=True)
+      names = np.loadtxt(cities,usecols=(2,),delimiter=',',dtype=str)
+      for i in range(len(names)):
+         ax.text(Xt[i]-0.09*len(names[i])/6, Yt[i]-0.01, names[i],
+                 bbox=dict(facecolor='white', alpha=0.4), fontsize=fs-3, zorder=13)
+      #ax.scatter(Xt,Yt, c='C3',s=900,zorder=20, marker='*')
 
 
 def zooms(save_fol,hora,prop,fig,ax,figsize=figsize):

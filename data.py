@@ -46,8 +46,10 @@ def get_and_place(url,base='RASP'):
    t = [year, month, day, hour]
    valid_date = dt.datetime.strptime(' '.join(t),'%Y %m %d %H%M')
    #XXX Manual offset for UTC
-   offset = {'CES':2*3600, 'DST':3600}   # seconds
-   UTCshift = dt.timedelta(seconds=offset[tz])
+   #offset = {'CES':2*3600, 'CTT':3600}   # seconds
+   #UTCshift = dt.timedelta(seconds=offset[tz])
+   UTCshift = dt.datetime.now()-dt.datetime.utcnow()
+   UTCshift = dt.timedelta(hours = round(UTCshift.total_seconds()/3600))
    valid_date = valid_date - UTCshift
 
    # http://raspuri.mooo.com/RASP/SC2/FCST/cape.curr.0800lst.w2.data
@@ -65,7 +67,7 @@ def get_and_place(url,base='RASP'):
    LG.debug('saved %s'%('/'.join(fname.split('/')[-7:])))
 
 if __name__ == '__main__':
-   import multiprocessing as sub
+   from threading import Thread
 
    C = common.load(here+'/full.ini')
 
@@ -105,10 +107,9 @@ if __name__ == '__main__':
    tday = dt.datetime.now().date()
    folders = [folder_index[x] for x in C.run_days]
 
-   if C.parallel:
-      pool = sub.Pool(4)
-      Res = pool.map(bring, folders)
-   else:
-      for f in folders:
-         bring(f)
+   for f in folders:
+      if C.parallel:
+         T = Thread(target=bring, args=[f])
+         T.start()
+      else: bring(f)
    LG.info('Done!')
