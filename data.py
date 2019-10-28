@@ -93,7 +93,9 @@ if __name__ == '__main__':
       S = BeautifulSoup(html_doc, 'html.parser')
       table = S.find('table')
       data_files,soundings,cape = [],[],[]
-      for row in table.find_all('tr')[3:-1]:
+      all_rows = table.find_all('tr')[3:-1]
+      for irow in range(len(all_rows)):
+         row = all_rows[irow]
          col = row.find_all('td')[1]
          l = col.find('a')
          l = l['href']
@@ -103,13 +105,19 @@ if __name__ == '__main__':
                   for domain in domains:
                      if domain in l: get_and_place(url+l, fol)
                   else: pass
+         if irow%(len(all_rows)//10) == 0:
+            LG.info(f'{f}: {int(100*irow/len(all_rows))}% done')
 
    tday = dt.datetime.now().date()
    folders = [folder_index[x] for x in C.run_days]
 
+   threads = []
    for f in folders:
       if C.parallel:
          T = Thread(target=bring, args=[f])
          T.start()
+         threads.append(T)
       else: bring(f)
+   for T in threads:
+      T.join()
    LG.info('Done!')
