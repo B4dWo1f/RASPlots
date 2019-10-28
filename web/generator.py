@@ -96,6 +96,7 @@ def body(hour,domain,prop,url,UTCshift,sc,z='',w0=1000):
    html += f'   <a href="/w2/{sc}/{z}/{prop}_{hour}.html">Sistema Central</a> | \n'
    html += f'   <a href="/d2/{sc}/{z}/{prop}_{hour}.html">Península</a>\n'
    html += f'   </p>\n'
+   html += f'   <p align="center">\n'
    html += f'   <font size="+1">\n'
    html += f'   <a href="/{domain}/{sc}/{z}/sfcwind_{hour}.html">Sfc wind</a> | \n'
    html += f'   <a href="/{domain}/{sc}/{z}/blwind_{hour}.html">BL wind</a> | \n'

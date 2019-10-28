@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
+from scipy.ndimage.filters import gaussian_filter
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
@@ -39,8 +40,8 @@ figsizes={'w2':{'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,25),'SC4+3':(30,25)},
           'd2':{'SC2':(30,20),'SC2+1':(30,20),'SC4+2':(30,20),'SC4+3':(30,20)}}
 crops = {'w2':{'SC2':  '1563x1060+220+118', 'SC2+1':'1563x1060+220+118',
                'SC4+2':'1563x1335+220+149', 'SC4+3':'1563x1335+220+149'},
-         'd2':{'SC2':  '1460x1150+270+65', 'SC2+1':'1460x1150+270+65',
-               'SC4+2':'1460x1150+270+65', 'SC4+3':'1460x1150+270+65'}}
+         'd2':{'SC2':  '1460x1175+270+65', 'SC2+1':'1460x1175+270+65',
+               'SC4+2':'1460x1175+270+65', 'SC4+3':'1460x1175+270+65'}}
 
 titles= {'blwind':'BL Wind', 'bltopwind':'BL Top Wind',
          'sfcwind':'Surface Wind', 'cape': 'CAPE',
@@ -110,10 +111,11 @@ def plot_all_properties(args):
       fig, ax = plt.subplots(figsize=figsize)
       plot_background(ve=ve,ax=ax, lats=lats,lons=lons,hasl=hasl,domain=domain)
       for prop in props:
-         if prop == 'sfcwind': remove_wind = True  #keep the sfcwind lines
+         if prop == 'sfcwind': remove_wind = False  #keep the sfcwind lines
          if prop == 'blcloudpct':
-            if domain == 'd2': cmap = colormaps.TERRAIN3D
-            else: cmap = 'gray'
+            cmap = colormaps.TERRAIN3D
+            if domain == 'd2': remove_wind = True
+            else: remove_wind = False  #keep the sfcwind lines
             #else: cmap = 'gray'
             plot_background(ve=ve, ax=ax, lats=lats, lons=lons, hasl=hasl,
                                    domain=domain, cmap=cmap)
@@ -272,7 +274,9 @@ def combi2(X,Y,fclouds,frain,fpress,fig=None,ax=None):
                    zorder=13) #,alpha=0.3)
    cbar = my_cbar(fig,ax,Cf,'mm',fs)
    # Pressure
-   Cf = ax.contour(X,Y,press,colors='k',linewidths=4,zorder=15)
+   sigma=6
+   press3 = gaussian_filter(press, sigma)
+   Cf = ax.contour(X,Y,press3,colors='k',linewidths=4,zorder=15)
   # , levels=levels, #range(vmin,vmax,delta),
   #                 extend='max',
   #                 antialiased=True,
@@ -280,7 +284,7 @@ def combi2(X,Y,fclouds,frain,fpress,fig=None,ax=None):
   #                 norm=norm,
   #                 vmin=vmin, vmax=vmax,
   #                 zorder=13) #,alpha=0.3)
-   plt.clabel(Cf, inline=True,fmt='%1d')
+   plt.clabel(Cf, inline=True,fmt='%1d',zorder=15)
    return None,Cf,cbar
 
 def combi(X,Y,fclouds,frain,fig=None,ax=None):
