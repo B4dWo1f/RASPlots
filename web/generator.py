@@ -93,8 +93,8 @@ def body(hour,domain,prop,url,UTCshift,sc,z='',w0=1000):
    #html += '<a href="http://raspuri.mooo.com/RASP/index.php">Oriol</a> & Noel\n'
    #html += '  </p>\n'
    html += f'   <p align="center">\n'
-   html += f'   <a href="/w2/{sc}/{z}/sfcwind_{hour}.html">Sistema Central</a> | \n'
-   html += f'   <a href="/d2/{sc}/{z}/sfcwind_{hour}.html">Península</a>\n'
+   html += f'   <a href="/w2/{sc}/{z}/{prop}_{hour}.html">Sistema Central</a> | \n'
+   html += f'   <a href="/d2/{sc}/{z}/{prop}_{hour}.html">Península</a>\n'
    html += f'   </p>\n'
    html += f'   <font size="+1">\n'
    html += f'   <a href="/{domain}/{sc}/{z}/sfcwind_{hour}.html">Sfc wind</a> | \n'
@@ -132,7 +132,7 @@ def url_img(folder,sc,hour,prop,z=''):
 if __name__ == '__main__':
    UTCshift = dt.datetime.now()-dt.datetime.utcnow()
    UTCshift = round(UTCshift.total_seconds()/3600)
-   root_folder = '/var/www/html/RASP'
+   root_folder = '/var/www/html'
    folder = '../../data/PLOTS'
    for sc in ['SC2','SC2+1','SC4+2','SC4+3']:
       for domain in ['w2','d2']:
