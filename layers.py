@@ -98,14 +98,13 @@ def provincias(fig,ax):
    ax.add_collection(coll)
 
 def rivers(fig,ax):
-   rivers = '../../test_lagos/rivers_spain/'
    rivers = f'{here}/rios/'
    files = listfiles(f'{rivers}')
    verts = [np.load(friver) for friver in files]
    coll = LineCollection(verts, color='C0',lw=0.75,zorder=1)
    ax.add_collection(coll)
 #def lakes(fig,ax):
-   lakes = '../../test_lagos/old/old1/lakes/'
+   lakes = f'{here}/lagos/'
    files = listfiles(f'{lakes}') #+ listfiles(f'{damns}')
    verts = [np.load(flake) for flake in files]
    coll = PolyCollection(verts, color='C0',zorder=1)
@@ -165,8 +164,7 @@ def scalar_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
 
    Cf = ax.contourf(X,Y,S, levels=np.arange(vmin,vmax,delta), extend='max',
                            antialiased=True,
-                           cmap=cmap, vmin=vmin, vmax=vmax,
-                           zorder=10) #,alpha=0.3)
+                           cmap=cmap, vmin=vmin, vmax=vmax)
    #cbar = my_cbar(fig,ax,Cf,'Km/h',fs)
    #return Sp, Cf, cbar
 
