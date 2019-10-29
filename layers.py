@@ -3,6 +3,7 @@
 
 import re
 import os
+here = os.path.dirname(os.path.realpath(__file__))
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.pyplot as plt
@@ -85,8 +86,8 @@ def plot_background(grid,cmap='gray',ve=100,fig=None,ax=None):
    return ext,aspect #,terrain,sea
 
 def provincias(fig,ax):
-   ccaa = 'ccaa/'
-   prov = 'provincias/'
+   ccaa = f'{here}/ccaa/'
+   prov = f'{here}/provincias/'
    files = listfiles(f'{ccaa}')
    verts = [np.load(fccaa) for fccaa in files]
    coll = LineCollection(verts, color='k',lw=1.5,zorder=10)
@@ -97,8 +98,8 @@ def provincias(fig,ax):
    ax.add_collection(coll)
 
 def rivers(fig,ax):
-   rivers = '../../test_lagos/old/old1/rivers/'
    rivers = '../../test_lagos/rivers_spain/'
+   rivers = f'{here}/rios/'
    files = listfiles(f'{rivers}')
    verts = [np.load(friver) for friver in files]
    coll = LineCollection(verts, color='C0',lw=0.75,zorder=1)
@@ -112,7 +113,7 @@ def rivers(fig,ax):
 
 def roads(fig,ax):
    # Roads
-   roads = 'roads/'
+   roads = f'{here}/roads/'
    files = listfiles(f'{roads}')
    for froad in files:
       Xroad,Yroad = np.loadtxt(froad,unpack=True)
@@ -124,7 +125,7 @@ def roads(fig,ax):
       ax.plot(Xroad, Yroad,'w',lw=lw,zorder=3)
 
 def takeoffs(fig,ax):
-   f_takeoffs = 'takeoffs.csv'
+   f_takeoffs = f'{here}/takeoffs.csv'
    Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
    ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
 
@@ -211,7 +212,7 @@ def all_background_layers(folder,domain,sc):
    com = f'mkdir -p {final_folder}'
    os.system(com)
    # Terrain
-   grid = f'terrain/{domain}/{sc}/'
+   grid = f'{here}/terrain/{domain}/{sc}/'
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
    fname = f'{final_folder}/terrain.png'
    lims,aspect = plot_background(grid,cmap='gray',ve=ve,fig=fig,ax=ax)
@@ -254,7 +255,7 @@ def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
    P = params[prop]
    final_folder = f'{Pfolder}/{domain}/{sc}'
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   grid = f'grids/{domain}/{sc}/'
+   grid = f'{here}/grids/{domain}/{sc}/'
    #froot = f'{Dfolder}/{domain}/{sc}/{hour}_{prop}'
    froot =  f'{Dfolder}/{domain}/{sc}/'
    froot += f'{date.year}/{date.month:02d}/{date.day:02d}/{hour}_{prop}'
@@ -268,7 +269,7 @@ def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
    hour = hour.strftime('%H%M')
    final_folder = f'{Pfolder}/{domain}/{sc}'
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   grid = f'grids/{domain}/{sc}/'
+   grid = f'{here}/grids/{domain}/{sc}/'
    froot =  f'{Dfolder}/{domain}/{sc}/'
    if 'wind' in prop:
       froot += f'{date.year}/{date.month:02d}/{date.day:02d}/{hour}_{prop}spd'
@@ -300,78 +301,78 @@ def strip_plot(fig,ax,lims,aspect,fname):
    fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
    plt.axis('off')
 
-if __name__ == '__main__':
-   # Terrain
-   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   grid = 'terrain/d2/sc2/'
-   lims,aspect = plot_background(grid,cmap='gray',ve=5,fig=fig,ax=ax)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('terrain.png', transparent=True,
-                           bbox_inches='tight',
-                           pad_inches=0)
-   plt.close('all')
+# if __name__ == '__main__':
+#    # Terrain
+#    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+#    grid = f'{here}/terrain/d2/sc2/'
+#    lims,aspect = plot_background(grid,cmap='gray',ve=5,fig=fig,ax=ax)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('terrain.png', transparent=True,
+#                            bbox_inches='tight',
+#                            pad_inches=0)
+#    plt.close('all')
 
-   # Vector Layer
-   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   grid = 'grids/d2/sc2/'
-   froot = '../../Documents/RASP/DATA/d2/SC2/2019/10/28/1300_sfcwind'
-   vector_layer(fig,ax,grid,froot)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('sfcwind_vec.png', transparent=True,
-                                  bbox_inches='tight',
-                                  pad_inches=0)
+#    # Vector Layer
+#    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+#    grid = 'grids/d2/sc2/'
+#    froot = '../../Documents/RASP/DATA/d2/SC2/2019/10/28/1300_sfcwind'
+#    vector_layer(fig,ax,grid,froot)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('sfcwind_vec.png', transparent=True,
+#                                   bbox_inches='tight',
+#                                   pad_inches=0)
 
-   # Scalar Layer
-   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   grid = 'grids/d2/sc2/'
-   froot = '../../Documents/RASP/DATA/d2/SC2/2019/10/28/1300_sfcwindspd'
-   delta = 4
-   vmin,vmax = 0,56+delta
-   cmap = colormaps.WindSpeed
-   scalar_layer(fig,ax,grid,froot,delta,vmin,vmax,colormaps.WindSpeed)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('sfcwind_scalar.png', transparent=True,
-                                     bbox_inches='tight',
-                                     pad_inches=0)
-   froot = '../../Documents/RASP/DATA/d2/SC2/2019/10/28/1300_cape'
-   delta = 100
-   vmin,vmax=0,6000+delta
-   cmap = colormaps.CAPE
-   scalar_layer(fig,ax,grid,froot,delta,vmin,vmax,colormaps.WindSpeed)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('cape.png', transparent=True,
-                                     bbox_inches='tight',
-                                     pad_inches=0)
+#    # Scalar Layer
+#    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+#    grid = 'grids/d2/sc2/'
+#    froot = '../../Documents/RASP/DATA/d2/SC2/2019/10/28/1300_sfcwindspd'
+#    delta = 4
+#    vmin,vmax = 0,56+delta
+#    cmap = colormaps.WindSpeed
+#    scalar_layer(fig,ax,grid,froot,delta,vmin,vmax,colormaps.WindSpeed)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('sfcwind_scalar.png', transparent=True,
+#                                      bbox_inches='tight',
+#                                      pad_inches=0)
+#    froot = '../../Documents/RASP/DATA/d2/SC2/2019/10/28/1300_cape'
+#    delta = 100
+#    vmin,vmax=0,6000+delta
+#    cmap = colormaps.CAPE
+#    scalar_layer(fig,ax,grid,froot,delta,vmin,vmax,colormaps.WindSpeed)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('cape.png', transparent=True,
+#                                      bbox_inches='tight',
+#                                      pad_inches=0)
 
 
-   # CCAA
-   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   provincias(fig,ax)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('ccaa.png', transparent=True,
-                           bbox_inches='tight',
-                           pad_inches=0)
+#    # CCAA
+#    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+#    provincias(fig,ax)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('ccaa.png', transparent=True,
+#                            bbox_inches='tight',
+#                            pad_inches=0)
 
-   # Rivers
-   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   rivers(fig,ax)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('rivers.png', transparent=True,
-                             bbox_inches='tight',
-                             pad_inches=0)
+#    # Rivers
+#    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+#    rivers(fig,ax)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('rivers.png', transparent=True,
+#                              bbox_inches='tight',
+#                              pad_inches=0)
 
-   # Roads
-   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   roads(fig,ax)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('roads.png', transparent=True,
-                             bbox_inches='tight',
-                             pad_inches=0)
+#    # Roads
+#    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+#    roads(fig,ax)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('roads.png', transparent=True,
+#                              bbox_inches='tight',
+#                              pad_inches=0)
 
-   # Takeoffs
-   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
-   takeoffs(fig,ax)
-   strip_plot(fig,ax,lims,aspect)
-   fig.savefig('takeoffs.png', transparent=True,
-                               bbox_inches='tight',
-                               pad_inches=0)
+#    # Takeoffs
+#    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+#    takeoffs(fig,ax)
+#    strip_plot(fig,ax,lims,aspect)
+#    fig.savefig('takeoffs.png', transparent=True,
+#                                bbox_inches='tight',
+#                                pad_inches=0)
