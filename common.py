@@ -12,16 +12,39 @@ here = os.path.dirname(os.path.realpath(__file__))
 import logging
 import log_help
 LG = logging.getLogger(__name__)
+import json
 
 
 now = dt.datetime.now
 
 class Config(object):
    #def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
-   def __init__(self,Rfolder,run_days=[], date='', domains=[], props=[],
+   def __init__(self,Rfolder,Dfolder,Pfolder,lims,background,
+                     run_days=[], date='', domains=[], props=[],
                      parallel=True,zoom=True,ve=100):
+      """
+      Rfolder
+      Dfolder
+      Pfolder
+      lims: limits file containing a json dictionary with the following informtion:
+            {lims:    {domian: {sc: [mx,Mx,my,My]}},
+             aspects: {domain: {sc: x}}}
+      background: bool to re-plot terrain or not
+      """
       if Rfolder[-1] == '/': Rfolder = Rfolder[:-1]
-      self.root_folder = Rfolder
+      self.root_folder = Rfolder.replace('//','/')
+      self.data_folder = Dfolder.replace('//','/')
+      self.plot_folder = Pfolder.replace('//','/')
+      self.background = background
+      self.lims_file = lims
+      try:
+         data = json.load( open(self.lims_file) )
+         self.lims = data['lims']
+         self.aspect = data['aspects']
+      except:
+         self.lims = {}
+         self.aspect = {}
+         self.background = True
       self.run_days = run_days
       self.date = date
       self.domains = domains
@@ -46,6 +69,13 @@ def load(fname='config.ini'):
    config.read(fname)
    # System
    Rfolder = expanduser(config['system']['root_folder'])
+   Dfolder = expanduser(config['system']['data_folder'])
+   Pfolder = expanduser(config['system']['plot_folder'])
+   # Run
+   background = eval(config['run']['plot_background'].capitalize())
+   lims = config['run']['lims_aspect']
+   if lims[0] in ['.','/']: pass
+   else: lims = here + '/'+lims
    try:
       run = eval(config['run']['days'])
       #run = config['run']['days']
@@ -61,7 +91,7 @@ def load(fname='config.ini'):
    parallel = eval(config['run']['parallel'].capitalize())
    zoom = eval(config['run']['zoom'].capitalize())
    ve = int(config['plots']['ve'])
-   return Config(Rfolder,run,date,domains,props,parallel,zoom,ve)
+   return Config(Rfolder,Dfolder,Pfolder,lims,background,run,date,domains,props,parallel,zoom,ve)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    if root[-1] != '/': root += '/'
