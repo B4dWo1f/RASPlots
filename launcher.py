@@ -5,14 +5,9 @@
 import datetime as dt
 import os
 here = os.path.dirname(os.path.realpath(__file__))
-run_file = here+'/running'
+full = here+'/full.ini'
 
-if os.path.isfile(run_file):
-   print('launcher is already running at',dt.datetime.now())
-   exit()
-else:
-   with open(run_file,'w') as f:
-      f.write('')
+os.system(f'rm {full} 2> /dev/null')
 
 import re
 from urllib.request import Request, urlopen
@@ -104,7 +99,6 @@ if len(run_days) == 0:
    #while time()-told < twait*60 and not os.path.isfile('STOP'):
    #   sleep(0.5)
    LG.info('Done!')
-   os.system(f"rm {run_file}")
    exit()
 else: LG.info(f'New data in ' + ','.join([SCs[i] for i in run_days]))
 
@@ -114,36 +108,45 @@ config._interpolation = ExtendedInterpolation()
 config.read(here+'/template.ini')
 config['run']['days'] = str(run_days)
 
-with open(here+'/full.ini', 'w') as configfile:
+with open(full, 'w') as configfile:
    config.write(configfile)
 
-## Launch processes
-# Data
-LG.info('Running data')
-p = sub.run(here+'/data.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
-out = p.stdout.decode('utf-8').strip()
-err = p.stderr.decode('utf-8').strip()
-if err != '':
-   LG.critical('Error running data.py:')
-   LG.critical(err)
-
-# Davinci
-LG.info('Running davinci')
-p = sub.run(here+'/davinci.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
-out = p.stdout.decode('utf-8').strip()
-err = p.stderr.decode('utf-8').strip()
-if err != '':
-   LG.critical('Error running davinci.py:')
-   LG.critical(err)
-
-# Timelapses
-LG.info('Running timelapses')
-p = sub.run(here+'/timelapses.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
-out = p.stdout.decode('utf-8').strip()
-err = p.stderr.decode('utf-8').strip()
-if err != '':
-   LG.critical('Error running davinci.py:')
-   LG.critical(err)
-
-LG.info('Done!')
-os.system(f"rm {run_file}")
+### Launch processes
+## Data
+#LG.info('Running data')
+#p = sub.run(here+'/data.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+#out = p.stdout.decode('utf-8').strip()
+#err = p.stderr.decode('utf-8').strip()
+#if err != '':
+#   LG.critical('Error running data.py:')
+#   LG.critical(err)
+#
+## Ploter
+#LG.info('Running ploter')
+#p = sub.run(here+'/ploter.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+#out = p.stdout.decode('utf-8').strip()
+#err = p.stderr.decode('utf-8').strip()
+#if err != '':
+#   LG.critical('Error running ploter.py:')
+#   LG.critical(err)
+#
+### Davinci
+##LG.info('Running davinci')
+##p = sub.run(here+'/davinci.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+##out = p.stdout.decode('utf-8').strip()
+##err = p.stderr.decode('utf-8').strip()
+##if err != '':
+##   LG.critical('Error running davinci.py:')
+##   LG.critical(err)
+##
+### Timelapses
+##LG.info('Running timelapses')
+##p = sub.run(here+'/timelapses.py', stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+##out = p.stdout.decode('utf-8').strip()
+##err = p.stderr.decode('utf-8').strip()
+##if err != '':
+##   LG.critical('Error running davinci.py:')
+##   LG.critical(err)
+#
+#LG.info('Done!')
+#os.system(f"rm {run_file}")

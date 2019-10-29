@@ -70,6 +70,9 @@ if __name__ == '__main__':
    from threading import Thread
 
    C = common.load(here+'/full.ini')
+   if C == None:
+      LG.critical('No full.ini')
+      exit()
 
    fol = C.root_folder
    props = C.props

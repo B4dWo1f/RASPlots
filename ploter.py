@@ -3,6 +3,19 @@
 
 import os
 here = os.path.dirname(os.path.realpath(__file__))
+################################## LOGGING #####################################
+import logging
+import log_help
+log_file = here+'/'+'.'.join( __file__.split('/')[-1].split('.')[:-1] ) + '.log'
+lv = logging.INFO
+logging.basicConfig(level=lv,
+                 format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
+                 datefmt='%Y/%m/%d-%H:%M',
+                 filename = log_file, filemode='w')
+LG = logging.getLogger('main')
+log_help.screen_handler(LG, lv=lv)
+################################################################################
+
 import datetime as dt
 import common
 import json
@@ -10,6 +23,10 @@ import layers as L
 import matplotlib.pyplot as plt
 
 C = common.load(here+'/full.ini')
+if C == None:
+   print('HEREEE')
+   LG.critical('No full.ini')
+   exit()
 
 UTCshift = dt.datetime.now()-dt.datetime.utcnow()
 UTCshift = dt.timedelta(hours = round(UTCshift.total_seconds()/3600))
@@ -39,14 +56,16 @@ SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
 parallel = True
 from tqdm import tqdm
 from random import shuffle
-print('**',C.background)
-for domain in C.domains:
-   print('-->',domain)
-   for isc in tqdm(C.run_days):
+LG.info(f'Plot Background: {C.background}')
+for isc in tqdm(C.run_days):
+   sc = SCs[isc]
+   LG.info(f'Plotting day: {sc}')
+   for domain in C.domains:
+      LG.info(f'Plotting domain: {domain}')
       curr_date = now + dt.timedelta(days=isc)
-      sc = SCs[isc]
-      print('  -->',sc)
-      os.system(f'mkdir -p {C.plot_folder}/{domain}/{sc}')
+      com = f'mkdir -p {C.plot_folder}/{domain}/{sc}'
+      LG.warning(com)
+      os.system(com)
       if C.background:
          l,a = L.all_background_layers(C.plot_folder, domain, sc)
          try:
@@ -72,10 +91,11 @@ for domain in C.domains:
    D = curr_date.strftime('%d/%m/%Y')
    now1 = dt.datetime.now().strftime('%d/%m/%Y-%H:%M')
    #LG.debug(f"Last plot for {D}: {now}")
-   print(here+'/'+SCs[isc]+'.time')
-   print(now1)
+   LG.info(f'last plot for {SCs[isc]}: {here}/{SCs[isc]}.time')
    with open(here+'/'+SCs[isc]+'.time','w') as myf:
       myf.write(f'{now1}\n')
 
+LG.info('Done!')
 if C.background:
+   LG.info('Update lims file')
    json.dump( {'lims':C.lims,'aspects':C.aspect}, open( C.lims_file, 'w' ) )

@@ -64,6 +64,7 @@ def load(fname='config.ini'):
    """
    Load the config options and return it as a class
    """
+   if not os.path.isfile(fname): return None
    config = ConfigParser(inline_comment_prefixes='#')
    config._interpolation = ExtendedInterpolation()
    config.read(fname)
