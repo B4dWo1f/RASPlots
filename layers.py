@@ -94,7 +94,7 @@ def provincias(fig,ax):
 
 def rivers(fig,ax):
    rivers = '../../test_lagos/old/old1/rivers/'
-   rivers = '../../test_lagos/AAA/'
+   rivers = '../../test_lagos/rivers_spain/'
    files = listfiles(f'{rivers}')
    verts = [np.load(friver) for friver in files]
    coll = LineCollection(verts, color='C0',lw=0.75,zorder=1)

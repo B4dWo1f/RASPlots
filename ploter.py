@@ -69,6 +69,13 @@ for domain in C.domains:
          shuffle(all_inputs)
          Res = pool.map(L.super_plot, all_inputs)
 
+   D = curr_date.strftime('%d/%m/%Y')
+   now1 = dt.datetime.now().strftime('%d/%m/%Y-%H:%M')
+   #LG.debug(f"Last plot for {D}: {now}")
+   print(here+'/'+SCs[isc]+'.time')
+   print(now1)
+   with open(here+'/'+SCs[isc]+'.time','w') as myf:
+      myf.write(f'{now1}\n')
 
 if C.background:
    json.dump( {'lims':C.lims,'aspects':C.aspect}, open( C.lims_file, 'w' ) )
