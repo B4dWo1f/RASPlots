@@ -11,6 +11,9 @@ import matplotlib.pyplot as plt
 
 C = common.load(here+'/full.ini')
 
+UTCshift = dt.datetime.now()-dt.datetime.utcnow()
+UTCshift = dt.timedelta(hours = round(UTCshift.total_seconds()/3600))
+
 ## Curate properties
 # Sort properties to plot
 props = C.props
@@ -33,45 +36,39 @@ pool = sub.Pool(4)
 SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
 
 
-
-#def super_plot(args):
-#   hora,prop,Dfolder, curr_date, Pfolder, domain, sc, hora, prop,l,a = args
-#   if 'wind' in prop: func = L.all_vector
-#   else: func = L.all_scalar
-#   func(Dfolder, curr_date, Pfolder, domain, sc, hora, prop,l,a)
-
 parallel = True
 from tqdm import tqdm
+from random import shuffle
+print('**',C.background)
 for domain in C.domains:
    print('-->',domain)
    for isc in tqdm(C.run_days):
       curr_date = now + dt.timedelta(days=isc)
       sc = SCs[isc]
       print('  -->',sc)
+      os.system(f'mkdir -p {C.plot_folder}/{domain}/{sc}')
       if C.background:
          l,a = L.all_background_layers(C.plot_folder, domain, sc)
-         C.lims[domain]   = {sc: l}
-         C.aspect[domain] = {sc: a}
+         try:
+            C.lims[domain][sc] = l
+            C.aspect[domain][sc] = a
+         except KeyError:
+            C.lims[domain]   = {sc: l}
+            C.aspect[domain] = {sc: a}
       else: l,a = C.lims[domain][sc], C.aspect[domain][sc]
       all_inputs = []
-      for hora in range(8,19):
+      for hora in range(8,20):           # local time
+         hour = dt.datetime.now().replace(hour=hora,minute=0)
+         hour -= UTCshift          # UTC time
          for prop in props:
-            inps = [hora,prop,C.data_folder, curr_date, C.plot_folder, domain,
-                    sc, f'{100*hora:04d}', prop,l,a]
+            inps = [hour,prop,C.data_folder, curr_date, C.plot_folder, domain,
+                    sc, prop,l,a]
             if parallel: all_inputs.append(inps)
             else: L.super_plot(inps)
       if parallel:
-         print('parallel launch')
+         shuffle(all_inputs)
          Res = pool.map(L.super_plot, all_inputs)
 
 
-
-
-         #Res = pool.map(f,range(8))
 if C.background:
-   print('here')
-   print(C.lims)
-   print(C.aspects)
-   print(type(C.lims))
-   print(type(C.aspects))
-   json.dump( {'lims':C.lims,'aspects':C.aspect}, open( C.lims, 'w' ) )
+   json.dump( {'lims':C.lims,'aspects':C.aspect}, open( C.lims_file, 'w' ) )

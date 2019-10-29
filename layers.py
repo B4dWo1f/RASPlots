@@ -11,6 +11,7 @@ from matplotlib.collections import LineCollection, PolyCollection
 import colormaps
 from colormaps import WindSpeed, CAPE, TERRAIN3D, Rain, greys
 from common import listfiles
+import datetime as dt
 
 
 params= {'sfcwind':  {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
@@ -35,10 +36,10 @@ params= {'sfcwind':  {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
                       'cmap':None}}
 
 def super_plot(args):
-   hora,prop,Dfolder, curr_date, Pfolder, domain, sc, hora, prop,l,a = args
-   if 'wind' in prop: func = all_vector
-   else: func = all_scalar
-   func(Dfolder, curr_date, Pfolder, domain, sc, hora, prop,l,a)
+   hour,prop,Dfolder, curr_date, Pfolder, domain, sc, prop,l,a = args
+   if 'wind' in prop:
+      all_vector(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
+   all_scalar(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
 
 
 def plot_background(grid,cmap='gray',ve=100,fig=None,ax=None):
@@ -192,8 +193,10 @@ def press_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
    press = np.loadtxt(press, skiprows=4)*factor
    sigma=6
    press3 = gaussian_filter(press, sigma)
-   Cf = ax.contour(X,Y,press3,colors='k',linewidths=3,zorder=0)
-   plt.clabel(Cf, inline=True,fmt='%1d',zorder=1)
+   mp, Mp = int(np.min(press3)-1), int(np.max(press3)+1)+1
+   levels = list( range(mp,Mp,max(1,int((Mp-mp)/10))) )
+   Cf = ax.contour(X,Y,press3,levels=levels,colors='k',linewidths=3,zorder=0)
+   plt.clabel(Cf, inline=True,fmt='%1d',fontsize=20,zorder=1)
 
 
 def all_background_layers(folder,domain,sc):
@@ -241,6 +244,7 @@ def all_background_layers(folder,domain,sc):
 
 
 def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
+   hour = hour.strftime('%H%M')
    densities = {'w2':{'SC2':1.8,'SC2+1':1.8,'SC4+2':2.5,'SC4+3':2.5},
                 'd2':{'SC2':2,'SC2+1':2,'SC4+2':2,'SC4+3':2}}
    P = params[prop]
@@ -257,6 +261,7 @@ def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
    plt.close('all')
 
 def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
+   hour = hour.strftime('%H%M')
    final_folder = f'{Pfolder}/{domain}/{sc}'
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
    grid = f'grids/{domain}/{sc}/'

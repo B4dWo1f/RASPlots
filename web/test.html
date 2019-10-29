@@ -2,38 +2,52 @@
 <html>
 <head>  <meta charset="utf-8">
    <style>
+      img {max-width:100%;
+           height:auto;}
       .FullMap {width:100%;
                 height:auto;
                 text-align:center;
-                padding:0px;
                 position: relative;
+                padding:0px;
                 left:0px;
                 top:0px;}
-      img {max-width:100%;
-           height:auto;}
-      .L0 {position: relative;
-           top: 0;
-           left: 0;
-           visibility:visible;}
-      .L1 {position: absolute;
-           top: 0px;
+      .L0 {position: absolute;
            left: 0px;
-           visibility:hidden;}
+           top: 0px;
+           z-index: -1;}
+      .L1 {position: absolute;
+           left: 0px;
+           top: 0px;
+           z-index: 1;}
       .L2 {position: absolute;
            top: 0px;
            left: 0px;
-           visibility:visible;
            mix-blend-mode: overlay;
-           opacity:0.33;}
+           z-index: 1;
+           visibility:visible;
+           opacity:0.75;}
       .L3 {position: absolute;
            top: 0px;
            left: 0px;
            visibility:visible;
-           opacity:0.75;}
-      .plot_title{font-size:150%;}
+           z-index: 1;
+           opacity:0.5;}
+      .L4 {position: absolute;
+           top: 0px;
+           left: 0px;
+           z-index: 1;
+           visibility:hidden;
+           opacity:0.9;}
+      .plot_title{font-size:175%;}
       .domains{font-size:120%;}
       .days{font-size:120%;}
       .hours{font-size:120%;}
+      .mytable{border: 1px solid black;
+                border-collapse: collapse;}
+      .mytr{border-top: solid 1px black border-bottom: solid 1px black; }
+      .mytd{border-right: none; border-left: none; }
+      .vl{border-left: 2px dashed LightGrey;
+          height: 200px;}
   </style>
 </head>
 
@@ -48,6 +62,17 @@
    </tr>
 </table>
 
+<!-- L0 -->
+<!-- position: relative; -->
+<!-- top: 0; -->
+<!-- left: 0; -->
+<!-- visibility:visible;} -->
+
+<!-- L1 -->
+<!-- position: absolute; -->
+<!-- top: 0px; -->
+<!-- left: 0px; -->
+<!-- visibility:hidden;} -->
 
 <p class="domains" align='center'>
 <a href="javascript:change_domain('w2');">Sistema Central</a> |
@@ -60,72 +85,84 @@
 
 
 <hr>
-<table>
-<tr>
-   <td> Vector Layer: </td>
-   <td> <input id="SliderOpacity" type="range" min="0" max="100" value="75" oninput="set_opacity(this.value,'vector_layer')"> </td>
-</tr>
-</table>
-<form>
-<input type="radio" id="chkSFCwind"  onChange="replot_vector('sfcwind');" name='foo' checked>Viento superficie
-<input type="radio" id="chkBLwind"  onChange="replot_vector('blwind');" name='foo'>Viento BL
-<input type="radio" id="chkBLTOPwind"  onChange="replot_vector('bltopwind');" name='foo'>Viento BL Top
-<input type="radio" id="chkBLTOPwind"  onChange="toggleVisibility('vector_layer');" name='foo'>None
-</form>
-<hr style="border-color:LightGrey; border-style: dashed; ">
-<table>
-<tr>
-   <td> Scalar Layer: </td>
-   <td> <input id="SliderOpacity" type="range" min="0" max="100" value="33" oninput="set_opacity(this.value,'scalar_layer')"> </td>
-</tr>
-</table>
-
-<form>
-<input type="radio" id="chkSFCwind"  onChange="replot_scalar('sfcwind');" name='foo' checked>SFCwind
-<input type="radio" id="chkBLwind"  onChange="replot_scalar('blwind');" name='foo'>BLwind
-<input type="radio" id="chkBLTOPwind"  onChange="replot_scalar('bltopwind');" name='foo'>BLTopwind
-<input type="radio" id="chkCAPE"  onChange="replot_scalar('cape');" name='foo'>CAPE
-<input type="radio" id="chkHBL"  onChange="replot_scalar('hbl');" name='foo'> Height BL
-<input type="radio" id="chkWstar"  onChange="replot_scalar('wstar');" name='foo'> Thermals
-<input type="radio" id="chkBSratio"  onChange="replot_scalar('bsratio');" name='foo'> B/S Ratio
-<input type="radio" id="chkClouds"  onChange="replot_scalar('cloud');" name='foo'> Clouds 
-<hr>
-</form>
-
-
-
-<p align="center">
-<table>
+<table align="center">
+   <!-- First row -->
    <tr>
-      <td align="left" style="min-width:120px">
-      </td>
-      <td align="center">
-         <div class="plot_title" align='center' id="Title"></div>
-      </td>
-   </tr>
-   <tr>
-      <td align="left">
+      <td>
+         Vector Layer:
+         <input id="SliderOpacity" type="range" min="0" max="100" value="50" oninput="set_opacity(this.value,['vector_layer'])">
          <form>
+         <input type="radio" id="chkSFCwind"  onChange="replot_vector('sfcwind');" name='foo' checked>Viento superficie
+         <input type="radio" id="chkBLwind"  onChange="replot_vector('blwind');" name='foo'>Viento BL
+         <input type="radio" id="chkBLTOPwind"  onChange="replot_vector('bltopwind');" name='foo'>Viento BL Top
+         <input type="radio" id="chkBLTOPwind"  onChange="toggleVisibility('vector_layer');" name='foo'>None
+         </form>
+      </td>
+      <td rowspan="3">
+         <div class="vl"></div>
+      </td>
+      <td rowspan="3">
+         <form>
+         <input type="checkbox" id="chkGnd" onChange="toggleVisibility('gnd_layer');">Color<br>
          <input type="checkbox" id="chkCCAA" onChange="toggleVisibility('ccaa_layer');" checked>Provincias<br>
          <input type="checkbox" id="chkRivers"  onChange="toggleVisibility('rivers_layer');" >Ríos y lagos<br>
          <input type="checkbox" id="chkRoads"  onChange="toggleVisibility('roads_layer');" >Carreteras<br>
          <input type="checkbox" id="chkRoads"  onChange="toggleVisibility('takeoffs_layer');" checked>Despegues<br>
          </form>
-      <td align="left">
-         <div class="FullMap">
-            <!-- Terrain -->
-            <img class="L0" id="terrain_layer" style="visibility:visible">
-            <img class="L1" id="ccaa_layer" style="visibility:visible">
-            <!-- Meteo -->
-            <img class="L1" id="rivers_layer" style="visibility:hidden">
-            <img class="L1" id="roads_layer" style="visibility:hidden">
-            <img class="L1" id="takeoffs_layer" style="visibility:visible">
-            <img class="L2" id="scalar_layer">
-            <img class="L3" id="vector_layer" style="visibility:visible">
-      </div>
+      </td>
+   </tr>
+   <!-- Second row -->
+   <tr>
+      <td>
+         <hr style="border-color:LightGrey; border-style: dashed; ">
+         Scalar Layer:
+         <input id="SliderOpacity" type="range" min="0" max="100" value="90" oninput="set_opacity(this.value,['scalar_layer'])">
+         <form>
+         <input type="radio" id="chkSFCwind"  onChange="replot_scalar('sfcwind');" name='foo' checked>SFCwind
+         <input type="radio" id="chkBLwind"  onChange="replot_scalar('blwind');" name='foo'>BLwind
+         <input type="radio" id="chkBLTOPwind"  onChange="replot_scalar('bltopwind');" name='foo'>BLTopwind
+         <input type="radio" id="chkCAPE"  onChange="replot_scalar('cape');" name='foo'>CAPE
+         <input type="radio" id="chkHBL"  onChange="replot_scalar('hbl');" name='foo'> Height BL
+         <input type="radio" id="chkWstar"  onChange="replot_scalar('wstar');" name='foo'> Thermals
+         <input type="radio" id="chkBSratio"  onChange="replot_scalar('bsratio');" name='foo'> B/S Ratio
+         <!-- <input type="radio" id="chkClouds"  onChange="replot_cloud('blcloudpct');" name='foo'> Clouds --> 
+         </form>
+      </td>
+   </tr>
+   <!-- Third row -->
+   <tr>
+      <td>
+         <hr style="border-color:LightGrey; border-style: dashed; ">
+         Overlay Layer:
+         <input id="SliderOpacity" type="range" min="0" max="100" value="90" oninput="set_opacity(this.value,['clouds_layer','press_layer'])">
+         <form>
+         <input type="checkbox" id="chkSFCwind" onChange="toggleVisibility('clouds_layer');">Nubes y lluvia
+         <input type="checkbox" id="chkBLwind"  onChange="toggleVisibility('press_layer');">Presión a Nivel del mar
+         <!-- <input type="radio" id="chkBLTOPwind"  onChange="toggleVisibility('overall_layer');" name='foo'>None  -->
+         </form>
       </td>
    </tr>
 </table>
+<hr>
+
+
+<p align="center">
+<div class="plot_title" id='Title' align='center'></div>
+<div class="FullMap" align="center">
+   <!-- Terrain -->
+   <img class="L0" id="terrain_layer" style="visibility:visible">
+   <img class="L1" id="gnd_layer" style="visibility:hidden">
+   <img class="L1" id="ccaa_layer" style="visibility:visible">
+   <!-- Meteo -->
+   <img class="L1" id="rivers_layer" style="visibility:hidden">
+   <img class="L1" id="roads_layer" style="visibility:hidden">
+   <img class="L1" id="takeoffs_layer" style="visibility:visible">
+   <img class="L2" id="scalar_layer">
+   <img class="L3" id="vector_layer" style="visibility:visible">
+   <!-- Special layers -->
+   <img class="L4" id="clouds_layer">
+   <img class="L4" id="press_layer">
+</div>
 </p>
 
 </body>
@@ -152,6 +189,7 @@
    /* Global variables */
    var sc = 'SC2';
    var domain = 'w2';
+   var Oprop = null;
    var Sprop = 'sfcwind';
    var Vprop = 'sfcwind';
    var hour = '12';
@@ -160,6 +198,7 @@
 
    // Default values for initial load
    document.getElementById('terrain_layer').src = folder+'/'+domain+'/'+sc+'/terrain.png';
+   document.getElementById('gnd_layer').src = folder+'/'+domain+'/'+sc+'/terrain1.png';
    document.getElementById('ccaa_layer').src = folder+'/'+domain+'/'+sc+'/ccaa.png';
    document.getElementById('rivers_layer').src = folder+'/'+domain+'/'+sc+'/rivers.png';
    document.getElementById('roads_layer').src = folder+'/'+domain+'/'+sc+'/roads.png';
@@ -168,23 +207,26 @@
    document.getElementById('scalar_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_'+Sprop+'.png';
    document.getElementById('vector_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_'+Vprop+'_vec.png';
    plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
+   // special layers
+   document.getElementById('clouds_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_blcloudpct.png';
+   document.getElementById('press_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_mslpress.png';
 
    // Generate days
-   var text = "| ";
+   var text = "";
    var i;
    for (i = 0; i <= 3; i++) {
       text += '<a href="javascript:change_day(' + i.toString() + ');">' 
-      text += days[(( today.getDay() + i )%7)] + "</a> |";
+      text += days[(( today.getDay() + i )%7)] + "</a> | ";
    }
-   document.getElementById("days").innerHTML = text;
+   document.getElementById("days").innerHTML = text.slice(0, -2);
 
    // Generate hours
-   var text = "| ";
+   var text = "";
    var i;
    for (i = 8; i <= 20; i++) {
-      text += '<a href="javascript:change_hour('+i.toString()+');">' + i.toString() + ":00 </a>| ";
+      text += '<a href="javascript:change_hour('+i.toString()+');">' + i.toString() + ":00</a> | ";
    }
-   document.getElementById("hours").innerHTML = text;
+   document.getElementById("hours").innerHTML = text.slice(0, -2);
 
 
    function replot_vector(x){
@@ -197,24 +239,39 @@
    }
    function replot_scalar(x){
       Sprop = x
-      document.getElementById('scalar_layer').src= folder+'/'+domain+'/'+sc+'/'+hour+'00_'+Sprop+'.png'; //sc+'_'+Sprop+'.png';
+      document.getElementById('scalar_layer').src= folder+'/'+domain+'/'+sc+'/'+hour+'00_'+Sprop+'.png';
       plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
+   }
+   function replot_cloud(x){
+      Oprop = x
+      var OL = document.getElementById('overall_layer')
+      if (Oprop != null){
+         document.getElementById('overall_layer').src= folder+'/'+domain+'/'+sc+'/'+hour+'00_'+Oprop+'.png';
+         document.getElementById('gnd_layer').src = folder+'/'+domain+'/'+sc+'/terrain1.png';
+         if (OL.style.visibility=="hidden") {
+             OL.style.visibility="visible";}
+      }
    }
    function change_hour(x) {
       hour = x;
       replot_scalar(Sprop);
       replot_vector(Vprop);
       plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
+      document.getElementById('clouds_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_blcloudpct.png';
+      document.getElementById('press_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_mslpress.png';
    }
    function change_domain(x) {
       domain = x
       replot_scalar(Sprop);
       replot_vector(Vprop);
       document.getElementById('terrain_layer').src = folder+'/'+domain+'/'+sc+'/terrain.png';
+      document.getElementById('gnd_layer').src = folder+'/'+domain+'/'+sc+'/terrain1.png';
       document.getElementById('ccaa_layer').src = folder+'/'+domain+'/'+sc+'/ccaa.png';
       document.getElementById('rivers_layer').src = folder+'/'+domain+'/'+sc+'/rivers.png';
       document.getElementById('roads_layer').src = folder+'/'+domain+'/'+sc+'/roads.png';
       document.getElementById('takeoffs_layer').src = folder+'/'+domain+'/'+sc+'/takeoffs.png';
+      document.getElementById('clouds_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_blcloudpct.png';
+      document.getElementById('press_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_mslpress.png';
    }
    function change_day(x) {
       sc = SCs[x];
@@ -224,10 +281,13 @@
       replot_scalar(Sprop);
       replot_vector(Vprop);
       document.getElementById('terrain_layer').src = folder+'/'+domain+'/'+sc+'/terrain.png';
+      document.getElementById('gnd_layer').src = folder+'/'+domain+'/'+sc+'/terrain1.png';
       document.getElementById('ccaa_layer').src = folder+'/'+domain+'/'+sc+'/ccaa.png';
       document.getElementById('rivers_layer').src = folder+'/'+domain+'/'+sc+'/rivers.png';
       document.getElementById('roads_layer').src = folder+'/'+domain+'/'+sc+'/roads.png';
       document.getElementById('takeoffs_layer').src = folder+'/'+domain+'/'+sc+'/takeoffs.png';
+      document.getElementById('clouds_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_blcloudpct.png';
+      document.getElementById('press_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_mslpress.png';
       plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
    }
    function select_vector_layer(id) {
@@ -241,8 +301,11 @@
         el.style.visibility="visible";}
    }
    // ------------ Slider ------------
-   function set_opacity(x,layer) {
-      document.getElementById(layer).style.opacity = x/100;
+   function set_opacity(x,layers) {
+      var layersLength = layers.length;
+      for (var i = 0; i < layersLength; i++) {
+         document.getElementById(layers[i]).style.opacity = x/100;
+      }
       replot_scalar(Sprop);
    }
 </script>
