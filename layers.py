@@ -121,7 +121,7 @@ def roads(fig,ax):
       lws = {'A':6, 'E':6, 'M':5, 'AV':5, 'SG':5, 'CL':5, 'EX':5, 'N':4}
       key = froad.split('/')[-1].replace('.csv','')
       key = " ".join(re.findall("[a-zA-Z]+", key))
-      lw = lws[key] -3
+      lw = max((lws[key] -3)/2,0.1)
       ax.plot(Xroad, Yroad,'k',lw=lw+2,zorder=2)
       ax.plot(Xroad, Yroad,'w',lw=lw,zorder=3)
 
