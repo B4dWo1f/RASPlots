@@ -52,10 +52,9 @@ SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
 
 
 parallel = True
-from tqdm import tqdm
 from random import shuffle
 LG.info(f'Plot Background: {C.background}')
-for isc in tqdm(C.run_days):
+for isc in C.run_days:
    sc = SCs[isc]
    LG.info(f'Plotting day: {sc}')
    for domain in C.domains:
