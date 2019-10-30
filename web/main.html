@@ -2,6 +2,8 @@
 <html>
 <head>  <meta charset="utf-8">
    <link rel="stylesheet" type="text/css" href="css/my_style.css">
+   <link rel="stylesheet" type="text/css" href="css/myswitch.css">
+   <link rel="stylesheet" type="text/css" href="css/collapsible.css">
    <script type="text/javascript" src='js/my_functions.js'> </script>
 </head>
 
@@ -16,23 +18,23 @@
    </tr>
 </table>
 
-<p class="domains" align='center'>
-<a href="javascript:change_domain('w2');">Sistema Central</a> |
-<a href="javascript:change_domain('d2');">Península</a>
-</p>
+
 
 <p align='center' id="days" class="days"></p>
 
 <p align='center' id="hours" class="hours"></p>
 
 
+<div align="center">
+<button type="button" class="collapsible" align="center">Opciones</button>
+<div class="content">
 <hr>
 <table align="center">
    <!-- First row -->
    <tr>
       <td>
          Vector Layer:
-         <input id="SliderOpacity" type="range" min="0" max="100" value="50" oninput="set_opacity(this.value,['vector_layer'])">
+         <input id="SliderOpacity" type="range" min="0" max="100" value="50" oninput="javascript:set_opacity(this.value,['vector_layer']);">
          <form>
          <input type="radio" id="chkSFCwind"  onChange="javascript:replot_vector('sfcwind');" name='foo' checked>Viento superficie
          <input type="radio" id="chkBLwind"  onChange="javascript:replot_vector('blwind');" name='foo'>Viento BL
@@ -86,28 +88,66 @@
    </tr>
 </table>
 <hr>
+</div>
+</div>  <!-- center -->
 
 
+
+<!-- Plot Title -->
 <p align="center">
 <div class="plot_title" id='Title' align='center'></div>
-<div class="FullMap" align="center">
-   <!-- Terrain -->
-   <img class="L0" id="terrain_layer" style="visibility:visible">
-   <img class="L1" id="gnd_layer" style="visibility:hidden">
-   <img class="L1" id="ccaa_layer" style="visibility:visible">
-   <!-- Meteo -->
-   <img class="L1" id="rivers_layer" style="visibility:hidden">
-   <img class="L1" id="roads_layer" style="visibility:hidden">
-   <img class="L1" id="takeoffs_layer" style="visibility:visible">
-   <img class="L2" id="scalar_layer">
-   <img class="L3" id="vector_layer" style="visibility:visible">
-   <!-- Special layers -->
-   <img class="L4" id="clouds_layer">
-   <img class="L4" id="press_layer">
+
+<!-- Switch -->
+<div class="test_switch" align='center'>
+   Sistema central
+   <label class="switch">
+   <input type="checkbox" onChange="javascript:toggle_domain()" >
+   <span class="slider round"></span>
+   </label>
+   Península
 </div>
-</p>
+
+<!-- Mapa -->
+<div class="Maps" align="middle">
+   <!-- Terrain -->
+   <img class="under" id="terrain_layer" style="visibility:visible">
+   <img class="over" id="gnd_layer" style="visibility:hidden">
+   <img class="over" id="ccaa_layer" style="visibility:visible">
+   <img class="over" id="rivers_layer" style="visibility:hidden">
+   <img class="over" id="roads_layer" style="visibility:hidden">
+   <img class="over" id="takeoffs_layer" style="visibility:visible">
+   <!-- Meteo -->
+   <img class="Sover" id="scalar_layer">
+   <img class="Vover" id="vector_layer" style="visibility:visible">
+   <!-- Special layers -->
+   <img class="Oover" id="clouds_layer">
+   <img class="Oover" id="press_layer">
+</div>
+
+<div class="Maps" align="middle">
+   <img class="under" id="cbar_layer">
+</div>
+<!-- ---- -->
+
 
 <script type="text/javascript" src='js/initialize.js'> </script>
+
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
 </body>
 
 

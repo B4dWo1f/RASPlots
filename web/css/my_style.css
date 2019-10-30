@@ -1,45 +1,80 @@
-img {max-width:100%;
-      height:auto;}
+.a_days {
+   padding: 5px;
+   border-radius: 5px;
+   background-color: #ddd;
+   color: blue;
+}
+.a_days:active {
+   color: hotpink;
+   background-color: #2196F3;
+}
+img {
+   max-width:80%;
+   height:auto;
+}
+.Maps {
+   position: relative;
+   width: 100%;
+   padding: 0px;
+   top: 0px;
+   left: 50%;
+   transform: translateX(-50%);
+   text-align: center;
+}
+.under {
+   left: 0px;
+   top: 0px;
+   z-index: -1;
+   position: relative;
+   opacity:1;
+}
+.over {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   transform: translateX(-50%);
+   opacity:1;
+   z-index: 1;
+}
+.Sover {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   z-index: 1;
+   transform: translateX(-50%);
+   mix-blend-mode: overlay;
+   opacity:0.75;
+}
+.Vover {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   z-index: 1;
+   transform: translateX(-50%);
+   opacity:1;
+}
+.Oover {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   z-index: 1;
+   transform: translateX(-50%);
+   opacity:1;
+   visibility: hidden;
+}
 
-.FullMap {width:100%;
-          height:auto;
-          text-align:center;
-          position: relative;
-          padding:0px;
-          left:0px;
-          top:0px;}
-
-.L0 {position: absolute;
-     left: 0px;
-     top: 0px;
-     z-index: -1;}
-
-.L1 {position: absolute;
-     left: 0px;
-     top: 0px;
-     z-index: 1;}
-
-.L2 {position: absolute;
-     top: 0px;
-     left: 0px;
-     mix-blend-mode: overlay;
-     z-index: 1;
-     visibility:visible;
-     opacity:0.75;}
-
-.L3 {position: absolute;
-     top: 0px;
-     left: 0px;
-     visibility:visible;
-     z-index: 1;
-     opacity:0.5;}
-
-.L4 {position: absolute;
-     top: 0px;
-     left: 0px;
-     z-index: 1;
-     visibility:hidden;
-     opacity:0.9;}
+.button_inactive {
+   background-color: rgba(121,200,255);
+   font-size:120%;
+   padding: 5px;
+   border-radius: 10px;
+}
+.button_active {
+   background-color: rgba(42,139,207);
+   font-size:120%;
+   padding: 5px;
+   border-radius: 10px;
+}
 
 .plot_title {font-size:175%;}
 
@@ -57,3 +92,4 @@ img {max-width:100%;
 
 .vl {border-left: 2px dashed LightGrey;
      height: 200px;}
+
