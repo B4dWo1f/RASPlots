@@ -148,5 +148,5 @@ with open(full, 'w') as configfile:
 ##   LG.critical('Error running davinci.py:')
 ##   LG.critical(err)
 #
-#LG.info('Done!')
+LG.info('Done!')
 #os.system(f"rm {run_file}")

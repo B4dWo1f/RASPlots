@@ -6,6 +6,8 @@ import os
 here = os.path.dirname(os.path.realpath(__file__))
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import LightSource, BoundaryNorm
 from matplotlib.collections import LineCollection, PolyCollection

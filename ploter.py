@@ -20,11 +20,9 @@ import datetime as dt
 import common
 import json
 import layers as L
-import matplotlib.pyplot as plt
 
 C = common.load(here+'/full.ini')
 if C == None:
-   print('HEREEE')
    LG.critical('No full.ini')
    exit()
 
