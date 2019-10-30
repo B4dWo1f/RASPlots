@@ -12,18 +12,42 @@ here = os.path.dirname(os.path.realpath(__file__))
 import logging
 import log_help
 LG = logging.getLogger(__name__)
+import json
 
 
 now = dt.datetime.now
 
 class Config(object):
    #def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
-   def __init__(self,Rfolder,run_days=[], date='', props=[],
+   def __init__(self,Rfolder,Dfolder,Pfolder,lims,background,
+                     run_days=[], date='', domains=[], props=[],
                      parallel=True,zoom=True,ve=100):
-      if Rfolder[-1] != '/': Rfolder += '/'
-      self.root_folder = Rfolder
+      """
+      Rfolder
+      Dfolder
+      Pfolder
+      lims: limits file containing a json dictionary with the following informtion:
+            {lims:    {domian: {sc: [mx,Mx,my,My]}},
+             aspects: {domain: {sc: x}}}
+      background: bool to re-plot terrain or not
+      """
+      if Rfolder[-1] == '/': Rfolder = Rfolder[:-1]
+      self.root_folder = Rfolder.replace('//','/')
+      self.data_folder = Dfolder.replace('//','/')
+      self.plot_folder = Pfolder.replace('//','/')
+      self.background = background
+      self.lims_file = lims
+      try:
+         data = json.load( open(self.lims_file) )
+         self.lims = data['lims']
+         self.aspect = data['aspects']
+      except:
+         self.lims = {}
+         self.aspect = {}
+         self.background = True
       self.run_days = run_days
       self.date = date
+      self.domains = domains
       self.props = props
       self.parallel = parallel
       self.zoom = zoom
@@ -32,18 +56,27 @@ class Config(object):
       msg =  f'Data stored in: {self.root_folder}\n'
       msg += f'Terrain files:  {self.lats}  {self.lons}  {self.hagl}\n'
       if len(self.run_days) != 0: msg += f'Run for: {self.run_days}\n'
-      if len(self.props) != 0: msg += 'Properties: ' + ', '.join(self.props)
+      if len(self.domains)!=0: msg += 'Domains: ' + ', '.join(self.domains)
+      if len(self.props)!=0: msg += 'Properties: ' + ', '.join(self.props)
       return msg
 
 def load(fname='config.ini'):
    """
    Load the config options and return it as a class
    """
+   if not os.path.isfile(fname): return None
    config = ConfigParser(inline_comment_prefixes='#')
    config._interpolation = ExtendedInterpolation()
    config.read(fname)
    # System
    Rfolder = expanduser(config['system']['root_folder'])
+   Dfolder = expanduser(config['system']['data_folder'])
+   Pfolder = expanduser(config['system']['plot_folder'])
+   # Run
+   background = eval(config['run']['plot_background'].capitalize())
+   lims = config['run']['lims_aspect']
+   if lims[0] in ['.','/']: pass
+   else: lims = here + '/'+lims
    try:
       run = eval(config['run']['days'])
       #run = config['run']['days']
@@ -54,11 +87,12 @@ def load(fname='config.ini'):
       date = dt.datetime.strptime(date, '%Y/%m/%d')
    except KeyError: date = dt.datetime.now().date()  # XXX
    #props = [x.strip() for x in config['run']['props'].split(',')]
+   domains = eval(config['run']['domains'])
    props = eval(config['run']['props'])
    parallel = eval(config['run']['parallel'].capitalize())
    zoom = eval(config['run']['zoom'].capitalize())
    ve = int(config['plots']['ve'])
-   return Config(Rfolder,run,date,props,parallel,zoom,ve)
+   return Config(Rfolder,Dfolder,Pfolder,lims,background,run,date,domains,props,parallel,zoom,ve)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    if root[-1] != '/': root += '/'
@@ -75,9 +109,9 @@ def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    root_folder = root + data+'/'+grid+'/'+fol
    return root_folder+'/'+fcst_time.strftime('%Y/%m/%d/%H%M_')
 
-def find_best_fcst(date,Rfolder):
+def find_best_fcst(date,Rfolder,domain):
    for f in ['SC2','SC2+1','SC4+2','SC4+3']:
-      fol = Rfolder+'DATA/w2/'+f+'/'+date.strftime('%Y/%m/%d')
+      fol = f'{Rfolder}/DATA/{domain}/{f}/'+date.strftime('%Y/%m/%d')
       if os.path.isdir(fol): return fol
 
 def listfiles(folder):

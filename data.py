@@ -46,8 +46,10 @@ def get_and_place(url,base='RASP'):
    t = [year, month, day, hour]
    valid_date = dt.datetime.strptime(' '.join(t),'%Y %m %d %H%M')
    #XXX Manual offset for UTC
-   offset = {'CES':2*3600, 'DST':3600}   # seconds
-   UTCshift = dt.timedelta(seconds=offset[tz])
+   #offset = {'CES':2*3600, 'CTT':3600}   # seconds
+   #UTCshift = dt.timedelta(seconds=offset[tz])
+   UTCshift = dt.datetime.now()-dt.datetime.utcnow()
+   UTCshift = dt.timedelta(hours = round(UTCshift.total_seconds()/3600))
    valid_date = valid_date - UTCshift
 
    # http://raspuri.mooo.com/RASP/SC2/FCST/cape.curr.0800lst.w2.data
@@ -65,12 +67,16 @@ def get_and_place(url,base='RASP'):
    LG.debug('saved %s'%('/'.join(fname.split('/')[-7:])))
 
 if __name__ == '__main__':
-   import multiprocessing as sub
+   from threading import Thread
 
    C = common.load(here+'/full.ini')
+   if C == None:
+      LG.critical('No full.ini')
+      exit()
 
    fol = C.root_folder
    props = C.props
+   domains = C.domains
    LG.info(f'Storing data in {fol}')
    LG.info( 'Downloading ' + ', '.join([str(p) for p in props]) )
 
@@ -90,24 +96,31 @@ if __name__ == '__main__':
       S = BeautifulSoup(html_doc, 'html.parser')
       table = S.find('table')
       data_files,soundings,cape = [],[],[]
-      for row in table.find_all('tr')[3:-1]:
+      all_rows = table.find_all('tr')[3:-1]
+      for irow in range(len(all_rows)):
+         row = all_rows[irow]
          col = row.find_all('td')[1]
          l = col.find('a')
          l = l['href']
          if '.data' == l[-5:]:
             if 'curr' in l:
                if l.split('.')[0] in props:
-                  if '.w2.' in l:
-                     get_and_place(url+l, fol)
+                  for domain in domains:
+                     if domain in l: get_and_place(url+l, fol)
                   else: pass
+         if irow%(len(all_rows)//10) == 0:
+            LG.info(f'{f}: {int(100*irow/len(all_rows))}% done')
 
    tday = dt.datetime.now().date()
    folders = [folder_index[x] for x in C.run_days]
 
-   if C.parallel:
-      pool = sub.Pool(4)
-      Res = pool.map(bring, folders)
-   else:
-      for f in folders:
-         bring(f)
+   threads = []
+   for f in folders:
+      if C.parallel:
+         T = Thread(target=bring, args=[f])
+         T.start()
+         threads.append(T)
+      else: bring(f)
+   for T in threads:
+      T.join()
    LG.info('Done!')

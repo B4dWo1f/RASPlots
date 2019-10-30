@@ -60,20 +60,21 @@ LG.info( 'Timelapses for: ' + ', '.join([str(p) for p in props]) )
 
 
 for day in C.run_days:
-   date_run = C.date + day*dt.timedelta(days=1)
-   fol = common.find_best_fcst(date_run,C.root_folder)
-   save_fol = fol.replace('DATA','PLOTS')
-   save_fol = '/'.join(save_fol.split('/')[:-3])
-   LG.info(f"Timelapses for {date_run.strftime('%d/%m/%Y')}")
+   for domain in C.domains:
+      date_run = C.date + day*dt.timedelta(days=1)
+      fol = common.find_best_fcst(date_run,C.root_folder,domain)
+      save_fol = fol.replace('DATA','PLOTS')
+      save_fol = '/'.join(save_fol.split('/')[:-3])
+      LG.info(f"Timelapses for {date_run.strftime('%d/%m/%Y')}")
 
-   if C.parallel:
-      LG.debug('Running in parallel')
-      all_inputs = [ (save_fol,prop,fps,dens) for prop in props ]
-      pool = sub.Pool(4)
-      Res = pool.map(timelapse, all_inputs)
-   else:
-      for prop in props:
-         LG.debug(f'Timelapsing: {prop}')
-         timelapse( (save_fol,prop,fps,dens) )
+      if C.parallel:
+         LG.debug('Running in parallel')
+         all_inputs = [ (save_fol,prop,fps,dens) for prop in props ]
+         pool = sub.Pool(4)
+         Res = pool.map(timelapse, all_inputs)
+      else:
+         for prop in props:
+            LG.debug(f'Timelapsing: {prop}')
+            timelapse( (save_fol,prop,fps,dens) )
 
 LG.info('Done!')
