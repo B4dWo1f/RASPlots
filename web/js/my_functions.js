@@ -28,6 +28,8 @@ function change_domain(x) {
    document.getElementById('takeoffs_layer').src = folder+'/'+domain+'/'+sc+'/takeoffs.png';
    document.getElementById('clouds_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_blcloudpct.png';
    document.getElementById('press_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_mslpress.png';
+   document.getElementById("days").innerHTML = generate_days();
+
 }
 
 function set_all(folder,domain,sc){
@@ -64,7 +66,8 @@ function replot_general(){
    C_layer.src  = get_filename(folder,domain,sc,hour,UTCshift,'blcloudpct',false);
    P_layer.src  = get_filename(folder,domain,sc,hour,UTCshift,'mslpress',false);
    CB_layer.src = folder+'/'+Sprop+'.png';
-   plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
+   //plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
+   update_plot_title(dw,d,Sprop,hour)
 }
 
 function replot_cloud(x){
@@ -95,7 +98,8 @@ function replot_scalar(x){
    var fname = get_filename(folder,domain,sc,hour,UTCshift,Sprop,false);
    Slayer.src = fname;
    CBlayer.src= folder+'/'+Sprop+'.png';
-   plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
+   // plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
+   update_plot_title(dw,d,Sprop,hour)
    return fname;
 }
 
@@ -123,6 +127,33 @@ function get_filename(fol,dom,sc,hour,UTCshift,prop,isvec){
    }
    fname += '.png'
    return fname
+}
+
+function update_plot_title(dw,d,Sprop,hour){
+   var Vdate = valid_dates[sc][domain];
+   var day_num = Vdate.getDate();
+   var day_week = days[Vdate.getDay()];
+   plot_title.innerHTML = day_week+' '+day_num+' '+title_prop[Sprop]+' '+hour+':00';
+}
+
+function generate_days(){
+   // Generate days
+   var text = "";
+   var Vdate;
+   var i = 0;
+   for (var key_sc in valid_dates) {
+      var Vdate = valid_dates[key_sc][domain];
+      text += '<button type="button" class="button_inactive" '
+      text += 'id="button_day_'+i+'" ';
+      text += 'onclick="javascript:change_day('+i+');">';
+      text += days[Vdate.getDay()];
+      if (i===0){
+         text += ' '+Vdate.getDate()
+      }
+      text += '</button>   ';
+      i += 1;
+   }
+   return text.slice(0, -2);
 }
 
 // ------------ Slider ------------

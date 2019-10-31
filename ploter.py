@@ -51,15 +51,14 @@ pool = sub.Pool(4)
 SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
 
 
-parallel = True
 from random import shuffle
 LG.info(f'Plot Background: {C.background}')
 for isc in C.run_days:
    sc = SCs[isc]
+   curr_date = now + dt.timedelta(days=isc)
    LG.info(f'Plotting day: {sc}')
    for domain in C.domains:
       LG.info(f'Plotting domain: {domain}')
-      curr_date = now + dt.timedelta(days=isc)
       com = f'mkdir -p {C.plot_folder}/{domain}/{sc}'
       LG.warning(com)
       os.system(com)
@@ -79,9 +78,9 @@ for isc in C.run_days:
          for prop in props:
             inps = [hour,prop,C.data_folder, curr_date, C.plot_folder, domain,
                     sc, prop,l,a]
-            if parallel: all_inputs.append(inps)
+            if C.parallel: all_inputs.append(inps)
             else: L.super_plot(inps)
-      if parallel:
+      if C.parallel:
          shuffle(all_inputs)
          Res = pool.map(L.super_plot, all_inputs)
 

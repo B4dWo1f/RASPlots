@@ -1,3 +1,6 @@
+var valid_dates = {'SC2': {'w2': new Date('10/30/2019'), 'd2': new Date('10/30/2019')}, 'SC2+1': {'w2': new Date('10/31/2019'), 'd2': new Date('10/31/2019')}, 'SC4+2': {'w2': new Date('11/01/2019'), 'd2': new Date('11/01/2019')}, 'SC4+3': {'w2': new Date('11/02/2019'), 'd2': new Date('11/02/2019')}};
+
+
 var title_prop = {'blwind':'BL Wind', 'bltopwind':'BL Top Wind', 'sfcwind':'Surface Wind',
                   'cape': 'CAPE', 'wstar':'Thermal Updraft Velocity', 'hbl':'Height of BL Top',
                   'bsratio':'Buoyancy/Shear Ratio', 'blcloudpct': '1h Accumulated Rain',
@@ -44,7 +47,8 @@ var C_layer = document.getElementById('clouds_layer')
 var P_layer = document.getElementById('press_layer')
 var CB_layer = document.getElementById('cbar_layer')
 
-// Default values for initial load
+// ----  Default values for initial load ----
+update_plot_title(dw,d,Sprop,hour)
 TER_layer.src = get_folder(folder,domain,sc)+'/terrain.png';
 GND_layer.src = get_folder(folder,domain,sc)+'/terrain1.png';
 CCA_layer.src = get_folder(folder,domain,sc)+'/ccaa.png';
@@ -54,25 +58,12 @@ TAK_layer.src = get_folder(folder,domain,sc)+'/takeoffs.png';
 // meteo
 S_layer.src = get_filename(folder,domain,sc,hour,UTCshift,Sprop,false);
 V_layer.src = get_filename(folder,domain,sc,hour,UTCshift,Vprop,true);
-plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
 // special layers
 C_layer.src  = get_filename(folder,domain,sc,hour,UTCshift,'blcloudpct',false);
 P_layer.src  = get_filename(folder,domain,sc,hour,UTCshift,'mslpress',false);
 CB_layer.src = folder+'/'+Sprop+'.png';
 
-// Generate days
-var text = "";
-var i;
-for (i = 0; i < Ndays; i++) {
-   // text += '<a class="a_days" href="javascript:change_day(' + i.toString() + ');">' 
-   // text += days[(( today.getDay() + i )%7)] + "</a> | ";
-   text += '<button type="button" class="button_inactive" '
-   text += 'id="button_day_'+i.toString()+'" ';
-   text += 'onclick="javascript:change_day('+i.toString()+');">';
-   text += days[(( today.getDay() + i )%7)];
-   text += '</button>   ';
-}
-document.getElementById("days").innerHTML = text.slice(0, -2);
+document.getElementById("days").innerHTML = generate_days();
 
 // Generate hours in local time
 var text = "";
