@@ -20,9 +20,10 @@ for sc in SCs:
    for domain in domains:
       fname = f"{C.plot_folder}/{domain}/{sc}/valid_date.txt"
       try: date = open(fname,'r').read().strip()
-      except: continue
+      except: date = ""
       date = dt.datetime.strptime(date,'%d/%m/%Y')
-      valid_dates[sc][domain] = f"new Date('{date.strftime('%m/%d/%Y')}')"
+      date = date.strftime('%m/%d/%Y')
+      valid_dates[sc][domain] = f"new Date('{date}')"
 
 
 new_string = f'var valid_dates = {valid_dates};\n'.replace('"','')
