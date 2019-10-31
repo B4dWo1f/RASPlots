@@ -44,6 +44,8 @@ params= {'sfcwind':  {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
 def super_plot(args):
    hour,prop,Dfolder, curr_date, Pfolder, domain, sc, prop,l,a = args
    LG.debug(f'Plotting {sc} {domain} {hour.strftime("%Y/%m/%d-%H%M")} {prop}')
+   with open(f'{Pfolder}/{domain}/{sc}/valid_date.txt','w') as f:
+      f.write(curr_date.strftime('%d/%m/%Y\n'))
    if 'wind' in prop:
       all_vector(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
    all_scalar(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)

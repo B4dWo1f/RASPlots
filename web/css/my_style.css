@@ -1,59 +1,88 @@
-img {max-width:100%;
-      height:auto;}
+/* Native classes */
+a, a:active, a:focus {
+   outline: none;
+}
 
-.FullMap {width:100%;
-          height:auto;
-          text-align:center;
-          position: relative;
-          padding:0px;
-          left:0px;
-          top:0px;}
+img {
+   max-width:80%;
+   height:auto;
+}
 
-.L0 {position: absolute;
-     left: 0px;
-     top: 0px;
-     z-index: -1;}
+/* User defined */
+.Maps {
+   position: relative;
+   width: 100%;
+   padding: 0px;
+   top: 0px;
+   left: 50%;
+   transform: translateX(-50%);
+   text-align: center;
+}
 
-.L1 {position: absolute;
-     left: 0px;
-     top: 0px;
-     z-index: 1;}
+.under {
+   left: 0px;
+   top: 0px;
+   z-index: -1;
+   position: relative;
+   opacity:1;
+}
+.over {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   transform: translateX(-50%);
+   opacity:1;
+   z-index: 1;
+}
+.Sover {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   z-index: 1;
+   transform: translateX(-50%);
+   mix-blend-mode: overlay;
+   opacity:0.75;
+}
+.Vover {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   z-index: 1;
+   transform: translateX(-50%);
+   opacity:1;
+}
+.Oover {
+   position: absolute;
+   left: 50%;
+   top: 0px;
+   z-index: 1;
+   transform: translateX(-50%);
+   opacity:1;
+   visibility: hidden;
+}
 
-.L2 {position: absolute;
-     top: 0px;
-     left: 0px;
-     mix-blend-mode: overlay;
-     z-index: 1;
-     visibility:visible;
-     opacity:0.75;}
-
-.L3 {position: absolute;
-     top: 0px;
-     left: 0px;
-     visibility:visible;
-     z-index: 1;
-     opacity:0.5;}
-
-.L4 {position: absolute;
-     top: 0px;
-     left: 0px;
-     z-index: 1;
-     visibility:hidden;
-     opacity:0.9;}
+.day_and_time {
+   position: static;
+   height: 100%;
+}
+.button_inactive {
+   background-color: rgba(65,165,234,0.7);
+   font-size:100%;
+   padding: 5px;
+   border-radius: 10px;
+}
+.button_active {
+   background-color: rgba(65,165,234,1);
+   font-size:100%;
+   padding: 5px;
+   border-radius: 10px;
+}
 
 .plot_title {font-size:175%;}
-
-.domains {font-size:120%;}
 
 .days {font-size:120%;}
 
 .hours {font-size:120%;}
-
-.mytable {border: 1px solid black;
-          border-collapse: collapse;}
-.mytr {border-top: solid 1px black border-bottom: solid 1px black; }
-
-.mytd {border-right: none; border-left: none; }
 
 .vl {border-left: 2px dashed LightGrey;
      height: 200px;}

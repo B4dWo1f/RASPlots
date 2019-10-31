@@ -1,0 +1,48 @@
+:root {
+  --slider-height: 10px;
+}
+
+/* Sliders Opacity Layers */
+.slider_container{
+   width: 100%;
+}
+
+.slider_opacity{
+   -webkit-appearance: none;
+   -moz-appearance: none;  /*unnecessary: not defined in mozilla*/
+   width: 100%;
+   height:  var(--slider-height);
+   border-radius: 5px;
+   background: #d3d3d3;
+   opacity: 0.7;
+   -webkit-transition: .2s;
+   -moz-transition: .2s;
+   transition: opacity .2s;
+}
+
+.slider_opacity:hover{
+   opacity: 1;
+   outline: none;
+}
+
+.slider_opacity::-webkit-slider-thumb {
+   -webkit-appearance: none;
+   outline: none;
+   appearance: none;
+   width:  calc(var(--slider-height) + 10px);
+   height:  calc(var(--slider-height) + 10px);
+   border-radius: 50%;
+   background-color: rgba(65,165,234);
+   cursor: pointer;
+}
+
+.slider_opacity::-moz-range-thumb {
+   -moz-appearance: none;
+   outline: none;
+   width:  calc(var(--slider-height) + 10px);
+   height:  calc(var(--slider-height) + 10px);
+   border-radius: 50%;
+   background-color: rgba(65,165,234);
+   cursor: pointer;
+}
+
