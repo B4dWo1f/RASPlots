@@ -1,4 +1,4 @@
-var valid_dates = {'SC2': {'w2': new Date('10/30/2019'), 'd2': new Date('10/30/2019')}, 'SC2+1': {'w2': new Date('10/31/2019'), 'd2': new Date('10/31/2019')}, 'SC4+2': {'w2': new Date('11/01/2019'), 'd2': new Date('11/01/2019')}, 'SC4+3': {'w2': new Date('11/02/2019'), 'd2': new Date('11/02/2019')}};
+var valid_dates = {'SC2': {'w2': new Date('10/31/2019'), 'd2': new Date('10/31/2019')}, 'SC2+1': {'w2': new Date('11/01/2019'), 'd2': new Date('11/01/2019')}, 'SC4+2': {'w2': new Date('11/02/2019'), 'd2': new Date('11/02/2019')}, 'SC4+3': {'w2': new Date('11/03/2019'), 'd2': new Date('11/03/2019')}};
 
 
 var title_prop = {'blwind':'BL Wind', 'bltopwind':'BL Top Wind', 'sfcwind':'Surface Wind',
@@ -71,13 +71,10 @@ var i;
 var j;
 for (i = 0; i < Nhours; i++) {
    j = i + hour0;
-   //text += '<a class="a_hours" href="javascript:change_hour('+j+');">'
-   //text += j + ":00</a> | ";
    text += '<button type="button" class="button_inactive" '
    text += 'id="button_hour_'+i.toString()+'" ';
    text += 'onclick="javascript:change_hour('+i+');">';
    text += j + ":00";
-   //text += days[(( today.getDay() + i )%7)];
    text += '</button>   ';
 }
 document.getElementById("hours").innerHTML = text.slice(0, -2);
