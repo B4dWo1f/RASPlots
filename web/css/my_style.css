@@ -4,12 +4,13 @@ a, a:active, a:focus {
 }
 
 img {
-   max-width:80%;
+   max-width:100%;
    height:auto;
 }
 
 /* User defined */
 .Maps {
+   border:1px solid black;
    position: relative;
    width: 100%;
    padding: 0px;
@@ -20,8 +21,11 @@ img {
 }
 
 .under {
+   padding: 0px;
    left: 0px;
    top: 0px;
+   width: 100%;
+   height:auto;
    z-index: -1;
    position: relative;
    opacity:1;
