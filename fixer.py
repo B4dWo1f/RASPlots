@@ -8,7 +8,7 @@ import common
 
 C = common.load(here+'/full.ini')
 if C == None:
-   LG.critical('No full.ini')
+   #LG.critical('No full.ini')
    exit()
 
 SCs = ['SC2', 'SC2+1', 'SC4+2', 'SC4+3']
