@@ -28,10 +28,7 @@ for sc in SCs:
 
 new_string = f'var valid_dates = {valid_dates};\n'.replace('"','')
 
-fname = f"{here}/web/js/initialize.js"
-with open(fname,'r') as f:
-    lines = f.readlines()
-lines[0] = new_string
+fname = f"{here}/web/js/valid_dates.js"
 with open(fname, "w") as f:
-    f.writelines(lines)
+    f.writelines(new_string)
 
