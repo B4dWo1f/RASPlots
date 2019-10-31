@@ -31,6 +31,8 @@ In order to plot the terrain we use matplotlib's hillshade function.
 Lakes and rivers have been taken from the [Ministerio de Agricultura, Alimentación y medio ambiente](https://servicio.mapama.gob.es/sia/visualizacion/descargas/mapas.jsp)
 
 ## Release notes
+v0.2.1
+Tested and running. CSS improvement
 v0.2.0
 Ditched standard plots for layered base so the web allows a GIS-like manipulation (using javascript)
 v0.1.0
