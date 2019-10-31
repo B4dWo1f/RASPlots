@@ -1,17 +1,14 @@
-.a_days {
-   padding: 5px;
-   border-radius: 5px;
-   background-color: #ddd;
-   color: blue;
+/* Native classes */
+a, a:active, a:focus {
+   outline: none;
 }
-.a_days:active {
-   color: hotpink;
-   background-color: #2196F3;
-}
+
 img {
    max-width:80%;
    height:auto;
 }
+
+/* User defined */
 .Maps {
    position: relative;
    width: 100%;
@@ -21,6 +18,7 @@ img {
    transform: translateX(-50%);
    text-align: center;
 }
+
 .under {
    left: 0px;
    top: 0px;
@@ -63,33 +61,28 @@ img {
    visibility: hidden;
 }
 
+.day_and_time {
+   position: static;
+   height: 100%;
+}
 .button_inactive {
-   background-color: rgba(121,200,255);
-   font-size:120%;
+   background-color: rgba(65,165,234,0.7);
+   font-size:100%;
    padding: 5px;
    border-radius: 10px;
 }
 .button_active {
-   background-color: rgba(42,139,207);
-   font-size:120%;
+   background-color: rgba(65,165,234,1);
+   font-size:100%;
    padding: 5px;
    border-radius: 10px;
 }
 
 .plot_title {font-size:175%;}
 
-.domains {font-size:120%;}
-
 .days {font-size:120%;}
 
 .hours {font-size:120%;}
 
-.mytable {border: 1px solid black;
-          border-collapse: collapse;}
-.mytr {border-top: solid 1px black border-bottom: solid 1px black; }
-
-.mytd {border-right: none; border-left: none; }
-
 .vl {border-left: 2px dashed LightGrey;
      height: 200px;}
-

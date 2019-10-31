@@ -3,6 +3,7 @@
 <head>  <meta charset="utf-8">
    <link rel="stylesheet" type="text/css" href="css/my_style.css">
    <link rel="stylesheet" type="text/css" href="css/myswitch.css">
+   <link rel="stylesheet" type="text/css" href="css/mysliders.css">
    <link rel="stylesheet" type="text/css" href="css/collapsible.css">
    <script type="text/javascript" src='js/my_functions.js'> </script>
    <script type="text/javascript" src="js/valid_dates.js.js" ></script>
@@ -21,75 +22,95 @@
 
 
 
-<p align='center' id="days" class="days"></p>
+<div align="center" class="day_and_time">
+   <p align='center' id="days" class="days"></p>
 
-<p align='center' id="hours" class="hours"></p>
+   <p align='center' id="hours" class="hours"></p>
 
-
-<div align="center">
-<button type="button" class="collapsible" align="center">Opciones</button>
-<div class="content">
-<hr>
-<table align="center">
-   <!-- First row -->
-   <tr>
-      <td>
-         Vector Layer:
-         <input id="SliderOpacity" type="range" min="0" max="100" value="50" oninput="javascript:set_opacity(this.value,['vector_layer']);">
-         <form>
-         <input type="radio" id="chkSFCwind"  onChange="javascript:replot_vector('sfcwind');" name='foo' checked>Viento superficie
-         <input type="radio" id="chkBLwind"  onChange="javascript:replot_vector('blwind');" name='foo'>Viento BL
-         <input type="radio" id="chkBLTOPwind"  onChange="javascript:replot_vector('bltopwind');" name='foo'>Viento BL Top
-         <input type="radio" id="chkBLTOPwind"  onChange="javascript:toggleVisibility('vector_layer');" name='foo'>None
-         </form>
-      </td>
-      <td rowspan="3">
-         <div class="vl"></div>
-      </td>
-      <td rowspan="3">
-         <form>
-         <input type="checkbox" id="chkGnd" onChange="javascript:toggleVisibility('gnd_layer');">Color<br>
-         <input type="checkbox" id="chkCCAA" onChange="javascript:toggleVisibility('ccaa_layer');" checked>Provincias<br>
-         <input type="checkbox" id="chkRivers"  onChange="javascript:toggleVisibility('rivers_layer');" >Ríos y lagos<br>
-         <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility('roads_layer');" >Carreteras<br>
-         <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility('takeoffs_layer');" checked>Despegues<br>
-         </form>
-      </td>
-   </tr>
-   <!-- Second row -->
-   <tr>
-      <td>
-         <hr style="border-color:LightGrey; border-style: dashed; ">
-         Scalar Layer:
-         <input id="SliderOpacity" type="range" min="0" max="100" value="90" oninput="javascript:set_opacity(this.value,['scalar_layer'])">
-         <form>
-         <input type="radio" id="chkSFCwind"  onChange="javascript:replot_scalar('sfcwind');" name='foo' checked>SFCwind
-         <input type="radio" id="chkBLwind"  onChange="javascript:replot_scalar('blwind');" name='foo'>BLwind
-         <input type="radio" id="chkBLTOPwind"  onChange="javascript:replot_scalar('bltopwind');" name='foo'>BLTopwind
-         <input type="radio" id="chkCAPE"  onChange="javascript:replot_scalar('cape');" name='foo'>CAPE
-         <input type="radio" id="chkHBL"  onChange="javascript:replot_scalar('hbl');" name='foo'> Height BL
-         <input type="radio" id="chkWstar"  onChange="javascript:replot_scalar('wstar');" name='foo'> Thermals
-         <input type="radio" id="chkBSratio"  onChange="javascript:replot_scalar('bsratio');" name='foo'> B/S Ratio
-         <!-- <input type="radio" id="chkClouds"  onChange="replot_cloud('blcloudpct');" name='foo'> Clouds --> 
-         </form>
-      </td>
-   </tr>
-   <!-- Third row -->
-   <tr>
-      <td>
-         <hr style="border-color:LightGrey; border-style: dashed; ">
-         Overlay Layer:
-         <input id="SliderOpacity" type="range" min="0" max="100" value="90" oninput="javascript:set_opacity(this.value,['clouds_layer','press_layer'])">
-         <form>
-         <input type="checkbox" id="chkSFCwind" onChange="javascript:toggleVisibility('clouds_layer');">Nubes y lluvia
-         <input type="checkbox" id="chkBLwind"  onChange="javascript:toggleVisibility('press_layer');">Presión a Nivel del mar
-         <!-- <input type="radio" id="chkBLTOPwind"  onChange="toggleVisibility('overall_layer');" name='foo'>None  -->
-         </form>
-      </td>
-   </tr>
-</table>
-<hr>
-</div>
+   <button type="button" class="collapsible" align="center">Opciones</button>
+   <div class="content">
+      <hr>
+      <table align="center">
+         <!-- First row -->
+         <tr>
+            <td>
+               <table class="slider_container" align="left">
+               <tr>
+                  <td>Vector Layer:</td>
+                  <td>
+                     <input id="SliderOpacity" class="slider_opacity" type="range" min="0" max="100" value="50" oninput="javascript:set_opacity(this.value,['vector_layer']);">
+                  </td>
+               </tr>
+               </table>
+               <form>
+               <input type="radio" id="chkSFCwind"  onChange="javascript:replot_vector('sfcwind');" name='foo' checked>Viento superficie
+               <input type="radio" id="chkBLwind"  onChange="javascript:replot_vector('blwind');" name='foo'>Viento BL
+               <input type="radio" id="chkBLTOPwind"  onChange="javascript:replot_vector('bltopwind');" name='foo'>Viento BL Top
+               <input type="radio" id="chkBLTOPwind"  onChange="javascript:toggleVisibility('vector_layer');" name='foo'>None
+               </form>
+            </td>
+            <td rowspan="3">
+               <div class="vl"></div>
+            </td>
+            <td rowspan="3">
+               <form>
+               <input type="checkbox" id="chkGnd" onChange="javascript:toggleVisibility('gnd_layer');">Color<br>
+               <input type="checkbox" id="chkCCAA" onChange="javascript:toggleVisibility('ccaa_layer');" checked>Provincias<br>
+               <input type="checkbox" id="chkRivers"  onChange="javascript:toggleVisibility('rivers_layer');" >Ríos y lagos<br>
+               <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility('roads_layer');" >Carreteras<br>
+               <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility('takeoffs_layer');" checked>Despegues<br>
+               </form>
+            </td>
+         </tr>
+         <!-- Second row -->
+         <tr>
+            <td>
+               <hr style="border-color:LightGrey; border-style: dashed; ">
+               <table class="slider_container" align="left">
+               <tr>
+                  <td>Scalar Layer:</td>
+                  <td>
+                     <input id="SliderOpacity" class="slider_opacity" type="range" min="0" max="100" value="50" oninput="javascript:set_opacity(this.value,['scalar_layer']);">
+                  </td>
+               </tr>
+               </table>
+               <form>
+               <input type="radio" id="chkSFCwind"  onChange="javascript:replot_scalar('sfcwind');" name='foo' checked>SFCwind
+               <input type="radio" id="chkBLwind"  onChange="javascript:replot_scalar('blwind');" name='foo'>BLwind
+               <input type="radio" id="chkBLTOPwind"  onChange="javascript:replot_scalar('bltopwind');" name='foo'>BLTopwind
+               <input type="radio" id="chkCAPE"  onChange="javascript:replot_scalar('cape');" name='foo'>CAPE
+               <input type="radio" id="chkHBL"  onChange="javascript:replot_scalar('hbl');" name='foo'> Height BL
+               <input type="radio" id="chkWstar"  onChange="javascript:replot_scalar('wstar');" name='foo'> Thermals
+               <input type="radio" id="chkBSratio"  onChange="javascript:replot_scalar('bsratio');" name='foo'> B/S Ratio
+               <!-- <input type="radio" id="chkClouds"  onChange="replot_cloud('blcloudpct');" name='foo'> Clouds --> 
+               </form>
+            </td>
+         </tr>
+         <!-- Third row -->
+         <tr>
+            <td>
+               <hr style="border-color:LightGrey; border-style: dashed; ">
+               <!-- Overlay Layer: -->
+               <!-- <input id="SliderOpacity" type="range" min="0" max="100" value="90" oninput="javascript:set_opacity(this.value,['clouds_layer','press_layer'])"> -->
+               <table class="slider_container" align="left">
+               <tr>
+                  <td>Overlay Layer:</td>
+                  <td>
+                     <input id="SliderOpacity" class="slider_opacity" type="range" min="0" max="100" value="50"
+                                                                                           oninput="javascript:set_opacity(this.value,['clouds_layer','press_layer']);">
+                  </td>
+               </tr>
+               </table>
+               <form>
+               <input type="checkbox" id="chkSFCwind" onChange="javascript:toggleVisibility('clouds_layer');">Nubes y lluvia
+               <input type="checkbox" id="chkBLwind"  onChange="javascript:toggleVisibility('press_layer');">Presión a Nivel del mar
+               <!-- <input type="radio" id="chkBLTOPwind"  onChange="toggleVisibility('overall_layer');" name='foo'>None  -->
+               </form>
+            </td>
+         </tr>
+      </table>
+      <hr>
+   </div>
 </div>  <!-- center -->
 
 
