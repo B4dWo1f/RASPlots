@@ -34,8 +34,18 @@
 .content {
   max-width: 100%;
   width: 85%;
+  text-align: center;
+  /* float: center; */
   padding: 0 18px;
   display: none;
   overflow: hidden;
   background-color: #f1f1f1;
 } 
+
+label {
+    white-space:nowrap;
+}
+
+.wrappable {
+    white-space:nowrap;
+}

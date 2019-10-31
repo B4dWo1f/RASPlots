@@ -3,9 +3,46 @@ a, a:active, a:focus {
    outline: none;
 }
 
+div {
+   /* border:1px solid black; */    /*For debugging XD  */
+   margin: auto;
+   text-align:center;
+}
+
 img {
    max-width:100%;
    height:auto;
+}
+
+.header {
+   width: 100%;
+   height: auto;
+   text-align: center;
+}
+
+.full_site_content {
+   width: 100%;
+   height: auto;
+   text-align: center;
+}
+
+.days {
+   /* min-width: 325px; */
+   font-size: 110%;
+   padding-bottom:5px;
+   text-align: center;
+}
+
+.hours {
+   font-size:110%;
+   padding-bottom:5px;
+   text-align: center;
+}
+
+.footer {
+   width: 100%;
+   height: auto;
+   text-align: center;
 }
 
 /* User defined */
@@ -74,19 +111,20 @@ img {
    font-size:100%;
    padding: 5px;
    border-radius: 10px;
+   border: 0px;
+   outline: none;
 }
 .button_active {
    background-color: rgba(65,165,234,1);
    font-size:100%;
    padding: 5px;
    border-radius: 10px;
+   border: 0px;
+   outline: none;
 }
 
 .plot_title {font-size:175%;}
 
-.days {font-size:120%;}
-
-.hours {font-size:120%;}
 
 .vl {border-left: 2px dashed LightGrey;
      height: 200px;}
