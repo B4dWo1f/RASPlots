@@ -1,5 +1,3 @@
-var valid_dates = {'SC2': {'w2': new Date('10/31/2019'), 'd2': new Date('10/31/2019')}, 'SC2+1': {'w2': new Date('11/01/2019'), 'd2': new Date('11/01/2019')}, 'SC4+2': {'w2': new Date('11/02/2019'), 'd2': new Date('11/02/2019')}, 'SC4+3': {'w2': new Date('11/03/2019'), 'd2': new Date('11/03/2019')}};
-
 
 var title_prop = {'blwind':'BL Wind', 'bltopwind':'BL Top Wind', 'sfcwind':'Surface Wind',
                   'cape': 'CAPE', 'wstar':'Thermal Updraft Velocity', 'hbl':'Height of BL Top',
