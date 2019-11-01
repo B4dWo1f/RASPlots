@@ -47,7 +47,11 @@ img {
 
 /* User defined */
 .Maps {
+<<<<<<< HEAD
+   border:1px solid black;
+=======
    /*border:1px solid black;*/
+>>>>>>> master
    position: relative;
    width: 100%;
    padding: 0px;
