@@ -3,13 +3,51 @@ a, a:active, a:focus {
    outline: none;
 }
 
+div {
+   /* border:1px solid black; */    /*For debugging XD  */
+   margin: auto;
+   text-align:center;
+}
+
 img {
-   max-width:80%;
+   max-width:100%;
    height:auto;
+}
+
+.header {
+   width: 100%;
+   height: auto;
+   text-align: center;
+}
+
+.full_site_content {
+   width: 100%;
+   height: auto;
+   text-align: center;
+}
+
+.days {
+   /* min-width: 325px; */
+   font-size: 110%;
+   padding-bottom:5px;
+   text-align: center;
+}
+
+.hours {
+   font-size:110%;
+   padding-bottom:5px;
+   text-align: center;
+}
+
+.footer {
+   width: 100%;
+   height: auto;
+   text-align: center;
 }
 
 /* User defined */
 .Maps {
+   /*border:1px solid black;*/
    position: relative;
    width: 100%;
    padding: 0px;
@@ -20,8 +58,11 @@ img {
 }
 
 .under {
+   padding: 0px;
    left: 0px;
    top: 0px;
+   width: 100%;
+   height:auto;
    z-index: -1;
    position: relative;
    opacity:1;
@@ -30,6 +71,8 @@ img {
    position: absolute;
    left: 50%;
    top: 0px;
+   width: 100%;
+   height:auto;
    transform: translateX(-50%);
    opacity:1;
    z-index: 1;
@@ -38,6 +81,8 @@ img {
    position: absolute;
    left: 50%;
    top: 0px;
+   width: 100%;
+   height:auto;
    z-index: 1;
    transform: translateX(-50%);
    mix-blend-mode: overlay;
@@ -47,6 +92,8 @@ img {
    position: absolute;
    left: 50%;
    top: 0px;
+   width: 100%;
+   height:auto;
    z-index: 1;
    transform: translateX(-50%);
    opacity:1;
@@ -55,6 +102,8 @@ img {
    position: absolute;
    left: 50%;
    top: 0px;
+   width: 100%;
+   height:auto;
    z-index: 1;
    transform: translateX(-50%);
    opacity:1;
@@ -70,19 +119,20 @@ img {
    font-size:100%;
    padding: 5px;
    border-radius: 10px;
+   border: 0px;
+   outline: none;
 }
 .button_active {
    background-color: rgba(65,165,234,1);
    font-size:100%;
    padding: 5px;
    border-radius: 10px;
+   border: 0px;
+   outline: none;
 }
 
 .plot_title {font-size:175%;}
 
-.days {font-size:120%;}
-
-.hours {font-size:120%;}
 
 .vl {border-left: 2px dashed LightGrey;
      height: 200px;}
