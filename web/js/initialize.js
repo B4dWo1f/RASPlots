@@ -29,9 +29,12 @@ var Nhours = 12;
 var hour0 = 8;
 var hour = 12;
 
-var plot_title = document.getElementById("Title");
+/* State variables */
+var Opts_menu = false;
+var Opts_minx = 100;
 
 // Useful aliases
+var plot_title = document.getElementById("Title");
 var TER_layer = document.getElementById('terrain_layer')
 var GND_layer = document.getElementById('gnd_layer')
 var CCA_layer = document.getElementById('ccaa_layer')
