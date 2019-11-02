@@ -45,8 +45,10 @@ var TAK_layer = document.getElementById('takeoffs_layer')
 var S_layer = document.getElementById('scalar_layer')
 var V_layer = document.getElementById('vector_layer')
 var C_layer = document.getElementById('clouds_layer')
+var R_layer = document.getElementById('rain_layer')
 var P_layer = document.getElementById('press_layer')
 var CB_layer = document.getElementById('cbar_layer')
+var CB_R_layer = document.getElementById('rain_cbar_layer')
 
 // ----  Default values for initial load ----
 update_plot_title(dw,d,Sprop,hour)
@@ -61,8 +63,10 @@ S_layer.src = get_filename(folder,domain,sc,hour,UTCshift,Sprop,false);
 V_layer.src = get_filename(folder,domain,sc,hour,UTCshift,Vprop,true);
 // special layers
 C_layer.src  = get_filename(folder,domain,sc,hour,UTCshift,'blcloudpct',false);
+R_layer.src  = get_filename(folder,domain,sc,hour,UTCshift,'rain1',false);
 P_layer.src  = get_filename(folder,domain,sc,hour,UTCshift,'mslpress',false);
 CB_layer.src = folder+'/'+Sprop+'.png';
+CB_R_layer.src = folder+'/'+'rain1.png';
 
 document.getElementById("days").innerHTML = generate_days();
 
