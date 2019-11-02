@@ -138,6 +138,7 @@ img {
    border-radius: 10px;
    border: 0px;
    outline: none;
+   cursor: pointer;
 }
 .button_active {
    background-color: rgba(65,165,234,1);
@@ -146,6 +147,7 @@ img {
    border-radius: 10px;
    border: 0px;
    outline: none;
+   cursor: pointer;
 }
 
 .plot_title {font-size:175%;}

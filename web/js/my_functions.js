@@ -11,25 +11,24 @@ function change_hour(x) {
    id = 'button_hour_' + x;
    var Button = document.getElementById(id);
    Button.className = "button_active";
-   //plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
-   //document.getElementById('clouds_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour-UTCshift+'00_blcloudpct.png';
-   //document.getElementById('press_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour-UTCshift+'00_mslpress.png';
+   C_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'blcloudpct',false);
+   R_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'rain1',false);
+   P_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'mslpress',false);
 }
 
 function change_domain(x) {
    domain = x
    replot_scalar(Sprop);
    replot_vector(Vprop);
-   document.getElementById('terrain_layer').src = folder+'/'+domain+'/'+sc+'/terrain.png';
-   document.getElementById('gnd_layer').src = folder+'/'+domain+'/'+sc+'/terrain1.png';
-   document.getElementById('ccaa_layer').src = folder+'/'+domain+'/'+sc+'/ccaa.png';
-   document.getElementById('rivers_layer').src = folder+'/'+domain+'/'+sc+'/rivers.png';
-   document.getElementById('roads_layer').src = folder+'/'+domain+'/'+sc+'/roads.png';
-   document.getElementById('takeoffs_layer').src = folder+'/'+domain+'/'+sc+'/takeoffs.png';
-   document.getElementById('clouds_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_blcloudpct.png';
-   document.getElementById('press_layer').src =  folder+'/'+domain+'/'+sc+'/'+hour+'00_mslpress.png';
+   TER_layer.src = folder+'/'+domain+'/'+sc+'/terrain.png';
+   CCA_layer.src = folder+'/'+domain+'/'+sc+'/ccaa.png';
+   RIV_layer.src = folder+'/'+domain+'/'+sc+'/rivers.png';
+   ROA_layer.src = folder+'/'+domain+'/'+sc+'/roads.png';
+   TAK_layer.src = folder+'/'+domain+'/'+sc+'/takeoffs.png';
+   C_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'blcloudpct',false);
+   R_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'rain1',false);
+   P_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'mslpress',false);
    document.getElementById("days").innerHTML = generate_days();
-
 }
 
 function set_all(folder,domain,sc){
@@ -103,16 +102,29 @@ function replot_scalar(x){
    return fname;
 }
 
-function toggleVisibility(id) {
-  var el = document.getElementById(id);
-  if (el.style.visibility=="visible") {
-     el.style.visibility="hidden";
-  }
-  else {
-     el.style.visibility="visible";}
-  if (id == 'gnd_layer'){
-     set_opacity(0,['scalar_layer']);
-  }
+function toggleVisibility(ids) {
+   var ids_length = ids.length;
+   for (var i = 0; i < ids_length; i++) {
+      var id = ids[i];
+      var el = document.getElementById(ids[i]);
+      if (el.style.visibility=="visible") {
+         el.style.visibility="hidden";
+         if (id == 'rain_layer'){
+            var rain = document.getElementById('rain_cbar_layer');
+            rain.style.visibility="hidden";
+         }
+      }
+      else {
+         el.style.visibility="visible";
+         if (id == 'rain_layer'){
+            var rain = document.getElementById('rain_cbar_layer');
+            rain.style.visibility="visible";
+         }
+      }
+      if (ids[i] == 'gnd_layer'){
+         set_opacity(0,['scalar_layer']);
+      }
+   }
 }
 
 function get_folder(fol,dom,sc){

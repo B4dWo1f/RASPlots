@@ -159,16 +159,17 @@
    </div>
    <div style="padding-bottom:2px;">
       <form>
-         <input type="checkbox" id="chkGnd" onChange="javascript:toggleVisibility('gnd_layer');">Color
-         <input type="checkbox" id="chkCCAA" onChange="javascript:toggleVisibility('ccaa_layer');" checked>Provincias
-         <input type="checkbox" id="chkRivers"  onChange="javascript:toggleVisibility('rivers_layer');" checked>Ríos y lagos
-         <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility('roads_layer');" >Carreteras
-         <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility('takeoffs_layer');" checked>Despegues
+         <input type="checkbox" id="chkGnd"    onChange="javascript:toggleVisibility(['gnd_layer']);">Color
+         <input type="checkbox" id="chkCCAA"   onChange="javascript:toggleVisibility(['ccaa_layer']);" checked>Provincias
+         <input type="checkbox" id="chkRivers" onChange="javascript:toggleVisibility(['rivers_layer']);" checked>Ríos y lagos
+         <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility(['roads_layer']);" >Carreteras
+         <input type="checkbox" id="chkRoads"  onChange="javascript:toggleVisibility(['takeoffs_layer']);" checked>Despegues
       </form>
    </div>
 
-   <!-- Mapa -->
+   <!-- Map container-->
    <div class="Maps" align="middle">
+      <!-- Layers options -->
       <div class="showhim">
          Capas
          <div class="showme">
@@ -191,7 +192,7 @@
                   <span>Viento BL Top</span>
                </label>
                <label>
-                  <input type="radio" id="chkBLTOPwind"  onChange="javascript:toggleVisibility('vector_layer');" name='foo'>
+                  <input type="radio" id="chkBLTOPwind"  onChange="javascript:toggleVisibility(['vector_layer']);" name='foo'>
                   <span>None</span>
                </label>
             </form>
@@ -234,11 +235,11 @@
             <label>
                Overlay Layer:<br>
                <input id="SliderOpacity" class="slider_opacity" type="range" min="0" max="100" value="50"
-                                         oninput="javascript:set_opacity(this.value,['clouds_layer','press_layer']);">
+                                         oninput="javascript:set_opacity(this.value,['clouds_layer','rain_layer','press_layer']);">
             </label>
             <form>
-               <input type="checkbox" id="chkSFCwind" onChange="javascript:toggleVisibility('clouds_layer');">Nubes y lluvia
-               <input type="checkbox" id="chkBLwind"  onChange="javascript:toggleVisibility('press_layer');">Presión a Nivel del mar
+               <input type="checkbox" id="chkSFCwind" onChange="javascript:toggleVisibility(['clouds_layer','rain_layer']);">Nubes y lluvia
+               <input type="checkbox" id="chkBLwind"  onChange="javascript:toggleVisibility(['press_layer']);">Presión a Nivel del mar
             </form>
             <hr style="width:93%;">
          </div>
@@ -255,12 +256,14 @@
       <img class="Vover" id="vector_layer" style="visibility:visible">
       <!-- Special layers -->
       <img class="Oover" id="clouds_layer">
+      <img class="Oover" id="rain_layer">
       <img class="Oover" id="press_layer">
    </div>
 
    <div class="Maps" align="middle">
       <!-- Colorbar -->
       <img class="under" id="cbar_layer">
+      <img class="under" id="rain_cbar_layer" style="visibility:hidden">
    </div>
    <!-- ---- -->
 </div>
