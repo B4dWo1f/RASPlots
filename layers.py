@@ -299,9 +299,9 @@ def strip_plot(fig,ax,lims,aspect,fname):
    ax.set_ylim(lims[2:4])
    ax.get_xaxis().set_visible(False)
    ax.get_yaxis().set_visible(False)
+   plt.axis('off')
    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
    fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
-   plt.axis('off')
 
 # if __name__ == '__main__':
 #    # Terrain

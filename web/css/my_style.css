@@ -4,9 +4,11 @@ a, a:active, a:focus {
 }
 
 div {
-   /* border:1px solid black; */    /*For debugging XD  */
+   /*border:1px solid red;*/    /*For debugging XD  */
+   border: none !important;
    margin: auto;
-   text-align:center;
+   text-align: center;
+   vertical-align: middle;
 }
 
 img {
@@ -49,12 +51,27 @@ img {
 .Maps {
    /*border:1px solid black;*/
    position: relative;
+   min-width:600px;  /* To avoid problem with options menu*/
    width: 100%;
    padding: 0px;
    top: 0px;
    left: 50%;
    transform: translateX(-50%);
    text-align: center;
+}
+
+@media only screen and (max-width: 600px) {
+   .Maps {
+      border:3px solid blue;
+      position: relative;
+      min-width:600px;  /* To avoid problem with options menu*/
+      width: 100%;
+      padding: 0px;
+      top: 0px;
+      left: 0px;
+      transform: translateX(0%);
+      text-align: center;
+   }
 }
 
 .under {

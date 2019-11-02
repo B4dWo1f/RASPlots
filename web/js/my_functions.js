@@ -175,3 +175,31 @@ function toggle_domain(){
       domain = "w2";}
    change_domain(domain)
 }
+
+// Collapsable button
+function toggle_opts_menu() {
+   if (Opts_menu == true){
+      closeNav();
+      Opts_menu = false;
+   }
+   else if (Opts_menu == false){
+      openNav();
+      Opts_menu = true;
+   }
+}
+
+function openNav() {
+   document.getElementById("options_button").style.width = "250px";
+   document.getElementById("opts_box").style.width = "250px";
+}
+
+function closeNav() {
+   Opts_minx=1000;
+   var foo = Opts_minx.toString()+'px';
+   alert(foo);
+   document.getElementById("options_button").style.width = foo;
+   alert('button')
+   document.getElementById("opts_box").style.height = foo;
+   alert('box')
+}
+
