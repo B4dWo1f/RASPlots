@@ -49,3 +49,48 @@ label {
 .wrappable {
     white-space:nowrap;
 }
+
+.showhim {
+   position: absolute;
+   background-color: rgba(0,0,0,0.5);
+   left: 20px;
+   top:  20px;
+   min-width:70px;
+   min-height:22px;
+   width: 10%;
+   height:5%;
+   z-index: 1000;
+   /* font-size: 100%; */
+   text-align: center;
+   vertical-align: middle;
+   color: white;
+   border: none;
+}
+
+.showhim:hover .showme {
+   display: block;
+   font-size:70%;
+}
+
+.showhim:hover {
+   background-color: rgba(0,0,0,0.75);
+   max-width:80%;
+   font-size:200%;
+   width:auto;
+   height:auto;
+   color: rgb(220,220,220);
+}
+
+.showme {
+   /* border:2px solid blue; */    /*For debugging XD  */
+   position: relative;
+   display: none;
+   width: 100%;
+   font-size:100%;
+   min-width: 100px;
+   height: auto;
+   /* padding-right: 30px; */
+   padding-bottom: 20px;
+   padding: 5px;
+   /* background-color: rgba(0,0,0,0.75); */
+}
