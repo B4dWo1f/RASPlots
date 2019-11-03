@@ -20,11 +20,12 @@ function change_domain(x) {
    domain = x
    replot_scalar(Sprop);
    replot_vector(Vprop);
-   TER_layer.src = folder+'/'+domain+'/'+sc+'/terrain.png';
-   CCA_layer.src = folder+'/'+domain+'/'+sc+'/ccaa.png';
-   RIV_layer.src = folder+'/'+domain+'/'+sc+'/rivers.png';
-   ROA_layer.src = folder+'/'+domain+'/'+sc+'/roads.png';
-   TAK_layer.src = folder+'/'+domain+'/'+sc+'/takeoffs.png';
+   TER_layer.src = get_folder(folder,domain,sc)+'/terrain.png';
+   GND_layer.src = get_folder(folder,domain,sc)+'/terrain1.png';
+   CCA_layer.src = get_folder(folder,domain,sc)+'/ccaa.png';
+   RIV_layer.src = get_folder(folder,domain,sc)+'/rivers.png';
+   ROA_layer.src = get_folder(folder,domain,sc)+'/roads.png';
+   TAK_layer.src = get_folder(folder,domain,sc)+'/takeoffs.png';
    C_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'blcloudpct',false);
    R_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'rain1',false);
    P_layer.src= get_filename(folder,domain,sc,hour,UTCshift,'mslpress',false);
