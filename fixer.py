@@ -25,10 +25,9 @@ for sc in SCs:
       date = date.strftime('%m/%d/%Y')
       valid_dates[sc][domain] = f"new Date('{date}')"
 
-
 new_string = f'var valid_dates = {valid_dates};\n'.replace('"','')
 
-fname = f"{here}/web/js/valid_dates.js"
+fname = f'{C.path_web}/js/valid_dates.js'
 with open(fname, "w") as f:
     f.writelines(new_string)
 

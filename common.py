@@ -21,7 +21,7 @@ class Config(object):
    #def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
    def __init__(self,Rfolder,Dfolder,Pfolder,lims,background,
                      run_days=[], date='', domains=[], props=[],
-                     parallel=True,zoom=True,ve=100):
+                     parallel=True,zoom=True,ve=100,path_web='../'):
       """
       Rfolder
       Dfolder
@@ -52,6 +52,7 @@ class Config(object):
       self.parallel = parallel
       self.zoom = zoom
       self.ve = ve
+      self.path_web = path_web
    def __str__(self):
       msg =  f'Data stored in: {self.root_folder}\n'
       msg += f'Terrain files:  {self.lats}  {self.lons}  {self.hagl}\n'
@@ -92,7 +93,8 @@ def load(fname='config.ini'):
    parallel = eval(config['run']['parallel'].capitalize())
    zoom = eval(config['run']['zoom'].capitalize())
    ve = int(config['plots']['ve'])
-   return Config(Rfolder,Dfolder,Pfolder,lims,background,run,date,domains,props,parallel,zoom,ve)
+   path_web = expanduser(config['fixer']['path_web'])
+   return Config(Rfolder,Dfolder,Pfolder,lims,background,run,date,domains,props,parallel,zoom,ve, path_web)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    if root[-1] != '/': root += '/'
