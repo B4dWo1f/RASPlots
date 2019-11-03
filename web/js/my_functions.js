@@ -82,13 +82,13 @@ function replot_cloud(x){
 }
 
 function replot_vector(x){
+   var checks = {'sfcwind': 'VchkSFCwind', 'blwind':'VchkBLwind',
+                 'bltopwind': 'VchkBLTOPwind'}
    var VL = document.getElementById('vector_layer')
    Vprop = x
    var fname = get_filename(folder,domain,sc,hour,UTCshift,Vprop,true);
    VL.src = fname;
-   // To reverse the action of None
-   if (VL.style.visibility=="hidden") {
-      VL.style.visibility="visible";}
+   check(checks[x]);
 }
 
 function replot_scalar(x){
@@ -98,6 +98,10 @@ function replot_scalar(x){
    var fname = get_filename(folder,domain,sc,hour,UTCshift,Sprop,false);
    Slayer.src = fname;
    CBlayer.src= folder+'/'+Sprop+'.png';
+   if ( ["sfcwind", "blwind", "bltopwind"].includes(x) ){
+      replot_vector(x)
+   }
+
    // plot_title.innerHTML = dw+' '+d+' '+title_prop[Sprop]+' '+hour+':00';
    update_plot_title(dw,d,Sprop,hour)
    return fname;
@@ -216,3 +220,10 @@ function closeNav() {
    alert('box')
 }
 
+function check(id) {
+    document.getElementById(id).checked = true;
+}
+
+function uncheck(id) {
+    document.getElementById(id).checked = false;
+}
