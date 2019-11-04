@@ -207,8 +207,8 @@ def press_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
 
 
 def all_background_layers(folder,domain,sc):
-   ves = {'w2':{'SC2':100,'SC2+1':100,'SC4+2':90,'SC4+3':90},
-          'd2':{'SC2':5,'SC2+1':5,'SC4+2':4,'SC4+3':4}}
+   ves = {'w2':{'SC2':100,'SC2+1':100,'SC4+2':40,'SC4+3':40},
+          'd2':{'SC2':2.5,'SC2+1':2.5,'SC4+2':9.5,'SC4+3':9.5}}
    ve=ves[domain][sc]
    final_folder = f'{folder}/{domain}/{sc}'
    com = f'mkdir -p {final_folder}'
@@ -301,7 +301,8 @@ def strip_plot(fig,ax,lims,aspect,fname):
    ax.get_yaxis().set_visible(False)
    plt.axis('off')
    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
-   fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0)
+   fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0,
+                      dpi=65, quality=90)   # compression
 
 # if __name__ == '__main__':
 #    # Terrain
