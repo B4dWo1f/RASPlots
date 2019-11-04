@@ -20,26 +20,31 @@ import logging
 LG = logging.getLogger(__name__)
 
 
-params= {'sfcwind':  {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
-                      'cmap':WindSpeed},
-         'blwind':   {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
-                      'cmap':WindSpeed},
-         'bltopwind':{'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
-                      'cmap':WindSpeed},
-         'cape':     {'factor':1, 'delta':100, 'vmin':0, 'vmax':6100,
-                      'cmap':CAPE},
-         'bsratio':  {'factor':1, 'delta':2, 'vmin':0, 'vmax':28,
-                      'cmap':WindSpeed},
-         'wstar':    {'factor':1/100, 'delta':0.25, 'vmin':0, 'vmax':3.75,
-                      'cmap':WindSpeed},
-         'hbl':      {'factor':1, 'delta':200,'vmin':800,'vmax':3800,
-                      'cmap':WindSpeed},
+params= {'sfcwind':   {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
+                       'cmap':WindSpeed},
+         'blwind':    {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
+                       'cmap':WindSpeed},
+         'bltopwind': {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
+                       'cmap':WindSpeed},
+         'cape':      {'factor':1, 'delta':100, 'vmin':0, 'vmax':6100,
+                       'cmap':CAPE},
+         'bsratio':   {'factor':1, 'delta':2, 'vmin':0, 'vmax':28,
+                       'cmap':WindSpeed},
+         'wstar':     {'factor':1/100, 'delta':0.25, 'vmin':0, 'vmax':3.75,
+                       'cmap':WindSpeed},
+         'hbl':       {'factor':1, 'delta':200,'vmin':800,'vmax':3800,
+                       'cmap':WindSpeed},
          'blcloudpct':{'factor':1, 'delta':7,'vmin':0,'vmax':98+7,
-                      'cmap':greys},
-         'rain1':{'factor':1, 'delta':200,'vmin':800,'vmax':3800,
-                      'cmap':None},  # dummy, it is overriden
-         'mslpress':{'factor':1, 'delta':200,'vmin':800,'vmax':3800,
-                      'cmap':None}}
+                       'cmap':greys},
+         'rain1':     {'factor':1, 'delta':200,'vmin':800,'vmax':3800,
+                       'cmap':None},  # dummy, it is overriden
+         'mslpress':  {'factor':1, 'delta':200,'vmin':800,'vmax':3800,
+                       'cmap':None},
+         'hglider' :  {'factor':1, 'delta':240,'vmin':200,'vmax':3800,
+                       'cmap':WindSpeed},
+         'wblmaxmin': {'factor':1/100, 'delta':0.5,'vmin':-3.5,'vmax':4,
+                       'cmap':WindSpeed}
+         }
 
 def super_plot(args):
    hour,prop,Dfolder, curr_date, Pfolder, domain, sc, prop,l,a = args
