@@ -30,4 +30,4 @@ new_string = f'var valid_dates = {valid_dates};\n'.replace('"','')
 fname = f'{C.path_web}/js/valid_dates.js'
 with open(fname, "w") as f:
     f.writelines(new_string)
-
+print('fixer Done!')

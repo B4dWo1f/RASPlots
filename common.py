@@ -94,6 +94,8 @@ def load(fname='config.ini'):
    zoom = eval(config['run']['zoom'].capitalize())
    ve = int(config['plots']['ve'])
    path_web = expanduser(config['fixer']['path_web'])
+   if path_web[0] in ['/']: pass
+   else: path_web = here +'/'+ path_web
    return Config(Rfolder,Dfolder,Pfolder,lims,background,run,date,domains,props,parallel,zoom,ve, path_web)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
