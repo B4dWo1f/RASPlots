@@ -88,3 +88,21 @@ if __name__ == '__main__':
    cmap  = colormaps.Rain
    units = 'mm'
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units,norm=norm)
+
+   name  = 'hglider'
+   delta = 240
+   vmin  = 200
+   vmax  = 3800
+   levels = None
+   cmap  = colormaps.WindSpeed
+   units = 'm'
+   plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
+
+   name  ='wblmaxmin'
+   delta = 0.5
+   vmin  = -3.5
+   vmax  = 4
+   levels = None
+   cmap  = colormaps.WindSpeed
+   units = 'm/s'
+   plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
