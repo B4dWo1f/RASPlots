@@ -3,10 +3,17 @@
 
 import numpy as np
 import colormaps
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.colors import BoundaryNorm
 
+COLOR = '#e0e0e0'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
+mpl.rcParams['axes.edgecolor'] = COLOR
 
 #fig.colorbar(c)
 #plt.show()
