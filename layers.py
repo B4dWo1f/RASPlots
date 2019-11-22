@@ -51,9 +51,13 @@ def super_plot(args):
    LG.debug(f'Plotting {sc} {domain} {hour.strftime("%Y/%m/%d-%H%M")} {prop}')
    with open(f'{Pfolder}/{domain}/{sc}/valid_date.txt','w') as f:
       f.write(curr_date.strftime('%d/%m/%Y\n'))
-   if 'wind' in prop:
-      all_vector(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
-   all_scalar(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
+   try:
+      if 'wind' in prop:
+         all_vector(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
+      all_scalar(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
+   except OSError:
+      msg = f'missing {sc} {domain} {hour.strftime("%Y/%m/%d-%H%M")} {prop}'
+      LG.critical(msg)
 
 
 def plot_background(grid,cmap='gray',ve=100,fig=None,ax=None):
@@ -296,6 +300,7 @@ def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
       scalar_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
    fname = f'{final_folder}/{hour}_{prop}.png'
    strip_plot(fig,ax,lims,aspect,fname)
+   plt.close('all')
 
 
 def strip_plot(fig,ax,lims,aspect,fname):
