@@ -102,27 +102,37 @@ print('Starting training')
 class StopOnConvergence(tf.keras.callbacks.Callback):
    """
    Stops training if the std of the loss in the last N epochs is < threshold
+   of if a file STOP is present in the folder
    """
    def __init__(self,N=30,threshold=0.05):
       self.N = N
       self.thres = threshold
       self.loss = []
    def on_epoch_end(self, epoch, logs={}):
-      N = self.N
-      thres = self.thres
-      self.loss.append(logs.get('loss'))
-      self.loss = self.loss[int(-1.2*N):]
-      if len(self.loss) > N:
-         std = np.std(self.loss[-N:])
-         print(f'loss std: {std}\n')
-         if std < thres:
-            print('\n\nConvergence achieved?\n\n')
-            self.model.stop_training = True
-
+      #N = self.N
+      #thres = self.thres
+      #self.loss.append(logs.get('loss'))
+      #self.loss = self.loss[int(-1.2*N):]
+      #if len(self.loss) > N:
+      #   std = np.std(self.loss[-N:])
+      #   print('*********************')
+      #   print(self.loss[-N:])
+      #   print(f'loss std: {std}\n')
+      #   print('*********************')
+      #   if std < thres:
+      #      print('\n\nConvergence achieved?\n\n')
+      #      self.model.stop_training = True
+      if os.path.isfile('STOP'): self.model.stop_training = True
 
 history = model.fit(inputs, outputs, validation_split=0.1,
-                                     epochs=epochs, verbose=2)
-                                     # callbacks=[StopOnConvergence()])
+                                     epochs=epochs, verbose=2,
+                                     callbacks=[StopOnConvergence(50,0.001)])
+
+M = np.column_stack([history.history['loss'], history.history['val_loss']])
+Nover = len(os.popen(f'ls overfit*.dat').read().strip().splitlines())
+np.savetxt(f'overfit{Nover}.dat',M,fmt='%.7f')
+
+exit()
 model.save(fmodel)
 # os.system(f'rm {fmodel_tmp}')
 
