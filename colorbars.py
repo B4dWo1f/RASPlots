@@ -113,3 +113,12 @@ if __name__ == '__main__':
    cmap  = colormaps.WindSpeed
    units = 'm/s'
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
+
+   name  ='zsfclcl'
+   delta = 280
+   vmin  = 1200
+   vmax  = 5400 + delta
+   levels = None
+   cmap = colormaps.WindSpeed
+   units = 'm'
+   plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
