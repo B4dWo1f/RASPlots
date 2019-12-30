@@ -43,7 +43,11 @@ params= {'sfcwind':   {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
          'hglider' :  {'factor':1, 'delta':240,'vmin':200,'vmax':3800,
                        'cmap':WindSpeed},
          'wblmaxmin': {'factor':1/100, 'delta':0.5,'vmin':-3.5,'vmax':4,
-                       'cmap':WindSpeed}
+                       'cmap':WindSpeed},
+         'zsfclcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+                     'cmap':WindSpeed},
+         'zsfclcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+                        'cmap':WindSpeed}
          }
 
 def super_plot(args):
@@ -201,6 +205,21 @@ def rain_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
                               extend='max', cmap=cmap,
                               norm=norm, vmin=vmin, vmax=vmax)
 
+def cloud_base_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
+   X = np.load(grid+'lons.npy')
+   Y = np.load(grid+'lats.npy')
+
+   cu_base = fbase+'.data'
+   cu_pote = fbase+'dif.data'
+   cu_base = np.loadtxt(cu_base, skiprows=4)*factor
+   cu_pote = np.loadtxt(cu_pote, skiprows=4)*factor
+   null = 0. * cu_base
+   cu_base_pote = np.where(cu_pote>0,cu_base,null)
+   Cf = ax.contourf(X,Y,cu_base_pote, levels=range(vmin,vmax,delta),
+                                      antialiased=True,
+                                      extend='max', cmap=cmap,
+                                      vmin=vmin, vmax=vmax)
+
 def press_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
    X = np.load(grid+'lons.npy')
    Y = np.load(grid+'lats.npy')
@@ -296,6 +315,9 @@ def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
       rain_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
    elif prop == 'mslpress':
       press_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
+   elif prop == 'zsfclcl':
+      cloud_base_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
+   elif prop == 'zsfclcldif': return
    else:
       scalar_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
    fname = f'{final_folder}/{hour}_{prop}.png'
