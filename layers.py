@@ -47,7 +47,11 @@ params= {'sfcwind':   {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
          'zsfclcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
                      'cmap':WindSpeed},
          'zsfclcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
-                        'cmap':WindSpeed}
+                        'cmap':WindSpeed},
+         'zblcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+                   'cmap':WindSpeed},
+         'zblcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+                       'cmap':WindSpeed},
          }
 
 def super_plot(args):
@@ -208,7 +212,6 @@ def rain_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
 def cloud_base_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
    X = np.load(grid+'lons.npy')
    Y = np.load(grid+'lats.npy')
-
    cu_base = fbase+'.data'
    cu_pote = fbase+'dif.data'
    cu_base = np.loadtxt(cu_base, skiprows=4)*factor
@@ -216,6 +219,20 @@ def cloud_base_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
    null = 0. * cu_base
    cu_base_pote = np.where(cu_pote>0,cu_base,null)
    Cf = ax.contourf(X,Y,cu_base_pote, levels=range(vmin,vmax,delta),
+                                      antialiased=True,
+                                      extend='max', cmap=cmap,
+                                      vmin=vmin, vmax=vmax)
+
+def overcast_development_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
+   X = np.load(grid+'lons.npy')
+   Y = np.load(grid+'lats.npy')
+   od_base = fbase+'.data'
+   od_pote = fbase+'dif.data'
+   od_base = np.loadtxt(od_base, skiprows=4)*factor
+   od_pote = np.loadtxt(od_pote, skiprows=4)*factor
+   null = 0. * od_base
+   od_base_pote = np.where(od_pote>0,od_base,null)
+   Cf = ax.contourf(X,Y,od_base_pote, levels=range(vmin,vmax,delta),
                                       antialiased=True,
                                       extend='max', cmap=cmap,
                                       vmin=vmin, vmax=vmax)
@@ -318,6 +335,9 @@ def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
    elif prop == 'zsfclcl':
       cloud_base_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
    elif prop == 'zsfclcldif': return
+   elif prop == 'zblcl':
+      overcast_development_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
+   elif prop == 'zblcldif': return
    else:
       scalar_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
    fname = f'{final_folder}/{hour}_{prop}.png'
