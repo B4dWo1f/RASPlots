@@ -90,7 +90,7 @@ def plot_background(grid,cmap='gray',ve=100,fig=None,ax=None):
    ext = [np.min(X), np.max(X), np.min(Y), np.max(Y)]
    if cmap != 'gray': vmin,vmax = 0.4,1
    else: vmin,vmax = None,None
-   aspects = {'w2':{'SC2':2.25, 'SC2+1':2.25, 'SC4+2':1.3, 'SC4+3':1.3},
+   aspects = {'w2':{'SC2':2.25, 'SC2+1':2.25, 'SC4+2':1.7, 'SC4+3':1.7},
               'd2':{'SC2':1.9, 'SC2+1':1.9, 'SC4+2':1.9, 'SC4+3':1.9}}
    aspect = aspects[dom][sc]*d_y/d_x #1.75*d_y/d_x   # 2.25 for almost mercator
    terrain = ax.imshow(ls.hillshade(Z, vert_exag=ve, dx=dx, dy=dy),
