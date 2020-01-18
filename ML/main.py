@@ -129,10 +129,9 @@ history = model.fit(inputs, outputs, validation_split=0.1,
                                      callbacks=[StopOnConvergence(50,0.001)])
 
 M = np.column_stack([history.history['loss'], history.history['val_loss']])
-Nover = len(os.popen(f'ls overfit*.dat').read().strip().splitlines())
+Nover = len(os.popen(f'ls overfit*.dat 2> /dev/null').read().strip().splitlines())
 np.savetxt(f'overfit{Nover}.dat',M,fmt='%.7f')
 
-exit()
 model.save(fmodel)
 # os.system(f'rm {fmodel_tmp}')
 
@@ -157,7 +156,7 @@ print()
 import results
 from random import randint
 date = now.replace(hour=randint(9,17))
-# date = dt.datetime.now().replace(hour=13)
+date = dt.datetime.now().replace(hour=17)
 domain = 'w2'
 
 
