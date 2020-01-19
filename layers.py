@@ -9,12 +9,15 @@ from scipy.ndimage.filters import gaussian_filter
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
+import matplotlib.image as mpimg
 from matplotlib.colors import LightSource, BoundaryNorm
 from matplotlib.collections import LineCollection, PolyCollection
 import colormaps
 from colormaps import WindSpeed, CAPE, TERRAIN3D, Rain, greys
 from common import listfiles
 import datetime as dt
+from random import random
 import log_help
 import logging
 LG = logging.getLogger(__name__)
@@ -358,6 +361,122 @@ def strip_plot(fig,ax,lims,aspect,fname):
    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
    fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0,
                       dpi=65, quality=90)   # compression
+
+
+
+props = {'sfcwind':'Viento Superficie', 'blwind':'Viento Promedio',
+         'bltopwind':'Viento Altura', 'hglider':'Techo (azul)',
+         'wstar':'Térmica', 'zsfclcl':'Base nube', 'zblcl':'Cielo cubierto',
+         'cape':'CAPE', 'wblmaxmin':'Convergencias',
+         'hbl': 'Altura Capa Convectiva', 'bsratio': 'B/S ratio',
+         'rain1': 'Lluvia'}
+
+def timelapse(args):
+   tmp_folder = '/tmp'
+   save_fol,prop,fps,N = args
+   f_out = f'{save_fol}/{prop}.mp4'
+   files = os.popen(f'ls {tmp_folder}/*_{prop}.jpg').read()
+   files = files.strip().splitlines()
+   files = sorted(files,key=lambda x:float(x.split('/')[-1].split('_')[0]))
+   tmp_file = f'{tmp_folder}/video{int(1+1000*random())}.txt'
+   with open(tmp_file,'w') as f:
+      for fname in files:
+         for _ in range(N):
+            f.write(fname+'\n')
+   com = f'mencoder -quiet -nosound -ovc lavc -lavcopts vcodec=mpeg4'
+   com += f' -o {tmp_folder}/{prop}_temp.mp4'
+   com += f' -mf type=jpeg:fps={int(N/fps)} mf://@{tmp_file}'
+   com += ' > /dev/null 2> /dev/null'
+   LG.debug(com)
+   os.system(com)
+   com = f'ffmpeg -y -i {tmp_folder}/{prop}_temp.mp4 -vcodec mpeg4 -threads 2 -b:v 1500k -acodec libmp3lame -ab 160k {f_out}'
+   com += ' > /dev/null 2> /dev/null'
+   LG.debug(com)
+   os.system(f'rm {f_out}')  # clean previuos plot
+   os.system(com)
+   os.system(f'rm {tmp_file}')
+   os.system(f'rm {tmp_folder}/{prop}_temp.mp4')
+   os.popen(f'rm {tmp_folder}/*_{prop}.jpg').read()
+   LG.info(f'Saved in {save_fol}/{prop}.mp4')
+   return f'{save_fol}/{prop}.mp4'
+
+
+
+def make_timelapse(root_folder,dom,sc,fscalar,fvector,UTCshift):
+   """
+   UTCshift = hours between UTC and local time
+   """
+   LG.debug(f'{dom},{sc},{fscalar},{fvector}')
+   com = f'ls {root_folder}/{dom}/{sc}/*00_{fscalar}.png'
+   LG.debug(com)
+   hours = os.popen(com).read().strip().splitlines()
+   hours = [int(h.split('/')[-1].split('_')[0]) for h in hours]
+   for hora in hours:
+      f_tmp = f'/tmp/{hora:04d}_{fscalar}.jpg'
+      f_tmp1 = f'/tmp/{hora:04d}_{fscalar}1.jpg'
+      grids_fol = '/home/n03l/CODES/RASPlots/grids/'
+      fol = f'{root_folder}/{dom}/{sc}'
+      date = open(f'{fol}/valid_date.txt', 'r').read().strip()
+      date = dt.datetime.strptime(date,'%d/%m/%Y')
+      dateUTC = date.replace(hour=hora//100)   # UTC
+      date = dateUTC + UTCshift
+      # scalar = 'sfcwind'
+      # vector = 'sfcwind'
+      title = f"{date.strftime('%d/%m/%Y-%H:%M')} {props[fscalar]}"
+
+      lats = f'{grids_fol}/{dom}/{sc}/lats.npy'
+      lons = f'{grids_fol}/{dom}/{sc}/lons.npy'
+
+      terrain = f'{fol}/terrain.png'
+      rivers = f'{fol}/rivers.png'
+      ccaa = f'{fol}/ccaa.png'
+      takeoffs = f'{fol}/takeoffs.png'
+      bar = f'{root_folder}/{fscalar}_light.png'
+
+      if fvector != 'none': vector = f'{fol}/{hora:04d}_{fvector}_vec.png'
+      else: vector = None
+      scalar = f'{fol}/{hora:04d}_{fscalar}.png'
+
+# Read Images
+      terrain = mpimg.imread(terrain)
+      rivers = mpimg.imread(rivers)
+      ccaa = mpimg.imread(ccaa)
+      takeoffs = mpimg.imread(takeoffs)
+      if fvector != None: img_vector = mpimg.imread(vector)
+      img_scalar = mpimg.imread(scalar)
+      bar = mpimg.imread(bar)
+# Output Images
+      aspect=1.
+      fig = plt.figure()
+      gs = gridspec.GridSpec(2, 1, height_ratios=[7.2,1])
+      fig.subplots_adjust(wspace=0.,hspace=0.)
+      ax1 = plt.subplot(gs[0,0])
+      ax2 = plt.subplot(gs[1,0])
+      ax1.imshow(terrain,aspect=aspect,interpolation='lanczos',zorder=0)
+      ax1.imshow(rivers,aspect=aspect,interpolation='lanczos',zorder=0)
+      ax1.imshow(ccaa,aspect=aspect,interpolation='lanczos',zorder=20)
+      ax1.imshow(takeoffs,aspect=aspect,interpolation='lanczos',zorder=20)
+      if vector != None:
+         ax1.imshow(img_vector, aspect=aspect, interpolation='lanczos',
+                                zorder=11, alpha=0.75)
+      ax1.imshow(img_scalar, aspect=aspect, interpolation='lanczos',
+                             zorder=10, alpha=0.5)
+      ax1.set_xticks([])
+      ax1.set_yticks([])
+      ax1.set_title(title)
+      ax1.axis('off')
+      ax2.imshow(bar)
+      ax2.set_xticks([])
+      ax2.set_yticks([])
+      ax2.axis('off')
+      fig.tight_layout()
+      fig.savefig(f_tmp)
+      # plt.show()
+      os.system(f'convert {f_tmp} -trim {f_tmp1}')
+      os.system(f'mv {f_tmp1} {f_tmp}')
+   plt.close('all')
+   out_folder = f'{root_folder}/{dom}/{sc}'
+   return timelapse((out_folder,fscalar,2,10))
 
 # if __name__ == '__main__':
 #    # Terrain
