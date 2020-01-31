@@ -414,7 +414,7 @@ def make_timelapse(root_folder,dom,sc,fscalar,fvector,UTCshift):
    for hora in hours:
       f_tmp = f'/tmp/{hora:04d}_{fscalar}.jpg'
       f_tmp1 = f'/tmp/{hora:04d}_{fscalar}1.jpg'
-      grids_fol = '/home/n03l/CODES/RASPlots/grids/'
+      grids_fol = f'{here}/grids/{dom}/{sc}/'
       fol = f'{root_folder}/{dom}/{sc}'
       date = open(f'{fol}/valid_date.txt', 'r').read().strip()
       date = dt.datetime.strptime(date,'%d/%m/%Y')
@@ -424,8 +424,8 @@ def make_timelapse(root_folder,dom,sc,fscalar,fvector,UTCshift):
       # vector = 'sfcwind'
       title = f"{date.strftime('%d/%m/%Y-%H:%M')} {props[fscalar]}"
 
-      lats = f'{grids_fol}/{dom}/{sc}/lats.npy'
-      lons = f'{grids_fol}/{dom}/{sc}/lons.npy'
+      lats = f'{grids_fol}/lats.npy'
+      lons = f'{grids_fol}/lons.npy'
 
       terrain = f'{fol}/terrain.png'
       rivers = f'{fol}/rivers.png'
