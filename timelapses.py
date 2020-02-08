@@ -40,7 +40,7 @@ props = winds+rest
 props = [p.replace('dif','') for p in props]
 props.remove('mslpress')
 props.remove('blcloudpct')
-props = [p for p in props if 'wind' in p]
+# props = [p for p in props if 'wind' in p]
 
 
 SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
