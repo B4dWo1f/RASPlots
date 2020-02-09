@@ -372,8 +372,7 @@ props = {'sfcwind':'Viento Superficie', 'blwind':'Viento Promedio',
          'rain1': 'Lluvia'}
 
 def timelapse(args):
-   tmp_folder = '/tmp'
-   save_fol,prop,fps,N = args
+   save_fol,tmp_folder,prop,fps,N = args
    f_out = f'{save_fol}/{prop}.mp4'
    files = os.popen(f'ls {tmp_folder}/*_{prop}.jpg').read()
    files = files.strip().splitlines()
@@ -401,19 +400,21 @@ def timelapse(args):
    return f'{save_fol}/{prop}.mp4'
 
 
-
-def make_timelapse(root_folder,dom,sc,fscalar,fvector,UTCshift):
+def make_timelapse(args):
    """
    UTCshift = hours between UTC and local time
    """
+   root_folder,dom,sc,fscalar,fvector,UTCshift = args
+   tmp_folder = f'/tmp/{dom}/{sc}'
+   os.system(f'mkdir -p {tmp_folder}')
    LG.debug(f'{dom},{sc},{fscalar},{fvector}')
    com = f'ls {root_folder}/{dom}/{sc}/*00_{fscalar}.png'
    LG.debug(com)
    hours = os.popen(com).read().strip().splitlines()
    hours = [int(h.split('/')[-1].split('_')[0]) for h in hours]
    for hora in hours:
-      f_tmp = f'/tmp/{hora:04d}_{fscalar}.jpg'
-      f_tmp1 = f'/tmp/{hora:04d}_{fscalar}1.jpg'
+      f_tmp  = f'{tmp_folder}/{hora:04d}_{fscalar}.jpg'
+      f_tmp1 = f'{tmp_folder}/{hora:04d}_{fscalar}1.jpg'
       grids_fol = f'{here}/grids/{dom}/{sc}/'
       fol = f'{root_folder}/{dom}/{sc}'
       date = open(f'{fol}/valid_date.txt', 'r').read().strip()
@@ -476,7 +477,11 @@ def make_timelapse(root_folder,dom,sc,fscalar,fvector,UTCshift):
       os.system(f'mv {f_tmp1} {f_tmp}')
    plt.close('all')
    out_folder = f'{root_folder}/{dom}/{sc}'
-   return timelapse((out_folder,fscalar,2,10))
+   vid = timelapse((out_folder,tmp_folder,fscalar,2,10))
+   com = f'rm {tmp_folder}/*00_{fscalar}.png'
+   LG.debug(com)
+   os.system(com)
+   return vid
 
 # if __name__ == '__main__':
 #    # Terrain
