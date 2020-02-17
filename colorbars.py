@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
+from layers import params
 import numpy as np
 import colormaps
 import matplotlib as mpl
@@ -9,6 +10,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.colors import BoundaryNorm
 
 COLOR = '#e0e0e0'
+COLOR = 'black'
 mpl.rcParams['text.color'] = COLOR
 mpl.rcParams['axes.labelcolor'] = COLOR
 mpl.rcParams['xtick.color'] = COLOR
@@ -18,14 +20,14 @@ mpl.rcParams['axes.edgecolor'] = COLOR
 #fig.colorbar(c)
 #plt.show()
 
-def plot_colorbar(cmap,delta=4,vmin=0,vmax=60,levels=None,
-                       name='cbar',units='',fs=18,norm=None):
+def plot_colorbar(cmap,delta=4,vmin=0,vmax=60,levels=None,name='cbar',
+                                        units='',fs=18,norm=None,extend='max'):
    fig, ax = plt.subplots()
    img = np.random.uniform(vmin,vmax,size=(4,4))
    if levels == None:
       levels=np.arange(vmin,vmax,delta)
    img = ax.contourf(img, levels=levels,
-                          extend='max',
+                          extend=extend,
                           antialiased=True,
                           cmap=cmap,
                           norm=norm,
@@ -36,51 +38,71 @@ def plot_colorbar(cmap,delta=4,vmin=0,vmax=60,levels=None,
    fig.add_axes(cax)
    cbar = fig.colorbar(img, cax=cax, orientation="horizontal")
    cbar.ax.set_xlabel(units,fontsize=fs)
-   fig.savefig(f'{name}.png', transparent=True,
+   fig.savefig(f'{name}_light.png', transparent=True,
                               bbox_inches='tight', pad_inches=0)
 
 if __name__ == '__main__':
    name = 'sfcwind'
    for name in ['sfcwind','blwind','bltopwind']:
-      delta = 4
-      vmin = 0
-      vmax = 56+delta
+      P = params[name]
+      delta = P['delta']
+      vmin  = P['vmin']
+      vmax  = P['vmax']
+      # delta = 4
+      # vmin = 0
+      # vmax = 56+delta
       levels = None
       cmap = colormaps.WindSpeed
       units = 'Km/h'
       plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
 
    name  = 'cape'
-   delta = 100
-   vmin  = 0
-   vmax  = 6000 + delta
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   # delta = 100
+   # vmin  = 0
+   # vmax  = 6000 + delta
    levels = None
    cmap  = colormaps.CAPE
    units = 'J/Kg'
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
 
    name  = 'bsratio'
-   delta = 2
-   vmin  = 0
-   vmax  = 26+delta
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   # delta = 2
+   # vmin  = 0
+   # vmax  = 26+delta
    levels = None
    cmap  = colormaps.WindSpeed
    units = ''
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
    
    name  ='wstar'
-   delta = 0.25
-   vmin  = 0
-   vmax  = 3.5 + delta
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   # delta = 0.25
+   # vmin  = 0
+   # vmax  = 3.5 + delta
    levels = None
    cmap  = colormaps.WindSpeed
    units = 'm/s'
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
 
    name  = 'hbl'
-   delta = 200
-   vmin  = 800
-   vmax  = 3600 + delta
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   # delta = 200
+   # vmin  = 800
+   # vmax  = 3600 + delta
    levels = None
    cmap  = colormaps.WindSpeed
    units = 'm'
@@ -97,22 +119,28 @@ if __name__ == '__main__':
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units,norm=norm)
 
    name  = 'hglider'
-   delta = 240
-   vmin  = 200
-   vmax  = 3800
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   # delta = 240
+   # vmin  = 200
+   # vmax  = 3800
    levels = None
    cmap  = colormaps.WindSpeed
    units = 'm'
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
 
    name  ='wblmaxmin'
-   delta = 0.5
-   vmin  = -3.5
-   vmax  = 4
-   levels = None
-   cmap  = colormaps.WindSpeed
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   levels = P['levels'] # [-3,-2, -1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1, 2, 3]
+   norm  = BoundaryNorm(levels,len(levels))
+   cmap  = colormaps.Convergencias
    units = 'm/s'
-   plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
+   plot_colorbar(cmap,delta,vmin,vmax,levels,name,units,norm=norm,extend='both')
 
    name  ='zsfclcl'
    delta = 280
