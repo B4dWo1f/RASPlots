@@ -14,7 +14,7 @@ import matplotlib.image as mpimg
 from matplotlib.colors import LightSource, BoundaryNorm
 from matplotlib.collections import LineCollection, PolyCollection
 import colormaps
-from colormaps import WindSpeed, CAPE, TERRAIN3D, Rain, greys
+from colormaps import WindSpeed, CAPE, TERRAIN3D, Rain, greys, Convergencias
 from common import listfiles
 import datetime as dt
 from random import random
@@ -40,13 +40,16 @@ params= {'sfcwind':   {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
          'blcloudpct':{'factor':1, 'delta':7,'vmin':0,'vmax':98+7,
                        'cmap':greys},
          'rain1':     {'factor':1, 'delta':200,'vmin':800,'vmax':3800,
+                       'levels': [0,1,2,4,6,8,10,15,20,25,30,40,50,60,70],
                        'cmap':None},  # dummy, it is overriden
          'mslpress':  {'factor':1, 'delta':200,'vmin':800,'vmax':3800,
                        'cmap':None},
          'hglider' :  {'factor':1, 'delta':240,'vmin':200,'vmax':3800,
                        'cmap':WindSpeed},
-         'wblmaxmin': {'factor':1/100, 'delta':0.5,'vmin':-3.5,'vmax':4,
-                       'cmap':WindSpeed},
+         'wblmaxmin': {'factor':1/100, 'delta':0.1,'vmin':-3,'vmax':3,
+                       'levels':[-3,-2, -1, -0.8, -0.6, -0.4, -0.2, 0,
+                                 0.2, 0.4, 0.6, 0.8, 1, 2, 3],
+                       'cmap':Convergencias},
          'zsfclcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
                      'cmap':WindSpeed},
          'zsfclcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
@@ -179,7 +182,7 @@ def vector_layer(fig,ax,grid,fbase,factor,dens=2):
                                 arrowstyle='->',arrowsize=2.5,
                                 zorder=11)
 
-def scalar_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
+def scalar_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap,levels=[]):
    """ Specific code to plot the wind (either surface, avg, ot top BL) """
    if grid[-1] != '/': grid += '/'
    X = np.load(grid+'lons.npy')
@@ -189,8 +192,13 @@ def scalar_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
    S = fbase+'.data'
    S = np.loadtxt(S, skiprows=4) * factor
 
-   Cf = ax.contourf(X,Y,S, levels=np.arange(vmin,vmax,delta), extend='max',
-                           antialiased=True,
+   if len(levels) > 0:
+      norm = BoundaryNorm(levels,len(levels))
+   else:
+      levels = np.arange(vmin,vmax,delta)
+      norm = None
+   Cf = ax.contourf(X,Y,S, levels=levels, extend='max',
+                           antialiased=True, norm=norm,
                            cmap=cmap, vmin=vmin, vmax=vmax)
    #cbar = my_cbar(fig,ax,Cf,'Km/h',fs)
    #return Sp, Cf, cbar
@@ -334,6 +342,8 @@ def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
    vmin = P['vmin']
    vmax = P['vmax']
    cmap = P['cmap']
+   try: levels = P['levels']
+   except KeyError: levels = []
    if prop == 'rain1':
       rain_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
    elif prop == 'mslpress':
@@ -345,7 +355,7 @@ def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
       overcast_development_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
    elif prop == 'zblcldif': return
    else:
-      scalar_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap)
+      scalar_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap,levels=levels)
    fname = f'{final_folder}/{hour}_{prop}.png'
    strip_plot(fig,ax,lims,aspect,fname)
    plt.close('all')
