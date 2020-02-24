@@ -8,6 +8,18 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib as mpl
 mpl.use('Agg')
+#COLOR = 'black'
+## Dark Theme ###################################################################
+COLOR = '#e0e0e0'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['axes.facecolor'] = 'black'
+mpl.rcParams['savefig.facecolor'] = 'black'
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
+mpl.rcParams['axes.edgecolor'] = COLOR
+#################################################################################
+
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import matplotlib.image as mpimg
@@ -309,7 +321,7 @@ def all_background_layers(folder,domain,sc):
    return lims,aspect
 
 
-def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
+def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect,dpi=100):
    hour = hour.strftime('%H%M')
    densities = {'w2':{'SC2':1.8,'SC2+1':1.8,'SC4+2':2.5,'SC4+3':2.5},
                 'd2':{'SC2':2,'SC2+1':2,'SC4+2':2,'SC4+3':2}}
@@ -323,10 +335,10 @@ def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
    factor = P['factor']
    vector_layer(fig,ax,grid,froot,factor,dens=densities[domain][sc])
    fname = f'{final_folder}/{hour}_{prop}_vec.png'
-   strip_plot(fig,ax,lims,aspect,fname)
+   strip_plot(fig,ax,lims,aspect,fname,dpi=dpi)
    plt.close('all')
 
-def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
+def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect,dpi=65):
    hour = hour.strftime('%H%M')
    final_folder = f'{Pfolder}/{domain}/{sc}'
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
@@ -357,11 +369,11 @@ def all_scalar(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect):
    else:
       scalar_layer(fig,ax,grid,froot,factor,delta,vmin,vmax,cmap,levels=levels)
    fname = f'{final_folder}/{hour}_{prop}.png'
-   strip_plot(fig,ax,lims,aspect,fname)
+   strip_plot(fig,ax,lims,aspect,fname,dpi=dpi)
    plt.close('all')
 
 
-def strip_plot(fig,ax,lims,aspect,fname):
+def strip_plot(fig,ax,lims,aspect,fname,dpi=65):
    ax.set_aspect(aspect)
    ax.set_xlim(lims[0:2])
    ax.set_ylim(lims[2:4])
@@ -370,7 +382,7 @@ def strip_plot(fig,ax,lims,aspect,fname):
    plt.axis('off')
    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
    fig.savefig(fname, transparent=True, bbox_inches='tight', pad_inches=0,
-                      dpi=65, quality=90)   # compression
+                      dpi=dpi, quality=90)   # compression
 
 
 
@@ -382,9 +394,12 @@ props = {'sfcwind':'Viento Superficie', 'blwind':'Viento Promedio',
          'rain1': 'Lluvia'}
 
 def timelapse(args):
-   save_fol,tmp_folder,prop,fps,N = args
+   """
+   merge all the jpg into a mp4 video suitable for Telegram
+   """
+   save_fol,tmp_folder,prop,fps,N,ext = args
    f_out = f'{save_fol}/{prop}.mp4'
-   files = os.popen(f'ls {tmp_folder}/*_{prop}.jpg').read()
+   files = os.popen(f'ls {tmp_folder}/*_{prop}.{ext}').read()
    files = files.strip().splitlines()
    files = sorted(files,key=lambda x:float(x.split('/')[-1].split('_')[0]))
    tmp_file = f'{tmp_folder}/video{int(1+1000*random())}.txt'
@@ -442,13 +457,13 @@ def make_timelapse(args):
       rivers = f'{fol}/rivers.png'
       ccaa = f'{fol}/ccaa.png'
       takeoffs = f'{fol}/takeoffs.png'
-      bar = f'{root_folder}/{fscalar}_light.png'
+      bar = f'{root_folder}/{fscalar}.png'  #_light.png'
 
       if fvector != 'none': vector = f'{fol}/{hora:04d}_{fvector}_vec.png'
       else: vector = None
       scalar = f'{fol}/{hora:04d}_{fscalar}.png'
 
-# Read Images
+      # Read Images
       terrain = mpimg.imread(terrain)
       rivers = mpimg.imread(rivers)
       ccaa = mpimg.imread(ccaa)
@@ -456,7 +471,7 @@ def make_timelapse(args):
       if fvector != None: img_vector = mpimg.imread(vector)
       img_scalar = mpimg.imread(scalar)
       bar = mpimg.imread(bar)
-# Output Images
+      # Output Images
       aspect=1.
       fig = plt.figure()
       gs = gridspec.GridSpec(2, 1, height_ratios=[7.2,1])
@@ -487,10 +502,7 @@ def make_timelapse(args):
       os.system(f'mv {f_tmp1} {f_tmp}')
    plt.close('all')
    out_folder = f'{root_folder}/{dom}/{sc}'
-   vid = timelapse((out_folder,tmp_folder,fscalar,2,10))
-   com = f'rm {tmp_folder}/*00_{fscalar}.png'
-   LG.debug(com)
-   os.system(com)
+   vid = timelapse((out_folder,tmp_folder,fscalar,2,10,'jpg'))
    return vid
 
 # if __name__ == '__main__':
