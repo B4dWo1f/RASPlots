@@ -463,7 +463,7 @@ def make_timelapse(args):
       else: vector = None
       scalar = f'{fol}/{hora:04d}_{fscalar}.png'
 
-# Read Images
+      # Read Images
       terrain = mpimg.imread(terrain)
       rivers = mpimg.imread(rivers)
       ccaa = mpimg.imread(ccaa)
@@ -471,7 +471,7 @@ def make_timelapse(args):
       if fvector != None: img_vector = mpimg.imread(vector)
       img_scalar = mpimg.imread(scalar)
       bar = mpimg.imread(bar)
-# Output Images
+      # Output Images
       aspect=1.
       fig = plt.figure()
       gs = gridspec.GridSpec(2, 1, height_ratios=[7.2,1])
@@ -503,9 +503,6 @@ def make_timelapse(args):
    plt.close('all')
    out_folder = f'{root_folder}/{dom}/{sc}'
    vid = timelapse((out_folder,tmp_folder,fscalar,2,10,'jpg'))
-   com = f'rm {tmp_folder}/*00_{fscalar}.png'
-   LG.debug(com)
-   os.system(com)
    return vid
 
 # if __name__ == '__main__':
