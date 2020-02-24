@@ -8,7 +8,7 @@ from random import shuffle
 import logging
 import log_help
 log_file = here+'/'+'.'.join( __file__.split('/')[-1].split('.')[:-1] ) + '.log'
-lv = logging.DEBUG
+lv = logging.INFO
 logging.basicConfig(level=lv,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M',
