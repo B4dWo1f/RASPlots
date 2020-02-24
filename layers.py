@@ -321,7 +321,7 @@ def all_background_layers(folder,domain,sc):
    return lims,aspect
 
 
-def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect,dpi=100):
+def all_vector(Dfolder, date, Pfolder, domain, sc, hour, prop,lims,aspect,dpi=65):
    hour = hour.strftime('%H%M')
    densities = {'w2':{'SC2':1.8,'SC2+1':1.8,'SC4+2':2.5,'SC4+3':2.5},
                 'd2':{'SC2':2,'SC2+1':2,'SC4+2':2,'SC4+3':2}}
