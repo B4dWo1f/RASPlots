@@ -41,8 +41,8 @@ rest = [p for p in C.props if 'wind' not in p]
 # remove masks
 rest = [p for p in rest if 'dif' not in p]
 try: 
-   props.remove('mslpress')
-   props.remove('blcloudpct')
+   rest.remove('mslpress')
+   rest.remove('blcloudpct')
    rest.remove('hwcrit')
    rest.remove('dwcrit')
 except: pass
