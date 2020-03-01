@@ -38,6 +38,10 @@ winds = [p.replace('windspd','wind') for p in winds]
 winds = sorted(list(set(winds)))   # XXX Dangerous
 rest = [p for p in C.props if 'wind' not in p]
 rest = [p for p in rest if 'dif' not in p]
+try:
+   rest.remove('hwcrit')
+   rest.remove('dwcrit')
+except: pass
 props = winds+rest
 
 

@@ -38,14 +38,16 @@ winds = [p.replace('winddir','wind') for p in winds]
 winds = [p.replace('windspd','wind') for p in winds]
 winds = sorted(list(set(winds)))   # XXX Dangerous
 rest = [p for p in C.props if 'wind' not in p]
-props = winds+rest
 # remove masks
-props = [p.replace('dif','') for p in props]
-props.remove('mslpress')
-props.remove('blcloudpct')
+rest = [p for p in rest if 'dif' not in p]
+try: 
+   props.remove('mslpress')
+   props.remove('blcloudpct')
+   rest.remove('hwcrit')
+   rest.remove('dwcrit')
+except: pass
+props = winds+rest
 props = sorted(set(props))
-# props = [p for p in props if 'wind' in p]
-
 
 SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
 
