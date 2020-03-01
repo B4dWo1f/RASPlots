@@ -58,18 +58,26 @@ params= {'sfcwind':   {'factor':3.6, 'delta':4, 'vmin':0, 'vmax':60,
                        'cmap':None},
          'hglider' :  {'factor':1, 'delta':240,'vmin':200,'vmax':3800,
                        'cmap':WindSpeed},
+         'hwcrit' :  {'factor':1, 'delta':240,'vmin':200,'vmax':3800,
+                       'cmap':WindSpeed},
+         'dwcrit' :  {'factor':1, 'delta':200,'vmin':0,'vmax':2000,
+                       'cmap':WindSpeed},
          'wblmaxmin': {'factor':1/100, 'delta':0.1,'vmin':-3,'vmax':3,
                        'levels':[-3,-2, -1, -0.8, -0.6, -0.4, -0.2, 0,
                                  0.2, 0.4, 0.6, 0.8, 1, 2, 3],
                        'cmap':Convergencias},
-         'zsfclcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
-                     'cmap':WindSpeed},
-         'zsfclcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
-                        'cmap':WindSpeed},
-         'zblcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
-                   'cmap':WindSpeed},
-         'zblcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
-                       'cmap':WindSpeed},
+         'zsfclcl' :  {'factor':1, 'delta':240,'vmin':200,'vmax':3800,
+                       'cmap':WindSpeed,'levels':None},
+         # 'zsfclcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+         #             'cmap':WindSpeed},
+         # 'zsfclcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+         #                'cmap':WindSpeed},
+         'zblcl' :  {'factor':1, 'delta':240,'vmin':200,'vmax':3800,
+                     'cmap':WindSpeed,'levels':None}
+         # 'zblcl': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+         #           'cmap':WindSpeed},
+         # 'zblcldif': {'factor':1, 'delta':280,'vmin':1200,'vmax':5400,
+         #               'cmap':WindSpeed},
          }
 
 def super_plot(args):
@@ -271,8 +279,9 @@ def press_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
    press = np.loadtxt(press, skiprows=4)*factor
    sigma=6
    press3 = gaussian_filter(press, sigma)
-   mp, Mp = int(np.min(press3)-1), int(np.max(press3)+1)+1
-   levels = list( range(mp,Mp,max(1,int((Mp-mp)/10))) )
+   # mp, Mp = int(np.min(press3)-1), int(np.max(press3)+1)+1
+   # levels = list( range(mp,Mp,max(1,int((Mp-mp)/10))) )
+   levels = list(range(964,1040,4))
    Cf = ax.contour(X,Y,press3,levels=levels,colors='k',linewidths=3,zorder=0)
    plt.clabel(Cf, inline=True,fmt='%1d',fontsize=20,zorder=1)
 
