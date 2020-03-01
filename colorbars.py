@@ -143,19 +143,21 @@ if __name__ == '__main__':
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units,norm=norm,extend='both')
 
    name  ='zsfclcl'
-   delta = 280
-   vmin  = 1200
-   vmax  = 5400 + delta
-   levels = None
-   cmap = colormaps.WindSpeed
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   levels = P['levels']
+   cmap = P['cmap']
    units = 'm'
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
 
    name  ='zblcl'
-   delta = 280
-   vmin  = 1200
-   vmax  = 5400 + delta
-   levels = None
-   cmap = colormaps.WindSpeed
+   P = params[name]
+   delta = P['delta']
+   vmin  = P['vmin']
+   vmax  = P['vmax']
+   levels = P['levels']
+   cmap = P['cmap']
    units = 'm'
    plot_colorbar(cmap,delta,vmin,vmax,levels,name,units)
