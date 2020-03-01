@@ -400,7 +400,7 @@ props = {'sfcwind':'Viento Superficie', 'blwind':'Viento Promedio',
          'wstar':'Térmica', 'zsfclcl':'Base nube', 'zblcl':'Cielo cubierto',
          'cape':'CAPE', 'wblmaxmin':'Convergencias',
          'hbl': 'Altura Capa Convectiva', 'bsratio': 'B/S ratio',
-         'rain1': 'Lluvia'}
+         'rain1': 'Lluvia', 'blcloudpct':'Nubosidad (%)'}
 
 def timelapse(args):
    """
