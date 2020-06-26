@@ -77,7 +77,7 @@ for isc in C.run_days:
             C.aspect[domain] = {sc: a}
       else: l,a = C.lims[domain][sc], C.aspect[domain][sc]
       all_inputs = []
-      for hora in range(8,20):           # local time
+      for hora in range(24): #range(8,20):           # local time
          hour = dt.datetime.now().replace(hour=hora,minute=0)
          hour -= UTCshift          # UTC time
          for prop in props:

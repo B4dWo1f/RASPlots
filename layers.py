@@ -283,7 +283,7 @@ def press_layer(fig,ax,grid,fbase,factor,delta,vmin,vmax,cmap):
    # levels = list( range(mp,Mp,max(1,int((Mp-mp)/10))) )
    levels = list(range(964,1040,4))
    Cf = ax.contour(X,Y,press3,levels=levels,colors='k',linewidths=3,zorder=0)
-   plt.clabel(Cf, inline=True,fmt='%1d',fontsize=20,zorder=1)
+   plt.clabel(Cf, inline=True,fmt='%1d',fontsize=20)  #,zorder=1)
 
 
 def all_background_layers(folder,domain,sc):
