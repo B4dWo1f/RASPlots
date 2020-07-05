@@ -69,3 +69,4 @@ if C.parallel:
    pool = sub.Pool(4)
    Res = pool.map(L.make_timelapse, all_inps)
 
+LG.info('Done!')
