@@ -178,6 +178,12 @@ def takeoffs(fig,ax):
    Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
    ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
 
+def manga(fig,ax):
+   f_manga = f'{here}/task.gps'
+   Ym,Xm,Rm = np.loadtxt(f_manga,usecols=(0,1,2),delimiter=',',unpack=True)
+   ax.plot(Xm,Ym, 'r-', lw=4) #c='C4',s=50,zorder=20)
+   # ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
+
 def vector_layer(fig,ax,grid,fbase,factor,dens=2):
    """ Specific code to plot the wind (either surface, avg, ot top BL) """
    if grid[-1] != '/': grid += '/'
@@ -326,6 +332,12 @@ def all_background_layers(folder,domain,sc):
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
    takeoffs(fig,ax)
    strip_plot(fig,ax,lims,aspect,fname)
+
+   # Manga
+   fname = f'{final_folder}/manga.png'
+   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+   manga(fig,ax)
+   strip_plot(fig,ax,lims,aspect,fname)
    plt.close('all')
    return lims,aspect
 
@@ -466,6 +478,7 @@ def make_timelapse(args):
       rivers = f'{fol}/rivers.png'
       ccaa = f'{fol}/ccaa.png'
       takeoffs = f'{fol}/takeoffs.png'
+      manga = f'{fol}/manga.png'
       bar = f'{root_folder}/{fscalar}.png'  #_light.png'
 
       if fvector != 'none': vector = f'{fol}/{hora:04d}_{fvector}_vec.png'
@@ -477,6 +490,8 @@ def make_timelapse(args):
       rivers = mpimg.imread(rivers)
       ccaa = mpimg.imread(ccaa)
       takeoffs = mpimg.imread(takeoffs)
+      try: manga = mpimg.imread(manga)
+      except: pass
       if fvector != None: img_vector = mpimg.imread(vector)
       img_scalar = mpimg.imread(scalar)
       bar = mpimg.imread(bar)
@@ -491,6 +506,8 @@ def make_timelapse(args):
       ax1.imshow(rivers,aspect=aspect,interpolation='lanczos',zorder=0)
       ax1.imshow(ccaa,aspect=aspect,interpolation='lanczos',zorder=20)
       ax1.imshow(takeoffs,aspect=aspect,interpolation='lanczos',zorder=20)
+      try: ax1.imshow(manga, aspect=aspect, interpolation='lanczos',zorder=21)
+      except: pass
       if vector != None:
          ax1.imshow(img_vector, aspect=aspect, interpolation='lanczos',
                                 zorder=11, alpha=0.75)

@@ -270,10 +270,10 @@ stops = [col3/255,col2/255,col1/255,col0/255]
 Ns = [2,9,3]
 TERRAIN3D = mycmap(stops,Ns=Ns)
 
-#col0 = np.array([52,77,138])
-#col1 = np.array([1,1,1,0])
-#stops = [col0/255,col1/255]
-#SeaMask = ListedColormap(stops)
+col0 = np.array([52,77,138])
+col1 = np.array([1,1,1,0])
+stops = [col0/255,col1/255]
+SeaMask = ListedColormap(stops)
 #################################################################################
 
 if __name__ == '__main__':
