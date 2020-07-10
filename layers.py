@@ -180,17 +180,66 @@ def takeoffs(fig,ax):
 
 def manga(fig,ax):
    f_manga = f'{here}/task.gps'
-   Ym,Xm,Rm = np.loadtxt(f_manga,usecols=(0,1,2),delimiter=',',unpack=True)
-   ax.plot(Xm,Ym, 'r-', lw=4) #c='C4',s=50,zorder=20)
-   # ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
+   try:
+      y,x,Rm = np.loadtxt(f_manga,usecols=(0,1,2),delimiter=',',unpack=True)
+      # spacing of arrows
+      scale = 2
+      aspace = .18 # good value for scale of 1
+      aspace *= scale
+
+      # r is the distance spanned between pairs of points
+      r = [0]
+      for i in range(1,len(x)):
+          dx = x[i]-x[i-1]
+          dy = y[i]-y[i-1]
+          r.append(np.sqrt(dx*dx+dy*dy))
+      r = np.array(r)
+
+      # rtot is a cumulative sum of r, it's used to save time
+      rtot = []
+      for i in range(len(r)):
+          rtot.append(r[0:i].sum())
+      rtot.append(r.sum())
+
+      arrowData = [] # will hold tuples of x,y,theta for each arrow
+      arrowPos = 0   # current point on walk along data
+      rcount = 1
+      while arrowPos < r.sum():
+          x1,x2 = x[rcount-1],x[rcount]
+          y1,y2 = y[rcount-1],y[rcount]
+          da = arrowPos-rtot[rcount]
+          theta = np.arctan2((x2-x1),(y2-y1))
+          X = np.sin(theta)*da+x1
+          Y = np.cos(theta)*da+y1
+          arrowData.append((X,Y,theta))
+          arrowPos+=aspace
+          while arrowPos > rtot[rcount+1]:
+              rcount+=1
+              if arrowPos > rtot[-1]: break
+
+      # could be done in above block if you want
+      for X,Y,theta in arrowData:
+          # use aspace as a guide for size and length of things
+          # scaling factors were chosen by experimenting a bit
+          ax.arrow(X,Y,
+                     np.sin(theta)*aspace/10,np.cos(theta)*aspace/10,
+                     head_width=aspace/8, color='r')
+      # ax.plot(x,y)
+      ax.plot(x,y, 'r-', lw=4) #c='C4',s=50,zorder=20)
+   except: pass
 
 def vector_layer(fig,ax,grid,fbase,factor,dens=2):
    """ Specific code to plot the wind (either surface, avg, ot top BL) """
    if grid[-1] != '/': grid += '/'
    X = np.load(grid+'lons.npy')
    Y = np.load(grid+'lats.npy')
-   mx,Mx = np.min(X),np.max(X)
-   my,My = np.min(Y),np.max(Y)
+   # mx,Mx = np.min(X),np.max(X)
+   # my,My = np.min(Y),np.max(Y)
+   Mx = np.mean([np.max(lons), np.min(lons[:,-1])])  # right bound
+   mx = np.mean([np.min(lons), np.max(lons[:,0])])   # left bound
+   My = np.mean([np.max(lats), np.min(lats[-1,:])])  # upper bound
+   my = np.mean([np.min(lats), np.max(lats[0,:])])   # lower bound
+
    x = np.linspace(mx,Mx,X.shape[1])
    y = np.linspace(my,My,X.shape[0])
 
@@ -338,6 +387,7 @@ def all_background_layers(folder,domain,sc):
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
    manga(fig,ax)
    strip_plot(fig,ax,lims,aspect,fname)
+
    plt.close('all')
    return lims,aspect
 
