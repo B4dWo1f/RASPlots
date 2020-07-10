@@ -233,12 +233,19 @@ def vector_layer(fig,ax,grid,fbase,factor,dens=2):
    if grid[-1] != '/': grid += '/'
    X = np.load(grid+'lons.npy')
    Y = np.load(grid+'lats.npy')
+   # # Opt 0
    # mx,Mx = np.min(X),np.max(X)
    # my,My = np.min(Y),np.max(Y)
-   Mx = np.mean([np.max(lons), np.min(lons[:,-1])])  # right bound
-   mx = np.mean([np.min(lons), np.max(lons[:,0])])   # left bound
-   My = np.mean([np.max(lats), np.min(lats[-1,:])])  # upper bound
-   my = np.mean([np.min(lats), np.max(lats[0,:])])   # lower bound
+   # Opt 1
+   Mx = np.mean([np.max(X), np.min(X[:,-1])])  # right bound
+   mx = np.mean([np.min(X), np.max(X[:,0])])   # left bound
+   My = np.mean([np.max(Y), np.min(Y[-1,:])])  # upper bound
+   my = np.mean([np.min(Y), np.max(Y[0,:])])   # lower bound
+   # # Opt 2
+   # Mx = np.min(X[:,-1])  # right bound
+   # mx = np.max(X[:,0])  # left bound
+   # My = np.min(Y[-1,:])  # upper bound
+   # my = np.max(Y[0,:])  # lower bound
 
    x = np.linspace(mx,Mx,X.shape[1])
    y = np.linspace(my,My,X.shape[0])
