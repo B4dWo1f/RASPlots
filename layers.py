@@ -6,6 +6,7 @@ import os
 here = os.path.dirname(os.path.realpath(__file__))
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
+import matplotlib.patheffects as PathEffects
 import matplotlib as mpl
 mpl.use('Agg')
 #COLOR = 'black'
@@ -176,7 +177,28 @@ def roads(fig,ax):
 def takeoffs(fig,ax):
    f_takeoffs = f'{here}/takeoffs.csv'
    Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(f_takeoffs,usecols=(2,),delimiter=',',dtype=str)
    ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
+
+def names(fig,ax):
+   f_takeoffs = f'{here}/takeoffs.csv'
+   Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(f_takeoffs,usecols=(2,),delimiter=',',dtype=str)
+   for x,y,name in zip(Xt,Yt,names):
+      txt = ax.text(x,y,name,color='k',fontsize=13)
+      txt.set_path_effects([PathEffects.withStroke(linewidth=5, foreground='w')])
+   f_cities = f'{here}/cities.csv'
+   Yt,Xt = np.loadtxt(f_cities,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(f_cities,usecols=(2,),delimiter=',',dtype=str)
+   for x,y,name in zip(Xt,Yt,names):
+      txt = ax.text(x,y,name,color='k',fontsize=13)
+      txt.set_path_effects([PathEffects.withStroke(linewidth=5, foreground='w')])
+
+def cities(fig,ax):
+   f_cities = f'{here}/cities.csv'
+   Yt,Xt = np.loadtxt(f_cities,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(f_cities,usecols=(2,),delimiter=',',dtype=str)
+   ax.scatter(Xt,Yt, c='C3',s=50, marker='x',zorder=20)
 
 def manga(fig,ax):
    f_manga = f'{here}/task.gps'
@@ -387,6 +409,18 @@ def all_background_layers(folder,domain,sc):
    fname = f'{final_folder}/takeoffs.png'
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
    takeoffs(fig,ax)
+   strip_plot(fig,ax,lims,aspect,fname)
+
+   # Names
+   fname = f'{final_folder}/names.png'
+   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+   names(fig,ax)
+   strip_plot(fig,ax,lims,aspect,fname)
+
+   # Cities
+   fname = f'{final_folder}/cities.png'
+   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+   cities(fig,ax)
    strip_plot(fig,ax,lims,aspect,fname)
 
    # Manga
