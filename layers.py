@@ -177,7 +177,6 @@ def roads(fig,ax):
 def takeoffs(fig,ax):
    f_takeoffs = f'{here}/takeoffs.csv'
    Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
-   names = np.loadtxt(f_takeoffs,usecols=(2,),delimiter=',',dtype=str)
    ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
 
 def names(fig,ax):
@@ -185,13 +184,18 @@ def names(fig,ax):
    Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
    names = np.loadtxt(f_takeoffs,usecols=(2,),delimiter=',',dtype=str)
    for x,y,name in zip(Xt,Yt,names):
-      txt = ax.text(x,y,name,color='k',fontsize=13)
+      txt = ax.text(x,y,name, horizontalalignment='center',
+                              verticalalignment='center',
+                              color='k',
+                              fontsize=13)
       txt.set_path_effects([PathEffects.withStroke(linewidth=5, foreground='w')])
    f_cities = f'{here}/cities.csv'
    Yt,Xt = np.loadtxt(f_cities,usecols=(0,1),delimiter=',',unpack=True)
    names = np.loadtxt(f_cities,usecols=(2,),delimiter=',',dtype=str)
    for x,y,name in zip(Xt,Yt,names):
-      txt = ax.text(x,y,name,color='k',fontsize=13)
+      txt = ax.text(x,y,name, horizontalalignment='center',
+                              verticalalignment='center',
+                              color='k',fontsize=13)
       txt.set_path_effects([PathEffects.withStroke(linewidth=5, foreground='w')])
 
 def cities(fig,ax):
