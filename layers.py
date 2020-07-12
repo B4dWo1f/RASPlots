@@ -198,7 +198,7 @@ def cities(fig,ax):
    f_cities = f'{here}/cities.csv'
    Yt,Xt = np.loadtxt(f_cities,usecols=(0,1),delimiter=',',unpack=True)
    names = np.loadtxt(f_cities,usecols=(2,),delimiter=',',dtype=str)
-   ax.scatter(Xt,Yt, c='C3',s=50, marker='x',zorder=20)
+   ax.scatter(Xt,Yt, c='C3',s=90, marker='x',zorder=20)
 
 def manga(fig,ax):
    f_manga = f'{here}/task.gps'
