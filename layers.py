@@ -574,6 +574,7 @@ def make_timelapse(args):
       ccaa = f'{fol}/ccaa.png'
       takeoffs = f'{fol}/takeoffs.png'
       manga = f'{fol}/manga.png'
+      cities = f'{fol}/cities.png'
       bar = f'{root_folder}/{fscalar}.png'  #_light.png'
 
       if fvector != 'none': vector = f'{fol}/{hora:04d}_{fvector}_vec.png'
@@ -587,6 +588,7 @@ def make_timelapse(args):
       takeoffs = mpimg.imread(takeoffs)
       try: manga = mpimg.imread(manga)
       except: pass
+      cities = mpimg.imread(cities)
       if fvector != None: img_vector = mpimg.imread(vector)
       img_scalar = mpimg.imread(scalar)
       bar = mpimg.imread(bar)
@@ -603,6 +605,7 @@ def make_timelapse(args):
       ax1.imshow(takeoffs,aspect=aspect,interpolation='lanczos',zorder=20)
       try: ax1.imshow(manga, aspect=aspect, interpolation='lanczos',zorder=21)
       except: pass
+      ax1.imshow(cities,aspect=aspect,interpolation='lanczos',zorder=20)
       if vector != None:
          ax1.imshow(img_vector, aspect=aspect, interpolation='lanczos',
                                 zorder=11, alpha=0.75)
