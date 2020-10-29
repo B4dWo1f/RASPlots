@@ -25,6 +25,7 @@ if C == None:
    LG.critical('No full.ini')
    exit()
 
+LG.info('Starting timelapses')
 UTCshift = dt.datetime.now()-dt.datetime.utcnow()
 UTCshift = dt.timedelta(hours = round(UTCshift.total_seconds()/3600))
 
@@ -52,6 +53,8 @@ props = sorted(set(props))
 SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}
 
 
+# C.parallel = False  #XXX
+LG.info(f'Timelapses for {C.run_days}')
 all_inps = []
 for dom in ['w2']:    # C.domains:
    for fscalar in props:
@@ -65,7 +68,9 @@ for dom in ['w2']:    # C.domains:
 
 shuffle(all_inps)
 if C.parallel:
+   LG.info('Going parallel')
    import multiprocessing as sub
-   pool = sub.Pool(4)
+   pool = sub.Pool(C.ncores)
    Res = pool.map(L.make_timelapse, all_inps)
 
+LG.info('Done!')
