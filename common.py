@@ -19,7 +19,7 @@ now = dt.datetime.now
 
 class Config(object):
    #def __init__(self,Rfolder,lats,lons,hagl,run_days=[], date='', props=[],
-   def __init__(self,Rfolder,Dfolder,Pfolder,lims,background,Ncores=4,
+   def __init__(self,Rfolder,Dfolder,Pfolder,lims,background,frunning,Ncores=4,
                      run_days=[], date='', domains=[], props=[],
                      parallel=True,zoom=True,ve=100,path_web='../'):
       """
@@ -36,6 +36,7 @@ class Config(object):
       self.data_folder = Dfolder.replace('//','/')
       self.plot_folder = Pfolder.replace('//','/')
       self.ncores = Ncores
+      self.frunning = frunning
       self.background = background
       self.lims_file = lims
       try:
@@ -75,6 +76,8 @@ def load(fname='config.ini'):
    Dfolder = expanduser(config['system']['data_folder'])
    Pfolder = expanduser(config['system']['plot_folder'])
    Ncores = int(config['system']['ncores'])
+   frunning = expanduser(config['system']['frunning'])
+   if not frunning.startswith('/'): frunning = f'{here}/{frunning}'
    # Run
    background = eval(config['run']['plot_background'].capitalize())
    lims = config['run']['lims_aspect']
@@ -99,7 +102,7 @@ def load(fname='config.ini'):
    if path_web[0] in ['/']: pass
    else: path_web = here +'/'+ path_web
    path_web = os.path.abspath(path_web)
-   return Config(Rfolder,Dfolder,Pfolder,lims,background,Ncores,run,date,domains,props,parallel,zoom,ve, path_web)
+   return Config(Rfolder,Dfolder,Pfolder,lims,background,frunning,Ncores,run,date,domains,props,parallel,zoom,ve, path_web)
 
 def find_data(root='../../Documents/RASP/',data='DATA',grid='w2',time=now()):
    if root[-1] != '/': root += '/'

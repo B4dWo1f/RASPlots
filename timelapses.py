@@ -21,9 +21,14 @@ import layers as L
 import common
 
 C = common.load(here+'/full.ini')
+# frunning = f'{here}/RUNNING'
+
 if C == None:
+   C = common.load(f'{here}/template.ini')
    LG.critical('No full.ini')
+   os.system(f'rm {C.frunning}')
    exit()
+
 
 LG.info('Starting timelapses')
 UTCshift = dt.datetime.now()-dt.datetime.utcnow()
@@ -74,3 +79,4 @@ if C.parallel:
    Res = pool.map(L.make_timelapse, all_inps)
 
 LG.info('Done!')
+os.system(f'rm {C.frunning}')
