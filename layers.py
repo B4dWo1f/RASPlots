@@ -8,6 +8,8 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.patheffects as PathEffects
 import matplotlib as mpl
+import matplotlib.pyplot as plt
+plt.style.use('mystyle')
 mpl.use('Agg')
 #COLOR = 'black'
 ## Dark Theme ###################################################################
@@ -511,7 +513,7 @@ props = {'sfcwind':'Viento Superficie', 'blwind':'Viento Promedio',
 
 def timelapse(args):
    """
-   merge all the jpg into a mp4 video suitable for Telegram
+   merge all the png into a mp4 video suitable for Telegram
    """
    save_fol,tmp_folder,prop,fps,N,ext = args
    f_out = f'{save_fol}/{prop}.mp4'
@@ -525,7 +527,7 @@ def timelapse(args):
             f.write(fname+'\n')
    com = f'mencoder -quiet -nosound -ovc lavc -lavcopts vcodec=mpeg4'
    com += f' -o {tmp_folder}/{prop}_temp.mp4'
-   com += f' -mf type=jpeg:fps={int(N/fps)} mf://@{tmp_file}'
+   com += f' -mf type=png:fps={int(N/fps)} mf://@{tmp_file}'
    com += ' > /dev/null 2> /dev/null'
    LG.debug(com)
    os.system(com)
@@ -536,7 +538,7 @@ def timelapse(args):
    os.system(com)
    os.system(f'rm {tmp_file}')
    os.system(f'rm {tmp_folder}/{prop}_temp.mp4')
-   os.popen(f'rm {tmp_folder}/*_{prop}.jpg').read()
+   os.popen(f'rm {tmp_folder}/*_{prop}.png').read()
    LG.info(f'Saved in {save_fol}/{prop}.mp4')
    return f'{save_fol}/{prop}.mp4'
 
@@ -554,8 +556,8 @@ def make_timelapse(args):
    hours = os.popen(com).read().strip().splitlines()
    hours = [int(h.split('/')[-1].split('_')[0]) for h in hours]
    for hora in hours:
-      f_tmp  = f'{tmp_folder}/{hora:04d}_{fscalar}.jpg'
-      f_tmp1 = f'{tmp_folder}/{hora:04d}_{fscalar}1.jpg'
+      f_tmp  = f'{tmp_folder}/{hora:04d}_{fscalar}.png'
+      f_tmp1 = f'{tmp_folder}/{hora:04d}_{fscalar}1.png'
       grids_fol = f'{here}/grids/{dom}/{sc}/'
       fol = f'{root_folder}/{dom}/{sc}'
       date = open(f'{fol}/valid_date.txt', 'r').read().strip()
@@ -626,7 +628,7 @@ def make_timelapse(args):
       os.system(f'mv {f_tmp1} {f_tmp}')
    plt.close('all')
    out_folder = f'{root_folder}/{dom}/{sc}'
-   vid = timelapse((out_folder,tmp_folder,fscalar,2,10,'jpg'))
+   vid = timelapse((out_folder,tmp_folder,fscalar,2,10,'png'))
    return vid
 
 # if __name__ == '__main__':
