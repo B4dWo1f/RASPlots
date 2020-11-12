@@ -9,7 +9,8 @@ from scipy.ndimage.filters import gaussian_filter
 import matplotlib.patheffects as PathEffects
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-plt.style.use('mystyle')
+try: plt.style.use('mystyle')
+except: pass
 mpl.use('Agg')
 #COLOR = 'black'
 ## Dark Theme ###################################################################
