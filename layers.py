@@ -8,10 +8,10 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 import matplotlib.patheffects as PathEffects
 import matplotlib as mpl
+if os.getenv('RUN_BY_CRON'): mpl.use('Agg')
 import matplotlib.pyplot as plt
 try: plt.style.use('mystyle')
 except: pass
-mpl.use('Agg')
 #COLOR = 'black'
 ## Dark Theme ###################################################################
 COLOR = '#e0e0e0'
