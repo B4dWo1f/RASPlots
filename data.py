@@ -37,6 +37,7 @@ def randomString(stringLength=10):
 
 import re
 def get_and_place(url,base='RASP'):
+   sc = url.split('/')[4]
    ftemp = '/tmp/'+ randomString(5) + '.data'  #'/tmp/temporal.data'
    urlretrieve(url, ftemp)
    date = open(ftemp,'r').read().strip().splitlines()[3]
@@ -46,10 +47,13 @@ def get_and_place(url,base='RASP'):
    t = [year, month, day, hour]
    valid_date = dt.datetime.strptime(' '.join(t),'%Y %m %d %H%M')
    #XXX Manual offset for UTC
-   #offset = {'CES':2*3600, 'CTT':3600}   # seconds
-   #UTCshift = dt.timedelta(seconds=offset[tz])
+   offset = {'CES':2, 'CET':1}   # hours
+   UTCshift_manual = dt.timedelta(hours=offset[tz])
    UTCshift = dt.datetime.now()-dt.datetime.utcnow()
    UTCshift = dt.timedelta(hours = round(UTCshift.total_seconds()/3600))
+   if UTCshift != UTCshift_manual: # in order to be in sync with Oriol
+      LG.critical(f'UTC shift is wrong [{sc}, {valid_date.date()}]')
+      UTCshift = UTCshift_manual
    valid_date = valid_date - UTCshift
 
    # http://raspuri.mooo.com/RASP/SC2/FCST/cape.curr.0800lst.w2.data

@@ -50,7 +50,7 @@ now = dt.datetime.now() - dt.timedelta(hours=5)
 today = now.date()
 
 import multiprocessing as sub
-pool = sub.Pool(4)
+pool = sub.Pool(C.ncores)
 
 
 SCs = {0:'SC2', 1:'SC2+1', 2:'SC4+2', 3:'SC4+3'}

@@ -6,8 +6,12 @@ import os
 here = os.path.dirname(os.path.realpath(__file__))
 import numpy as np
 from scipy.ndimage.filters import gaussian_filter
+import matplotlib.patheffects as PathEffects
 import matplotlib as mpl
-mpl.use('Agg')
+if os.getenv('RUN_BY_CRON'): mpl.use('Agg')
+import matplotlib.pyplot as plt
+try: plt.style.use('mystyle')
+except: pass
 #COLOR = 'black'
 ## Dark Theme ###################################################################
 COLOR = '#e0e0e0'
@@ -178,19 +182,100 @@ def takeoffs(fig,ax):
    Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
    ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
 
+def names(fig,ax):
+   f_takeoffs = f'{here}/takeoffs.csv'
+   Yt,Xt = np.loadtxt(f_takeoffs,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(f_takeoffs,usecols=(2,),delimiter=',',dtype=str)
+   for x,y,name in zip(Xt,Yt,names):
+      txt = ax.text(x,y,name, horizontalalignment='center',
+                              verticalalignment='center',
+                              color='k',
+                              fontsize=13)
+      txt.set_path_effects([PathEffects.withStroke(linewidth=5, foreground='w')])
+   f_cities = f'{here}/cities.csv'
+   Yt,Xt = np.loadtxt(f_cities,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(f_cities,usecols=(2,),delimiter=',',dtype=str)
+   for x,y,name in zip(Xt,Yt,names):
+      txt = ax.text(x,y,name, horizontalalignment='center',
+                              verticalalignment='center',
+                              color='k',fontsize=13)
+      txt.set_path_effects([PathEffects.withStroke(linewidth=5, foreground='w')])
+
+def cities(fig,ax):
+   f_cities = f'{here}/cities.csv'
+   Yt,Xt = np.loadtxt(f_cities,usecols=(0,1),delimiter=',',unpack=True)
+   names = np.loadtxt(f_cities,usecols=(2,),delimiter=',',dtype=str)
+   ax.scatter(Xt,Yt, c='C3',s=90, marker='x',zorder=20)
+
 def manga(fig,ax):
    f_manga = f'{here}/task.gps'
-   Ym,Xm,Rm = np.loadtxt(f_manga,usecols=(0,1,2),delimiter=',',unpack=True)
-   ax.plot(Xm,Ym, 'r-', lw=4) #c='C4',s=50,zorder=20)
-   # ax.scatter(Xt,Yt, c='C3',s=50,zorder=20)
+   try:
+      y,x,Rm = np.loadtxt(f_manga,usecols=(0,1,2),delimiter=',',unpack=True)
+      # spacing of arrows
+      scale = 2
+      aspace = .18 # good value for scale of 1
+      aspace *= scale
+
+      # r is the distance spanned between pairs of points
+      r = [0]
+      for i in range(1,len(x)):
+          dx = x[i]-x[i-1]
+          dy = y[i]-y[i-1]
+          r.append(np.sqrt(dx*dx+dy*dy))
+      r = np.array(r)
+
+      # rtot is a cumulative sum of r, it's used to save time
+      rtot = []
+      for i in range(len(r)):
+          rtot.append(r[0:i].sum())
+      rtot.append(r.sum())
+
+      arrowData = [] # will hold tuples of x,y,theta for each arrow
+      arrowPos = 0   # current point on walk along data
+      rcount = 1
+      while arrowPos < r.sum():
+          x1,x2 = x[rcount-1],x[rcount]
+          y1,y2 = y[rcount-1],y[rcount]
+          da = arrowPos-rtot[rcount]
+          theta = np.arctan2((x2-x1),(y2-y1))
+          X = np.sin(theta)*da+x1
+          Y = np.cos(theta)*da+y1
+          arrowData.append((X,Y,theta))
+          arrowPos+=aspace
+          while arrowPos > rtot[rcount+1]:
+              rcount+=1
+              if arrowPos > rtot[-1]: break
+
+      # could be done in above block if you want
+      for X,Y,theta in arrowData:
+          # use aspace as a guide for size and length of things
+          # scaling factors were chosen by experimenting a bit
+          ax.arrow(X,Y,
+                     np.sin(theta)*aspace/10,np.cos(theta)*aspace/10,
+                     head_width=aspace/8, color='r')
+      # ax.plot(x,y)
+      ax.plot(x,y, 'r-', lw=4) #c='C4',s=50,zorder=20)
+   except: pass
 
 def vector_layer(fig,ax,grid,fbase,factor,dens=2):
    """ Specific code to plot the wind (either surface, avg, ot top BL) """
    if grid[-1] != '/': grid += '/'
    X = np.load(grid+'lons.npy')
    Y = np.load(grid+'lats.npy')
-   mx,Mx = np.min(X),np.max(X)
-   my,My = np.min(Y),np.max(Y)
+   # # Opt 0
+   # mx,Mx = np.min(X),np.max(X)
+   # my,My = np.min(Y),np.max(Y)
+   # Opt 1
+   Mx = np.mean([np.max(X), np.min(X[:,-1])])  # right bound
+   mx = np.mean([np.min(X), np.max(X[:,0])])   # left bound
+   My = np.mean([np.max(Y), np.min(Y[-1,:])])  # upper bound
+   my = np.mean([np.min(Y), np.max(Y[0,:])])   # lower bound
+   # # Opt 2
+   # Mx = np.min(X[:,-1])  # right bound
+   # mx = np.max(X[:,0])  # left bound
+   # My = np.min(Y[-1,:])  # upper bound
+   # my = np.max(Y[0,:])  # lower bound
+
    x = np.linspace(mx,Mx,X.shape[1])
    y = np.linspace(my,My,X.shape[0])
 
@@ -333,11 +418,24 @@ def all_background_layers(folder,domain,sc):
    takeoffs(fig,ax)
    strip_plot(fig,ax,lims,aspect,fname)
 
+   # Names
+   fname = f'{final_folder}/names.png'
+   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+   names(fig,ax)
+   strip_plot(fig,ax,lims,aspect,fname)
+
+   # Cities
+   fname = f'{final_folder}/cities.png'
+   fig, ax = plt.subplots(figsize=(10,10),frameon=False)
+   cities(fig,ax)
+   strip_plot(fig,ax,lims,aspect,fname)
+
    # Manga
    fname = f'{final_folder}/manga.png'
    fig, ax = plt.subplots(figsize=(10,10),frameon=False)
    manga(fig,ax)
    strip_plot(fig,ax,lims,aspect,fname)
+
    plt.close('all')
    return lims,aspect
 
@@ -416,7 +514,7 @@ props = {'sfcwind':'Viento Superficie', 'blwind':'Viento Promedio',
 
 def timelapse(args):
    """
-   merge all the jpg into a mp4 video suitable for Telegram
+   merge all the png into a mp4 video suitable for Telegram
    """
    save_fol,tmp_folder,prop,fps,N,ext = args
    f_out = f'{save_fol}/{prop}.mp4'
@@ -430,7 +528,7 @@ def timelapse(args):
             f.write(fname+'\n')
    com = f'mencoder -quiet -nosound -ovc lavc -lavcopts vcodec=mpeg4'
    com += f' -o {tmp_folder}/{prop}_temp.mp4'
-   com += f' -mf type=jpeg:fps={int(N/fps)} mf://@{tmp_file}'
+   com += f' -mf type=png:fps={int(N/fps)} mf://@{tmp_file}'
    com += ' > /dev/null 2> /dev/null'
    LG.debug(com)
    os.system(com)
@@ -441,7 +539,7 @@ def timelapse(args):
    os.system(com)
    os.system(f'rm {tmp_file}')
    os.system(f'rm {tmp_folder}/{prop}_temp.mp4')
-   os.popen(f'rm {tmp_folder}/*_{prop}.jpg').read()
+   os.popen(f'rm {tmp_folder}/*_{prop}.png').read()
    LG.info(f'Saved in {save_fol}/{prop}.mp4')
    return f'{save_fol}/{prop}.mp4'
 
@@ -459,8 +557,8 @@ def make_timelapse(args):
    hours = os.popen(com).read().strip().splitlines()
    hours = [int(h.split('/')[-1].split('_')[0]) for h in hours]
    for hora in hours:
-      f_tmp  = f'{tmp_folder}/{hora:04d}_{fscalar}.jpg'
-      f_tmp1 = f'{tmp_folder}/{hora:04d}_{fscalar}1.jpg'
+      f_tmp  = f'{tmp_folder}/{hora:04d}_{fscalar}.png'
+      f_tmp1 = f'{tmp_folder}/{hora:04d}_{fscalar}1.png'
       grids_fol = f'{here}/grids/{dom}/{sc}/'
       fol = f'{root_folder}/{dom}/{sc}'
       date = open(f'{fol}/valid_date.txt', 'r').read().strip()
@@ -479,6 +577,7 @@ def make_timelapse(args):
       ccaa = f'{fol}/ccaa.png'
       takeoffs = f'{fol}/takeoffs.png'
       manga = f'{fol}/manga.png'
+      cities = f'{fol}/cities.png'
       bar = f'{root_folder}/{fscalar}.png'  #_light.png'
 
       if fvector != 'none': vector = f'{fol}/{hora:04d}_{fvector}_vec.png'
@@ -492,6 +591,7 @@ def make_timelapse(args):
       takeoffs = mpimg.imread(takeoffs)
       try: manga = mpimg.imread(manga)
       except: pass
+      cities = mpimg.imread(cities)
       if fvector != None: img_vector = mpimg.imread(vector)
       img_scalar = mpimg.imread(scalar)
       bar = mpimg.imread(bar)
@@ -508,6 +608,7 @@ def make_timelapse(args):
       ax1.imshow(takeoffs,aspect=aspect,interpolation='lanczos',zorder=20)
       try: ax1.imshow(manga, aspect=aspect, interpolation='lanczos',zorder=21)
       except: pass
+      ax1.imshow(cities,aspect=aspect,interpolation='lanczos',zorder=20)
       if vector != None:
          ax1.imshow(img_vector, aspect=aspect, interpolation='lanczos',
                                 zorder=11, alpha=0.75)
@@ -528,7 +629,7 @@ def make_timelapse(args):
       os.system(f'mv {f_tmp1} {f_tmp}')
    plt.close('all')
    out_folder = f'{root_folder}/{dom}/{sc}'
-   vid = timelapse((out_folder,tmp_folder,fscalar,2,10,'jpg'))
+   vid = timelapse((out_folder,tmp_folder,fscalar,2,10,'png'))
    return vid
 
 # if __name__ == '__main__':

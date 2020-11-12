@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
-
-import datetime as dt
+import common
 import os
 here = os.path.dirname(os.path.realpath(__file__))
+import datetime as dt
 full = here+'/full.ini'
 
 os.system(f'rm {full} 2> /dev/null')
@@ -69,6 +69,14 @@ def get_latest_run(url):
    LG.critical('Unable to get last run')   #TODO
    return None
 
+
+C = common.load(here+'/template.ini')
+
+# frunning = f'{here}/RUNNING'
+if os.path.isfile(C.frunning):
+   LG.critical('Already running')
+   exit()
+dummy = open(C.frunning,'w')
 
 SCs = ['SC2','SC2+1','SC4+2','SC4+3']
 twait = 7   # minutes to check for new data
@@ -150,3 +158,4 @@ with open(full, 'w') as configfile:
 #
 LG.info('Done!')
 #os.system(f"rm {run_file}")
+dummy.close()
