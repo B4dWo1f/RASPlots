@@ -15,6 +15,7 @@ logging.basicConfig(level=lv,
                  filename = log_file, filemode='w')
 LG = logging.getLogger('main')
 log_help.screen_handler(LG, lv=lv)
+LG.info(f'Starting: {__file__}')
 ################################################################################
 import datetime as dt
 import layers as L
