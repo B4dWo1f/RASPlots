@@ -93,6 +93,7 @@ def super_plot(args):
       if 'wind' in prop:
          all_vector(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
       all_scalar(Dfolder, curr_date, Pfolder, domain, sc, hour, prop,l,a)
+      LG.debug(f'plotted: {domain} {sc} {hour} {prop}')
    except OSError:
       msg = f'missing {sc} {domain} {hour.strftime("%Y/%m/%d-%H%M")} {prop}'
       LG.critical(msg)

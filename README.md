@@ -6,13 +6,18 @@ This repo has become a bunch of functions to plot weather information coming fro
 
 The data structre is:
 ```bash
-RASP/DATA/
-└── w2
-    ├── SC2
-    │   └── %year
-    │       ├── %month
-    │       │   ├── %day
-    │       │   │   ├── %Hour%Minute_%property.data
+RASP
+├── DATA
+│   └── w2
+│       ├── SC2
+│       │   └── %year
+│       │       ├── %month
+│       │       │   ├── %day
+│       │       │   │   ├── %Hour%Minute_%property.data
+└── PLOTS
+    ├── w2
+    │   ├── SC2
+    │   │   ├── %Hour%Minute_%property.png
 ```
 **davinci.py**: general script to run through all the dates, times and properties to be plotted.  
 **plots.py**: collection of function to plot each property individually tuned.  
@@ -29,6 +34,48 @@ lats.npy, lons.npy, hagl.npy are the grid of latitudes, longitudes and **h**eigh
 The used terrain data is extracted from the [SkyBean terrain data repository](https://vps.skybean.eu/agl/), converted into a grid of terrain height with customizable density.
 In order to plot the terrain we use matplotlib's hillshade function.
 Lakes and rivers have been taken from the [Ministerio de Agricultura, Alimentación y medio ambiente](https://servicio.mapama.gob.es/sia/visualizacion/descargas/mapas.jsp)
+
+## Properties
+ - Thermal Updraft Velocity
+ - Thrml. Updrft. Vel&B/S Ratio
+ - Buoyancy/Shear (B/S) Ratio
+ - Critical Updraft Hgt (Hcrit)
+ - Depth of Hcrit (AGL Hcrit)
+ - Max.Therm.Height
+ - BL Top Height
+ - BL Depth
+ - Thermal Hgt. Variability
+ - Surface Heating
+ - Normalized Surface Sun
+ - Surface Temperature
+ - Sfc. Wind
+ - BL Avg. Wind
+ - BL Top Wind
+ - BL Vertical Wind Shear
+ - BL Max.Up/Down Motion
+ - Cumulus Potential
+ - Cumulus Cloudbase
+ - Cu Cloudbase @CuPot>0
+ - OD Potential
+ - OD Cloudbase
+ - OD Cloudbase @ODpot>0
+ - CloudWater Cloudbase
+ - BL Max. Rel. Humidity
+ - Sfc. Dew Point Temp.
+ - CAPE
+ - BL Cl.Cover
+ - BL Ext.Cloudbase
+ - Vert.Velocity@850mb
+ - @700mb  @500mb
+ - Vert.Vel.Slide@Vert.Vel.Max
+ - Experimental:  .
+ - Loop
+ - Arcones XD (line)
+ - Snow C
+ - Rain (acc.)
+ - Psfc Pmsl
+ - Hgt
+
 
 ## Release notes
 v0.2.1  
