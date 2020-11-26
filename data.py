@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import datetime as dt
 import os
 here = os.path.dirname(os.path.realpath(__file__))
-HOME = os.getenv('HOME')
+is_cron = os.getenv('RUN_BY_CRON')
 ################################## LOGGING #####################################
 import logging
 import log_help
@@ -19,7 +19,7 @@ logging.basicConfig(level=lv,
                  datefmt='%Y/%m/%d-%H:%M:%S',
                  filename = here+'/data.log', filemode='w')
 LG = logging.getLogger('main')
-log_help.screen_handler(LG, lv=lv)
+if not is_cron: log_help.screen_handler(LG, lv=lv)
 LG.info(f'Starting: {__file__}')
 ################################################################################
 
