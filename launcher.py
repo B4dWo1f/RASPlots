@@ -4,6 +4,7 @@
 import common
 import os
 here = os.path.dirname(os.path.realpath(__file__))
+is_cron = os.getenv('RUN_BY_CRON')
 import datetime as dt
 full = here+'/full.ini'
 
@@ -17,13 +18,16 @@ import subprocess as sub
 from time import sleep,time
 ################################## LOGGING #####################################
 import logging
-#import log_help
-logging.basicConfig(level=logging.INFO,
+import log_help
+log_file = here+'/'+'.'.join( __file__.split('/')[-1].split('.')[:-1] ) + '.log'
+lv = logging.INFO
+logging.basicConfig(level=lv,
                  format='%(asctime)s %(name)s:%(levelname)s - %(message)s',
                  datefmt='%Y/%m/%d-%H:%M',
-                 filename = here+'/launcher.log', filemode='w')
+                 filename = log_file, filemode='w')
 LG = logging.getLogger('main')
-#log_help.screen_handler(LG,lv=logging.INFO)
+if not is_cron: log_help.screen_handler(LG, lv=lv)
+LG.info(f'Starting: {__file__}')
 ################################################################################
 
 
